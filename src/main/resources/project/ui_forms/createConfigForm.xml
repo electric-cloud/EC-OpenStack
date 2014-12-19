@@ -1,0 +1,81 @@
+<editor>
+    <formElement>
+        <type>entry</type>
+        <label>Configuration Name:</label>
+        <property>config</property>
+        <value></value>
+        <required>1</required>
+        <documentation>Provide a unique name for the configuration, keeping in mind that you may need to create additional configurations over time.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Description:</label>
+        <property>description</property>
+        <value>OpenStack configuration</value>
+        <documentation>Provide a simple description for this configuration.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Identity Service URL:</label>
+        <property>identity_service_url</property>
+        <value></value>
+        <documentation>Provide the host name or IP address of the Identity Service for OpenStack</documentation>
+        <required>1</required>
+    </formElement>
+
+    <formElement>
+        <type>entry</type>
+        <label>Compute Service URL:</label>
+        <property>compute_service_url</property>
+        <value></value>
+        <documentation>Provide the host name or IP address of the Compute Service for OpenStack</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>credential</type>
+        <label>Login as:</label>
+        <property>credential</property>
+        <required>1</required>
+        <documentation>OpenStack account username/password. This account must have enough privileges to perform API functions.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>API version:</label>
+        <property>api_version</property>
+        <value>2.0</value>
+        <documentation>	The API version</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Keystone API version:</label>
+        <property>keystone_api_version</property>
+        <value>3</value>
+        <documentation> The Keystone API version</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Resource:</label>
+        <property>resource</property>
+        <value>local</value>
+        <documentation>	The name of the resource (or pool) on which the integration steps can run (default is 'local').</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+    	<type>entry</type>
+    	<label>Workspace:</label>
+    	<property>workspace</property>
+    	<required>1</required>
+    	<documentation>The workspace to use for resources dynamically created by this configuration (default is 'default').</documentation>
+        <value>default</value>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Debug Level:</label>
+        <property>debug_level</property>
+        <value>1</value>
+        <documentation>Level for output: 0=errors only, 1=normal headers and responses, 2+=debugging information included.</documentation>
+        <required>1</required>
+    </formElement>
+</editor>

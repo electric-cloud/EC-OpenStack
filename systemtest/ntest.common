@@ -1,0 +1,67 @@
+# -*-Perl-*-
+
+# ntest.common
+#
+# Copyright (c) 2005-2011 Electric Cloud, Inc.
+# All rights reserved
+
+use strict;
+use warnings;
+use ECTest;
+
+# read in setup and tests that are common to all EC-OpenStack plugin archives
+# system tests
+
+use constant EXIT_CODE_SUCCESS => 0;
+
+use constant DISABLE_SYSTEM_TESTS => '0';
+use constant ENABLE_SYSTEM_TESTS  => '1';
+
+use constant LINUX_OS_ALIAS        => 'lin';
+use constant WINDOWS_OS_ALIAS      => 'win';
+use constant WINDOWS_OS_IDENTIFIER => 'MSWin32';
+
+initCommander();
+
+$::gPlugin_name = $::ENV{PLUGIN_NAME};
+$::gPlugin_key  = $::gPlugin_name;
+$::gPlugin_key =~ s/-[^-]+$//;
+$::gPlugin_driver = $::gPlugin_key;
+
+$::gRunFlag = 'RUNOPENTESTS';
+
+# win/lin matches the chronic3 procedure platform property
+$::gPlatform = LINUX_OS_ALIAS;
+if ($^O eq WINDOWS_OS_IDENTIFIER) {
+    $::gPlatform = WINDOWS_OS_ALIAS;
+}
+
+if (defined($::ENV{$::gRunFlag}) && $::ENV{$::gRunFlag} eq DISABLE_SYSTEM_TESTS) {
+    print "Skipping system tests\n";
+    exit EXIT_CODE_SUCCESS;
+}
+
+$::N = $adminSession;
+my $xpath = $::N->getPlugin($::gPlugin_key);
+$::gPlugin_name       = $xpath->findvalue('//pluginName')->value;
+$::gPlugin_ver        = $xpath->findvalue('//pluginVersion')->value;
+$::gCreatePrivateDirs = 1;
+$::gECdtTestFileDir   = "$::gTestFileDir/../../EC-OpenStack/systemtest";
+
+$::ECFitNesse = $::N->getProperty('/plugins/EC-OpenStack/projectName')->findvalue("//value")->string_value;
+
+$::gJobId = $::ENV{COMMANDER_JOBID} || '1';
+$::gAgentResource = 'local';
+
+# show all key variables for debugging
+print "==========EC OpenStack NTEST SETUP============\n";
+print "key     : $::gPlugin_key\n";
+print "ver     : $::gPlugin_ver\n";
+print "name    : $::gPlugin_name\n";
+print "driver  : $::gPlugin_driver\n";
+print "resource: $::gAgentResource\n";
+print "platform: $::gPlatform\n";
+print "jobid   : $::gJobId\n";
+print "\n";
+
+1;

@@ -1,0 +1,102 @@
+// build.gradle                                                 -*- Groovy -*-
+//
+// Gradle build script for EC-OpenStack plugin.
+//
+// Copyright (c) 2014 Electric Cloud, Inc.
+// All rights reserved
+
+group = "com.electriccloud"
+description = "Plugins : EC-OpenStack"
+version = "3.0.1"
+
+project.ext {
+	pluginName = "$name-$version".toString()
+	commanderHome = System.env.COMMANDER_HOME
+	commanderServer = System.env.COMMANDER_SERVER ? System.env.COMMANDER_SERVER : "localhost"
+}
+
+apply plugin: "java"
+apply plugin: "eclipse"
+
+sourceCompatibility = 1.5
+
+defaultTasks "assemblePluginJar"
+
+if(commanderHome) {
+	println "Using commander home:   $commanderHome"
+}
+
+println "Using commander server: $commanderServer"
+
+buildscript {
+	repositories {
+		maven { url "https://github.com/steffenschaefer/gwt-gradle-plugin/raw/maven-repo/" }
+		mavenCentral()
+	}
+
+	dependencies { classpath "de.richsource.gradle.plugins:gwt-gradle-plugin:0.4" }
+}
+
+repositories {
+	mavenCentral()
+	flatDir {
+       dirs 'libs'
+    }
+
+}
+
+dependencies {
+	compile group: group, name: "commander-sdk", version: "5.0.0-SNAPSHOT"
+	compile group: group, name: "commander-client", version: "5.0.0-SNAPSHOT"
+	compile group: group, name: "ec_internal", version: "5.0.0-SNAPSHOT"
+	compile group: group, name: "ec-test", version: "5.0.0-SNAPSHOT"
+	compile group: "com.google.gwt", name: "gwt-dev", version: "2.5.0"
+	compile group: "com.google.gwt", name: "gwt-servlet", version: "2.5.0"
+	compile group: "com.google.gwt", name: "gwt-user", version: "2.5.0"
+	compile "com.intellij:annotations:132.839-PATCH1"
+}
+
+processResources {
+	// Clear readonly flag, set by perforce
+	setFileMode(0644)
+
+	filter(org.apache.tools.ant.filters.ReplaceTokens,
+	tokens: [PLUGIN_NAME: project.pluginName, PLUGIN_KEY: project.name, PLUGIN_VERSION: project.version])
+}
+
+task processProjectXml(type:Exec, dependsOn: processResources) {
+	def resourcesPath = "$buildDir/resources/main"
+	def ecperl = project.commanderHome ? "$commanderHome/bin/ec-perl" : "ec-perl"
+	commandLine ecperl, "../build/buildProject-mvn.pl", "$resourcesPath/project", "$resourcesPath/META-INF"
+}
+
+task assemblePluginJar(type: Jar, dependsOn: processProjectXml) {
+	appendix = "plugin"
+	destinationDir = buildDir
+	includeEmptyDirs = false
+	excludes = [
+		"project/project.xml",
+		"**/*.pl",
+		"**/*.pm",
+		"project/forms"
+	]
+
+	from sourceSets.main.output
+}
+
+task deployPluginJar(dependsOn: assemblePluginJar) << {
+	def ectool = project.commanderHome ? "$commanderHome/ectool" : "ectool"
+	def serverOpt = "--server $commanderServer"
+
+	exec {
+		commandLine ectool, serverOpt, "login", "admin", "changeme"
+	}
+
+	exec {
+		commandLine ectool, serverOpt, "installPlugin", assemblePluginJar.archivePath
+	}
+
+	exec {
+		commandLine ectool, serverOpt, "promotePlugin", project.name
+	}
+}

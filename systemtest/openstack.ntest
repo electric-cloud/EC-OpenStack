@@ -1,0 +1,881 @@
+# -*-Perl-*-
+# rally.ntest -
+# Exercise basic components of EC-Rally plugin
+# Copyright (c) 2005-2012 Electric Cloud, Inc.
+# All rights reserved
+
+use strict;
+use warnings;
+use ECTest;
+
+# system tests
+require "$::gTestFileDir/ntest.common";
+
+$::gProjectImported = 0;
+$::gtestProjectName = 'Openstack_systemtests';
+$::gConfigCreated   = 0;
+
+sub importProject() {
+    assertOK(
+             $::N->import(
+                          {
+                            file  => "$::gTestFileDir/OpenStack_tests.xml",
+                            path  => "/projects/Openstack_systemtests",
+                            force => 1
+                          }
+                         ),
+             "import runCommandLine"
+            );
+
+    assertOK($::N->getProcedure($::gtestProjectName, 'Deploy'),           'Deploy procedure doesn\'t exist');
+    assertOK($::N->getProcedure($::gtestProjectName, 'Cleanup'),          'Cleanup procedure doesn\'t exist');
+    assertOK($::N->getProcedure($::gtestProjectName, 'CreateKeyPair'),    'CreateKeyPair procedure doesn\'t exist');
+    assertOK($::N->getProcedure($::gtestProjectName, 'DeleteKeyPair'),    'DeleteKeyPair procedure doesn\'t exist');
+    assertOK($::N->getProcedure($::gtestProjectName, 'AllocateIP'),       'AllocateIP procedure doesn\'t exist');
+    assertOK($::N->getProcedure($::gtestProjectName, 'ReleaseIP'),        'ReleaseIP procedure doesn\'t exist');
+    assertOK($::N->getProcedure($::gtestProjectName, 'Deploy & Cleanup'), 'Deploy & Cleanup procedure doesn\'t exist');
+
+    $::gProjectImported = 1;
+}
+
+sub createConfig() {
+    my $xpath = $::N->runProcedure(
+        "$::gPlugin_name",
+        {
+            procedureName   => 'CreateConfiguration',
+            pollInterval    => '0.2',
+            timeout         => 600,
+            actualParameter => [
+                { actualParameterName => 'config', value => 'open' },
+                { actualParameterName => 'description', value => 'Openstack systemtests configuration' },
+                { actualParameterName => 'api_version', value => '2' },
+                { actualParameterName => 'identity_service_url', value => 'http://192.168.88.100' },
+                { actualParameterName => 'keystone_api_version', value => '3' },
+                { actualParameterName => 'compute_service_url', value => 'http://192.168.88.100' },
+                { actualParameterName => 'credential', value => 'open' },
+                { actualParameterName => 'debug_level', value => '2' },
+                { actualParameterName => 'resource', value => 'local' },
+                { actualParameterName => 'workspace', value => 'default' },
+            ],
+            credential => [
+                { credentialName => 'open', userName => 'admin2', password => 'letmein', },
+            ],
+        }
+    );
+    assertOK($xpath, 'run create configuration procedure');
+    my $jobId  = 0;
+    my $status = '';
+    assertDef($xpath, 'runProcedure finished without a timeout');
+    if ($xpath) {
+        $jobId  = $xpath->findvalue('//jobId');
+        $status = $xpath->findvalue('//status');
+        assertTrue($jobId && $jobId ne "",'valid job id');
+        assertEq('completed', $status, "job $jobId complete");
+        if ($status ne 'completed') {
+            assertOK($::N->abortJob($jobId, { force => 1 }));
+        }
+    }
+    $xpath = $::N->getJobDetails($jobId);
+
+    # check that the config and credential exist
+    $xpath = $::N->getProperty("/projects/$::gPlugin_name/openstack_cfgs/open/description");
+    assertEq("Openstack systemtests configuration", $xpath->findvalue("//value")->string_value, "Configuration description");
+    $xpath = $::N->getCredential("$::gPlugin_name", "open");
+    assertEq('admin2', $xpath->findvalue("//userName")->string_value, 'Credential user');
+    $::gConfigCreated = 1;
+}
+
+sub doSetup() {
+
+    if (!$::gProjectImported) {
+        importProject();
+    }
+    if (!$::gConfigCreated) {
+        createConfig();
+    }
+
+}
+
+################################
+# check-components-present - Check that the plugin contains required components
+#
+# Arguments:
+#   none
+#
+# Returns:
+#   none
+#
+################################
+
+ntest 'check-components-present', {}, sub {
+
+    # Check that the plugin contains required components
+
+    my $xpath;
+
+    $xpath = $::N->getSteps("$::gPlugin_name", "CreateConfiguration");
+    assertOK($xpath, 'get steps');
+    assertEq("CreateConfiguration",       $xpath->findvalue("//step[1]/stepName"), "step 1: CreateConfiguration");
+    assertEq("CreateAndAttachCredential", $xpath->findvalue("//step[2]/stepName"), "step 2: CreateAndAttachCredential");
+
+    $xpath = $::N->getSteps("$::gPlugin_name", "DeleteConfiguration");
+    assertOK($xpath, "DeleteConfiguration");
+    assertEq("DeleteConfiguration", $xpath->findvalue("//step[1]/stepName"), "step 1 is DeleteConfiguration");
+
+    $xpath = $::N->getSteps("$::gPlugin_name", "AllocateIP");
+    assertOK($xpath, "AllocateIP");
+    assertEq("AllocateIP", $xpath->findvalue("//step[1]/stepName"), "step 1 is AllocateIP");
+
+    $xpath = $::N->getSteps("$::gPlugin_name", "Cleanup");
+    assertOK($xpath, "Cleanup");
+    assertEq("Cleanup",    $xpath->findvalue("//step[1]/stepName"), "step 1 is Cleanup");
+
+    $xpath = $::N->getSteps("$::gPlugin_name", "CreateKeyPair");
+    assertOK($xpath, "CreateKeyPair");
+    assertEq("CreateKeyPair", $xpath->findvalue("//step[1]/stepName"), "step 1 is CreateKeyPair");
+
+    $xpath = $::N->getSteps("$::gPlugin_name", "DeleteKeyPair");
+    assertOK($xpath, "DeleteKeyPair");
+    assertEq("DeleteKeyPair", $xpath->findvalue("//step[1]/stepName"), "step 1 is DeleteKeyPair");
+
+    $xpath = $::N->getSteps("$::gPlugin_name", "Deploy");
+    assertOK($xpath, "Deploy");
+    assertEq("Deploy",     $xpath->findvalue("//step[1]/stepName"), "step 1 is Deploy");
+
+    $xpath = $::N->getSteps("$::gPlugin_name", "ReleaseIP");
+    assertOK($xpath, "ReleaseIP");
+    assertEq("ReleaseIP", $xpath->findvalue("//step[1]/stepName"), "step 1 is ReleaseIP");
+
+    $xpath = $::N->getSteps("$::gPlugin_name", "CloudManagerGrow");
+    assertOK($xpath, "CloudManagerGrow");
+    assertEq("grow", $xpath->findvalue("//step[1]/stepName"), "step 1 is grow");
+
+    $xpath = $::N->getSteps("$::gPlugin_name", "CloudManagerShrink");
+    assertOK($xpath, "CloudManagerShrink");
+    assertEq("shrink", $xpath->findvalue("//step[1]/stepName"), "step 1 is shrink");
+
+    $xpath = $::N->getSteps("$::gPlugin_name", "CloudManagerSync");
+    assertOK($xpath, "CloudManagerSync");
+    assertEq("sync", $xpath->findvalue("//step[1]/stepName"), "step 1 is sync");
+
+};
+
+ntest "01. Deploy", {}, sub {
+
+    doSetup();
+
+    # run test job
+    my $xpath = $::N->runProcedure(
+                                   $::gtestProjectName,
+                                   {
+                                      procedureName   => "Deploy",
+                                      pollInterval    => '1',
+                                      timeout         => 600,
+                                      actualParameter => [],
+                                   }
+                                  );
+
+    # make sure it finished
+    my $jobId     = 0;
+    my $jobStepId = 0;
+    my $status    = "";
+
+    assertOK($xpath, 'runProcedure finished');
+    if ($xpath) {
+        $jobId  = $xpath->findvalue("//jobId");
+        $status = $xpath->findvalue("//status");
+
+        assertTrue($jobId && $jobId ne "",'valid job id');
+        assertEq('completed', $status, "job $jobId complete");
+
+        #abort if job did not finish
+        if ($status ne "completed") {
+            assertOK($::N->abortJob($jobId, { force => 1 }));
+        }
+    }
+
+    # get the job details
+    $xpath = $::N->getJobDetails($jobId);
+
+    # Get the root of log files. use UNC so it works from
+    # command line as well as within a CMD step
+    my $ws = $xpath->findvalue("//workspace/winUNC");
+    if (!isWindows()) {
+        $ws = $xpath->findvalue("//workspace/unix");
+    }
+
+    # Get the name of the log file
+    my $logFileName = $ws . "/" . $xpath->findvalue("//jobStep[stepName='Create Key']/logFileName");
+
+    # Get the jobStepId for Rally
+    $jobStepId = $xpath->findvalue("//jobStep[stepName='Create Key']/jobStepId");
+
+    # Read the log file and verify its contents.
+    my $data = readFile($logFileName);
+
+    # write the job details to a file in the test directory
+    writeFile("$::gCurrentTestDir/Create Key.log", "====Job Details====\n$xpath->{_xml}\n====LOG====\n$data\n");
+
+    #assert command lines
+    my $expectedOutput = "";
+    $expectedOutput .= "Using plugin EC-OpenStack version " . $::gPlugin_ver . "\n";
+    $expectedOutput .= "Loading config open\n";
+    $expectedOutput .= "Adding config resource = local\n";
+    $expectedOutput .= "Adding config workspace = default\n";
+    $expectedOutput .= "Adding config service_url = http://192.168.88.100\n";
+    $expectedOutput .= "Adding config debug_level = 2\n";
+    $expectedOutput .= "Adding config credential = open\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "-- Authenticating with server -------\n";
+    $expectedOutput .= "Authenticating with 'http://192.168.88.100:5000/v1.1'\n";
+    $expectedOutput .= "    Authentication status: 204 No Content\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "-- Creating KeyPair -------\n";
+    $expectedOutput .= "KeyPair cmdr-38185 created.";
+
+    assertDiff($expectedOutput, $data, 'Create Key successful output');
+
+    ### Get step 2 log
+
+    # Get the name of the log file
+    $logFileName = $ws . "/" . $xpath->findvalue("//jobStep[stepName='Deploy']/logFileName");
+
+    # Get the jobStepId for Rally
+    $jobStepId = $xpath->findvalue("//jobStep[stepName='Deploy']/jobStepId");
+
+    # Read the log file and verify its contents.
+    $data = readFile($logFileName);
+
+    # write the job details to a file in the test directory
+    writeFile("$::gCurrentTestDir/Deploy.log", "====Job Details====\n$xpath->{_xml}\n====LOG====\n$data\n");
+
+    #assert command lines
+    $expectedOutput = "";
+    $expectedOutput .= "Using plugin EC-OpenStack version " . $::gPlugin_ver . "\n";
+    $expectedOutput .= "Loading config open\n";
+    $expectedOutput .= "Adding config resource = local\n";
+    $expectedOutput .= "Adding config workspace = default\n";
+    $expectedOutput .= "Adding config service_url = http://192.168.88.100\n";
+    $expectedOutput .= "Adding config debug_level = 2\n";
+    $expectedOutput .= "Adding config credential = open\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "-- Authenticating with server -------\n";
+    $expectedOutput .= "Authenticating with 'http://192.168.88.100:5000/v1.1'\n";
+    $expectedOutput .= "    Authentication status: 204 No Content\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "Waiting for action to complete...\n";
+    $expectedOutput .= "Server 'server_1' created.\n";
+    $expectedOutput .= "Server server_1 deployed.\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "Waiting for action to complete...\n";
+    $expectedOutput .= "Server 'server_2' created.\n";
+    $expectedOutput .= "Server server_2 deployed.";
+
+    assertDiff($expectedOutput, $data, 'Deploy successful output');
+
+};
+
+ntest "02. Cleanup", {}, sub {
+
+    doSetup();
+
+    # run test job
+    my $xpath = $::N->runProcedure(
+                                   $::gtestProjectName,
+                                   {
+                                      procedureName   => "Cleanup",
+                                      pollInterval    => '1',
+                                      timeout         => 600,
+                                      actualParameter => [],
+                                   }
+                                  );
+
+    # make sure it finished
+    my $jobId     = 0;
+    my $jobStepId = 0;
+    my $status    = "";
+
+    assertOK($xpath, 'runProcedure finished');
+    if ($xpath) {
+        $jobId  = $xpath->findvalue("//jobId");
+        $status = $xpath->findvalue("//status");
+
+        assertTrue($jobId && $jobId ne "",'valid job id');
+        assertEq('completed', $status, "job $jobId complete");
+
+        #abort if job did not finish
+        if ($status ne "completed") {
+            assertOK($::N->abortJob($jobId, { force => 1 }));
+        }
+    }
+
+    # get the job details
+    $xpath = $::N->getJobDetails($jobId);
+
+    # Get the root of log files. use UNC so it works from
+    # command line as well as within a CMD step
+    my $ws = $xpath->findvalue("//workspace/winUNC");
+    if (!isWindows()) {
+        $ws = $xpath->findvalue("//workspace/unix");
+    }
+
+    # Get the name of the log file
+    my $logFileName = $ws . "/" . $xpath->findvalue("//jobStep[stepName='Delete Key']/logFileName");
+
+    # Get the jobStepId for Rally
+    $jobStepId = $xpath->findvalue("//jobStep[stepName='Delete Key']/jobStepId");
+
+    # Read the log file and verify its contents.
+    my $data = readFile($logFileName);
+
+    # write the job details to a file in the test directory
+    writeFile("$::gCurrentTestDir/Delete Key.log", "====Job Details====\n$xpath->{_xml}\n====LOG====\n$data\n");
+
+    #assert command lines
+    my $expectedOutput = "";
+    $expectedOutput .= "Using plugin EC-OpenStack version " . $::gPlugin_ver . "\n";
+    $expectedOutput .= "Loading config open\n";
+    $expectedOutput .= "Adding config resource = local\n";
+    $expectedOutput .= "Adding config workspace = default\n";
+    $expectedOutput .= "Adding config service_url = http://192.168.88.100\n";
+    $expectedOutput .= "Adding config debug_level = 2\n";
+    $expectedOutput .= "Adding config credential = open\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "-- Authenticating with server -------\n";
+    $expectedOutput .= "Authenticating with 'http://192.168.88.100:5000/v1.1'\n";
+    $expectedOutput .= "    Authentication status: 204 No Content\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "-- Deleting KeyPair -------\n";
+    $expectedOutput .= "KeyPair cmdr-38185 deleted";
+
+    assertDiff(outdent($expectedOutput), $data, 'Delete Key successful output');
+
+    ### Get step 2 log
+
+    # Get the name of the log file
+    $logFileName = $ws . "/" . $xpath->findvalue("//jobStep[stepName='Cleanup']/logFileName");
+
+    # Get the jobStepId for Rally
+    $jobStepId = $xpath->findvalue("//jobStep[stepName='Cleanup']/jobStepId");
+
+    # Read the log file and verify its contents.
+    $data = readFile($logFileName);
+
+    # write the job details to a file in the test directory
+    writeFile("$::gCurrentTestDir/Cleanup.log", "====Job Details====\n$xpath->{_xml}\n====LOG====\n$data\n");
+
+    #assert command lines
+    $expectedOutput = "";
+    $expectedOutput .= "Using plugin EC-OpenStack version " . $::gPlugin_ver . "\n";
+    $expectedOutput .= "Loading config open\n";
+    $expectedOutput .= "Adding config resource = local\n";
+    $expectedOutput .= "Adding config workspace = default\n";
+    $expectedOutput .= "Adding config service_url = http://192.168.88.100\n";
+    $expectedOutput .= "Adding config debug_level = 2\n";
+    $expectedOutput .= "Adding config credential = open\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "-- Authenticating with server -------\n";
+    $expectedOutput .= "Authenticating with 'http://192.168.88.100:5000/v1.1'\n";
+    $expectedOutput .= "    Authentication status: 204 No Content\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "Terminating instance 61\n";
+    $expectedOutput .= "Instance '61' has been terminated.\n";
+    $expectedOutput .= "Terminating instance 62\n";
+    $expectedOutput .= "Instance '62' has been terminated.\n";
+    $expectedOutput .= "2 instances terminated.";
+
+    assertDiff(outdent($expectedOutput), $data, 'Cleanup successful output');
+
+};
+
+ntest "03. CreateKeyPair", {}, sub {
+
+    doSetup();
+
+    # run test job
+    my $xpath = $::N->runProcedure(
+                                   $::gtestProjectName,
+                                   {
+                                      procedureName   => "CreateKeyPair",
+                                      pollInterval    => '1',
+                                      timeout         => 600,
+                                      actualParameter => [],
+                                   }
+                                  );
+
+    # make sure it finished
+    my $jobId     = 0;
+    my $jobStepId = 0;
+    my $status    = "";
+
+    assertOK($xpath, 'runProcedure finished');
+    if ($xpath) {
+        $jobId  = $xpath->findvalue("//jobId");
+        $status = $xpath->findvalue("//status");
+
+        assertTrue($jobId && $jobId ne "",'valid job id');
+        assertEq('completed', $status, "job $jobId complete");
+
+        #abort if job did not finish
+        if ($status ne "completed") {
+            assertOK($::N->abortJob($jobId, { force => 1 }));
+        }
+    }
+
+    # get the job details
+    $xpath = $::N->getJobDetails($jobId);
+
+    # Get the root of log files. use UNC so it works from
+    # command line as well as within a CMD step
+    my $ws = $xpath->findvalue("//workspace/winUNC");
+    if (!isWindows()) {
+        $ws = $xpath->findvalue("//workspace/unix");
+    }
+
+    # Get the name of the log file
+    my $logFileName = $ws . "/" . $xpath->findvalue("//jobStep[stepName='CreateKeyPair']/logFileName");
+
+    # Get the jobStepId for Rally
+    $jobStepId = $xpath->findvalue("//jobStep[stepName='CreateKeyPair']/jobStepId");
+
+    # Read the log file and verify its contents.
+    my $data = readFile($logFileName);
+
+    # write the job details to a file in the test directory
+    writeFile("$::gCurrentTestDir/CreateKeyPair.log", "====Job Details====\n$xpath->{_xml}\n====LOG====\n$data\n");
+
+    #assert command lines
+    my $expectedOutput = "";
+    $expectedOutput .= "Using plugin EC-OpenStack version " . $::gPlugin_ver . "\n";
+    $expectedOutput .= "Loading config open\n";
+    $expectedOutput .= "Adding config resource = local\n";
+    $expectedOutput .= "Adding config workspace = default\n";
+    $expectedOutput .= "Adding config service_url = http://192.168.88.100\n";
+    $expectedOutput .= "Adding config debug_level = 2\n";
+    $expectedOutput .= "Adding config credential = open\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "-- Authenticating with server -------\n";
+    $expectedOutput .= "Authenticating with 'http://192.168.88.100:5000/v1.1'\n";
+    $expectedOutput .= "    Authentication status: 204 No Content\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "-- Creating KeyPair -------\n";
+    $expectedOutput .= "KeyPair cmdr-38259 created.";
+
+    assertDiff(outdent($expectedOutput), $data, 'CreateKeyPair successful output');
+
+};
+
+ntest "04. DeleteKeyPair", {}, sub {
+
+    doSetup();
+
+    # run test job
+    my $xpath = $::N->runProcedure(
+                                   $::gtestProjectName,
+                                   {
+                                      procedureName   => "DeleteKeyPair",
+                                      pollInterval    => '1',
+                                      timeout         => 600,
+                                      actualParameter => [],
+                                   }
+                                  );
+
+    # make sure it finished
+    my $jobId     = 0;
+    my $jobStepId = 0;
+    my $status    = "";
+
+    assertOK($xpath, 'runProcedure finished');
+    if ($xpath) {
+        $jobId  = $xpath->findvalue("//jobId");
+        $status = $xpath->findvalue("//status");
+
+        assertTrue($jobId && $jobId ne "",'valid job id');
+        assertEq('completed', $status, "job $jobId complete");
+
+        #abort if job did not finish
+        if ($status ne "completed") {
+            assertOK($::N->abortJob($jobId, { force => 1 }));
+        }
+    }
+
+    # get the job details
+    $xpath = $::N->getJobDetails($jobId);
+
+    # Get the root of log files. use UNC so it works from
+    # command line as well as within a CMD step
+    my $ws = $xpath->findvalue("//workspace/winUNC");
+    if (!isWindows()) {
+        $ws = $xpath->findvalue("//workspace/unix");
+    }
+
+    # Get the name of the log file
+    my $logFileName = $ws . "/" . $xpath->findvalue("//jobStep[stepName='DeleteKeyPair']/logFileName");
+
+    # Get the jobStepId for Rally
+    $jobStepId = $xpath->findvalue("//jobStep[stepName='DeleteKeyPair']/jobStepId");
+
+    # Read the log file and verify its contents.
+    my $data = readFile($logFileName);
+
+    # write the job details to a file in the test directory
+    writeFile("$::gCurrentTestDir/DeleteKeyPair.log", "====Job Details====\n$xpath->{_xml}\n====LOG====\n$data\n");
+
+    #assert command lines
+    my $expectedOutput = "";
+    $expectedOutput .= "Using plugin EC-OpenStack version " . $::gPlugin_ver . "\n";
+    $expectedOutput .= "Loading config open\n";
+    $expectedOutput .= "Adding config resource = local\n";
+    $expectedOutput .= "Adding config workspace = default\n";
+    $expectedOutput .= "Adding config service_url = http://192.168.88.100\n";
+    $expectedOutput .= "Adding config debug_level = 2\n";
+    $expectedOutput .= "Adding config credential = open\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "-- Authenticating with server -------\n";
+    $expectedOutput .= "Authenticating with 'http://192.168.88.100:5000/v1.1'\n";
+    $expectedOutput .= "    Authentication status: 204 No Content\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "-- Deleting KeyPair -------\n";
+    $expectedOutput .= "KeyPair cmdr-38259 deleted";
+
+    assertDiff(outdent($expectedOutput), $data, 'DeleteKeyPair successful output');
+
+};
+
+ntest "05. AllocateIP", {}, sub {
+
+    doSetup();
+
+    # run test job
+    my $xpath = $::N->runProcedure(
+                                   $::gtestProjectName,
+                                   {
+                                      procedureName   => "AllocateIP",
+                                      pollInterval    => '1',
+                                      timeout         => 600,
+                                      actualParameter => [],
+                                   }
+                                  );
+
+    # make sure it finished
+    my $jobId     = 0;
+    my $jobStepId = 0;
+    my $status    = "";
+
+    assertOK($xpath, 'runProcedure finished');
+    if ($xpath) {
+        $jobId  = $xpath->findvalue("//jobId");
+        $status = $xpath->findvalue("//status");
+
+        assertTrue($jobId && $jobId ne "",'valid job id');
+        assertEq('completed', $status, "job $jobId complete");
+
+        #abort if job did not finish
+        if ($status ne "completed") {
+            assertOK($::N->abortJob($jobId, { force => 1 }));
+        }
+    }
+
+    # get the job details
+    $xpath = $::N->getJobDetails($jobId);
+
+    # Get the root of log files. use UNC so it works from
+    # command line as well as within a CMD step
+    my $ws = $xpath->findvalue("//workspace/winUNC");
+    if (!isWindows()) {
+        $ws = $xpath->findvalue("//workspace/unix");
+    }
+
+    # Get the name of the log file
+    my $logFileName = $ws . "/" . $xpath->findvalue("//jobStep[stepName='AllocateIP']/logFileName");
+
+    # Get the jobStepId for Rally
+    $jobStepId = $xpath->findvalue("//jobStep[stepName='AllocateIP']/jobStepId");
+
+    # Read the log file and verify its contents.
+    my $data = readFile($logFileName);
+
+    # write the job details to a file in the test directory
+    writeFile("$::gCurrentTestDir/AllocateIP.log", "====Job Details====\n$xpath->{_xml}\n====LOG====\n$data\n");
+
+    #assert command lines
+    my $expectedOutput = "";
+    $expectedOutput .= "Using plugin EC-OpenStack version " . $::gPlugin_ver . "\n";
+    $expectedOutput .= "Loading config open\n";
+    $expectedOutput .= "Adding config resource = local\n";
+    $expectedOutput .= "Adding config workspace = default\n";
+    $expectedOutput .= "Adding config service_url = http://192.168.88.100\n";
+    $expectedOutput .= "Adding config debug_level = 2\n";
+    $expectedOutput .= "Adding config credential = open\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "-- Authenticating with server -------\n";
+    $expectedOutput .= "Authenticating with 'http://192.168.88.100:5000/v1.1'\n";
+    $expectedOutput .= "    Authentication status: 204 No Content\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "-- Allocating IP -------\n";
+    $expectedOutput .= "Address 192.168.20.2 allocated";
+
+    assertDiff(outdent($expectedOutput), $data, 'AllocateIP successful output');
+
+};
+
+ntest "06. ReleaseIP", {}, sub {
+
+    doSetup();
+
+    # run test job
+    my $xpath = $::N->runProcedure(
+                                   $::gtestProjectName,
+                                   {
+                                      procedureName   => "ReleaseIP",
+                                      pollInterval    => '1',
+                                      timeout         => 600,
+                                      actualParameter => [],
+                                   }
+                                  );
+
+    # make sure it finished
+    my $jobId     = 0;
+    my $jobStepId = 0;
+    my $status    = "";
+
+    assertOK($xpath, 'runProcedure finished');
+    if ($xpath) {
+        $jobId  = $xpath->findvalue("//jobId");
+        $status = $xpath->findvalue("//status");
+
+        assertTrue($jobId && $jobId ne "",'valid job id');
+        assertEq('completed', $status, "job $jobId complete");
+
+        #abort if job did not finish
+        if ($status ne "completed") {
+            assertOK($::N->abortJob($jobId, { force => 1 }));
+        }
+    }
+
+    # get the job details
+    $xpath = $::N->getJobDetails($jobId);
+
+    # Get the root of log files. use UNC so it works from
+    # command line as well as within a CMD step
+    my $ws = $xpath->findvalue("//workspace/winUNC");
+    if (!isWindows()) {
+        $ws = $xpath->findvalue("//workspace/unix");
+    }
+
+    # Get the name of the log file
+    my $logFileName = $ws . "/" . $xpath->findvalue("//jobStep[stepName='ReleaseIP']/logFileName");
+
+    # Get the jobStepId for Rally
+    $jobStepId = $xpath->findvalue("//jobStep[stepName='ReleaseIP']/jobStepId");
+
+    # Read the log file and verify its contents.
+    my $data = readFile($logFileName);
+
+    # write the job details to a file in the test directory
+    writeFile("$::gCurrentTestDir/ReleaseIP.log", "====Job Details====\n$xpath->{_xml}\n====LOG====\n$data\n");
+
+    #assert command lines
+    my $expectedOutput = "";
+    $expectedOutput .= "Using plugin EC-OpenStack version " . $::gPlugin_ver . "\n";
+    $expectedOutput .= "Loading config open\n";
+    $expectedOutput .= "Adding config resource = local\n";
+    $expectedOutput .= "Adding config workspace = default\n";
+    $expectedOutput .= "Adding config service_url = http://192.168.88.100\n";
+    $expectedOutput .= "Adding config debug_level = 2\n";
+    $expectedOutput .= "Adding config credential = open\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "-- Authenticating with server -------\n";
+    $expectedOutput .= "Authenticating with 'http://192.168.88.100:5000/v1.1'\n";
+    $expectedOutput .= "    Authentication status: 204 No Content\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "-- Releasing IP -------\n";
+    $expectedOutput .= "Address 2 released.";
+
+    assertDiff(outdent($expectedOutput), $data, 'ReleaseIP successful output');
+
+};
+
+ntest "07. Deploy & Cleanup", {}, sub {
+
+    doSetup();
+
+    # run test job
+    my $xpath = $::N->runProcedure(
+                                   $::gtestProjectName,
+                                   {
+                                      procedureName   => "Deploy & Cleanup",
+                                      pollInterval    => '1',
+                                      timeout         => 600,
+                                      actualParameter => [],
+                                   }
+                                  );
+
+    # make sure it finished
+    my $jobId     = 0;
+    my $jobStepId = 0;
+    my $status    = "";
+
+    assertOK($xpath, 'runProcedure finished');
+    if ($xpath) {
+        $jobId  = $xpath->findvalue("//jobId");
+        $status = $xpath->findvalue("//status");
+
+        assertTrue($jobId && $jobId ne "",'valid job id');
+        assertEq('completed', $status, "job $jobId complete");
+
+        #abort if job did not finish
+        if ($status ne "completed") {
+            assertOK($::N->abortJob($jobId, { force => 1 }));
+        }
+    }
+
+    # get the job details
+    $xpath = $::N->getJobDetails($jobId);
+
+    # Get the root of log files. use UNC so it works from
+    # command line as well as within a CMD step
+    my $ws = $xpath->findvalue("//workspace/winUNC");
+    if (!isWindows()) {
+        $ws = $xpath->findvalue("//workspace/unix");
+    }
+
+    # Get the name of the log file
+    my $logFileName = $ws . "/" . $xpath->findvalue("//jobStep[stepName='Create Key']/logFileName");
+
+    # Get the jobStepId for Rally
+    $jobStepId = $xpath->findvalue("//jobStep[stepName='Create Key']/jobStepId");
+
+    # Read the log file and verify its contents.
+    my $data = readFile($logFileName);
+
+    # write the job details to a file in the test directory
+    writeFile("$::gCurrentTestDir/Create Key.log", "====Job Details====\n$xpath->{_xml}\n====LOG====\n$data\n");
+
+    #assert command lines
+    my $expectedOutput = "";
+    $expectedOutput .= "Using plugin EC-OpenStack version " . $::gPlugin_ver . "\n";
+    $expectedOutput .= "Loading config open\n";
+    $expectedOutput .= "Adding config resource = local\n";
+    $expectedOutput .= "Adding config workspace = default\n";
+    $expectedOutput .= "Adding config service_url = http://192.168.88.100\n";
+    $expectedOutput .= "Adding config debug_level = 2\n";
+    $expectedOutput .= "Adding config credential = open\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "-- Authenticating with server -------\n";
+    $expectedOutput .= "Authenticating with 'http://192.168.88.100:5000/v1.1'\n";
+    $expectedOutput .= "    Authentication status: 204 No Content\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "-- Creating KeyPair -------\n";
+    $expectedOutput .= "KeyPair cmdr-38334 created.";
+
+    assertDiff($expectedOutput, $data, 'Create Key successful output');
+
+    ### Get step 2 log
+
+    # Get the name of the log file
+    $logFileName = $ws . "/" . $xpath->findvalue("//jobStep[stepName='Deploy']/logFileName");
+
+    # Get the jobStepId for Rally
+    $jobStepId = $xpath->findvalue("//jobStep[stepName='Deploy']/jobStepId");
+
+    # Read the log file and verify its contents.
+    $data = readFile($logFileName);
+
+    # write the job details to a file in the test directory
+    writeFile("$::gCurrentTestDir/Deploy.log", "====Job Details====\n$xpath->{_xml}\n====LOG====\n$data\n");
+
+    #assert command lines
+    $expectedOutput = "";
+    $expectedOutput .= "Using plugin EC-OpenStack version " . $::gPlugin_ver . "\n";
+    $expectedOutput .= "Loading config open\n";
+    $expectedOutput .= "Adding config resource = local\n";
+    $expectedOutput .= "Adding config workspace = default\n";
+    $expectedOutput .= "Adding config service_url = http://192.168.88.100\n";
+    $expectedOutput .= "Adding config debug_level = 2\n";
+    $expectedOutput .= "Adding config credential = open\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "-- Authenticating with server -------\n";
+    $expectedOutput .= "Authenticating with 'http://192.168.88.100:5000/v1.1'\n";
+    $expectedOutput .= "    Authentication status: 204 No Content\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "Waiting for action to complete...\n";
+    $expectedOutput .= "Server 'server-38331' created.\n";
+    $expectedOutput .= "Creating resource for server 'server-38331'...\n";
+    $expectedOutput .= "Resource Name:server-38331-7360-test\n";
+    $expectedOutput .= "Server server-38331 deployed.";
+
+    assertDiff($expectedOutput, $data, 'Deploy successful output');
+
+    ### Get step 3 log
+
+    # Get the name of the log file
+    $logFileName = $ws . "/" . $xpath->findvalue("//jobStep[stepName='Delete Key']/logFileName");
+
+    # Get the jobStepId for Rally
+    $jobStepId = $xpath->findvalue("//jobStep[stepName='Delete Key']/jobStepId");
+
+    # Read the log file and verify its contents.
+    $data = readFile($logFileName);
+
+    # write the job details to a file in the test directory
+    writeFile("$::gCurrentTestDir/Delete Key.log", "====Job Details====\n$xpath->{_xml}\n====LOG====\n$data\n");
+
+    #assert command lines
+    $expectedOutput = "";
+    $expectedOutput .= "Using plugin EC-OpenStack version " . $::gPlugin_ver . "\n";
+    $expectedOutput .= "Loading config open\n";
+    $expectedOutput .= "Adding config resource = local\n";
+    $expectedOutput .= "Adding config workspace = default\n";
+    $expectedOutput .= "Adding config service_url = http://192.168.88.100\n";
+    $expectedOutput .= "Adding config debug_level = 2\n";
+    $expectedOutput .= "Adding config credential = open\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "-- Authenticating with server -------\n";
+    $expectedOutput .= "Authenticating with 'http://192.168.88.100:5000/v1.1'\n";
+    $expectedOutput .= "    Authentication status: 204 No Content\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "-- Deleting KeyPair -------\n";
+    $expectedOutput .= "KeyPair cmdr-38334 deleted";
+
+    assertDiff($expectedOutput, $data, 'Delete Key successful output');
+
+    ### Get step 4 log
+
+    # Get the name of the log file
+    $logFileName = $ws . "/" . $xpath->findvalue("//jobStep[stepName='Cleanup']/logFileName");
+
+    # Get the jobStepId for Rally
+    $jobStepId = $xpath->findvalue("//jobStep[stepName='Cleanup']/jobStepId");
+
+    # Read the log file and verify its contents.
+    $data = readFile($logFileName);
+
+    # write the job details to a file in the test directory
+    writeFile("$::gCurrentTestDir/Cleanup.log", "====Job Details====\n$xpath->{_xml}\n====LOG====\n$data\n");
+
+    #assert command lines
+    $expectedOutput = "";
+    $expectedOutput .= "Using plugin EC-OpenStack version " . $::gPlugin_ver . "\n";
+    $expectedOutput .= "Loading config open\n";
+    $expectedOutput .= "Adding config resource = local\n";
+    $expectedOutput .= "Adding config workspace = default\n";
+    $expectedOutput .= "Adding config service_url = http://192.168.88.100\n";
+    $expectedOutput .= "Adding config debug_level = 2\n";
+    $expectedOutput .= "Adding config credential = open\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "-- Authenticating with server -------\n";
+    $expectedOutput .= "Authenticating with 'http://192.168.88.100:5000/v1.1'\n";
+    $expectedOutput .= "    Authentication status: 204 No Content\n";
+    $expectedOutput .= "---------------------------------------------------------------------\n";
+    $expectedOutput .= "Terminating instance 63\n";
+    $expectedOutput .= "Instance '63' has been terminated.\n";
+    $expectedOutput .= "1 instances terminated.\n";
+    $expectedOutput .= "Deleting resources.\n";
+    $expectedOutput .= "Deleting resource server-38331-7360-test\n";
+    $expectedOutput .= "\n";
+    $expectedOutput .= "Deleted resource: server-38331-7360-test";
+
+    assertDiff($expectedOutput, $data, 'Cleanup successful output');
+
+};
