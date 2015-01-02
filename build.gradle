@@ -64,6 +64,10 @@ processResources {
 	tokens: [PLUGIN_NAME: project.pluginName, PLUGIN_KEY: project.name, PLUGIN_VERSION: project.version])
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.0'
+}
+
 task processProjectXml(type:Exec, dependsOn: processResources) {
 	def resourcesPath = "$buildDir/resources/main"
 	def ecperl = project.commanderHome ? "$commanderHome/bin/ec-perl" : "ec-perl"
