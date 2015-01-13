@@ -81,6 +81,9 @@ task processProjectXml(type:Exec, dependsOn: processResources) {
 
 task rearrange {
 
+    // disable caching
+    outputs.upToDateWhen { false }
+
     // insert the pages directory into staging
     copy {
         from "pages"
@@ -107,7 +110,9 @@ task rearrange {
         into "${buildDir}/resources/main/htdocs/war"
     }
 
-
+    delete '${buildDir}/gwt/out/WEB-INF'
+    delete '${buildDir}/project'
+    delete '${buildDir}/ecplugins'
 
 }
 
