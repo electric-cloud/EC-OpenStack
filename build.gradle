@@ -79,7 +79,39 @@ task processProjectXml(type:Exec, dependsOn: processResources) {
 	commandLine ecperl, "../build/buildProject-mvn.pl", "$resourcesPath/project", "$resourcesPath/META-INF"
 }
 
-task assemblePluginJar(type: Jar, dependsOn: [processProjectXml,compileGwt]) {
+task rearrange {
+
+    // insert the pages directory into staging
+    copy {
+        from "pages"
+        into "${buildDir}/resources/main/pages"
+        filter(org.apache.tools.ant.filters.ReplaceTokens,
+                tokens: [PLUGIN_NAME: project.pluginName, PLUGIN_KEY: project.name, PLUGIN_VERSION: project.version])
+    }
+
+    // insert the cgi-bin directory into staging
+    copy {
+        from "cgi-bin"
+        into "${buildDir}/resources/main/cgi-bin"
+        filter(org.apache.tools.ant.filters.ReplaceTokens,
+                tokens: [PLUGIN_NAME: project.pluginName, PLUGIN_KEY: project.name, PLUGIN_VERSION: project.version])
+    }
+
+    copy {
+        from "htdocs"
+        into "${buildDir}/resources/main/htdocs"
+    }
+
+    copy {
+        from "${buildDir}/gwt/out"
+        into "${buildDir}/resources/main/htdocs/war"
+    }
+
+
+
+}
+
+task assemblePluginJar(type: Jar, dependsOn: [processProjectXml,compileGwt,rearrange]) {
 	appendix = "plugin"
 	destinationDir = buildDir
 	includeEmptyDirs = false
