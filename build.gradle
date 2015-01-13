@@ -17,6 +17,8 @@ project.ext {
 
 apply plugin: "java"
 apply plugin: "eclipse"
+apply plugin: 'gwt-compiler'
+
 
 sourceCompatibility = 1.5
 
@@ -30,7 +32,7 @@ println "Using commander server: $commanderServer"
 
 buildscript {
 	repositories {
-		maven { url "https://github.com/steffenschaefer/gwt-gradle-plugin/raw/maven-repo/" }
+        maven { url "https://github.com/steffenschaefer/gwt-gradle-plugin/raw/maven-repo/" }
 		mavenCentral()
 	}
 
@@ -54,6 +56,9 @@ dependencies {
 	compile group: "com.google.gwt", name: "gwt-servlet", version: "2.5.0"
 	compile group: "com.google.gwt", name: "gwt-user", version: "2.5.0"
 	compile "com.intellij:annotations:132.839-PATCH1"
+    compile "com.google.guava:guava-gwt:16.+"
+    compile "com.google.gwt.inject:gin:1.5.0"
+    compile "com.gwtplatform:gwtp-all:0.8-PATCH5"
 }
 
 processResources {
@@ -74,7 +79,7 @@ task processProjectXml(type:Exec, dependsOn: processResources) {
 	commandLine ecperl, "../build/buildProject-mvn.pl", "$resourcesPath/project", "$resourcesPath/META-INF"
 }
 
-task assemblePluginJar(type: Jar, dependsOn: processProjectXml) {
+task assemblePluginJar(type: Jar, dependsOn: [processProjectXml,compileGwt]) {
 	appendix = "plugin"
 	destinationDir = buildDir
 	includeEmptyDirs = false
@@ -104,3 +109,9 @@ task deployPluginJar(dependsOn: assemblePluginJar) << {
 		commandLine ectool, serverOpt, "promotePlugin", project.name
 	}
 }
+
+gwt {
+    gwtVersion '2.5.0'
+    modules 'ecplugins.openstack.ConfigurationManagement'
+}
+
