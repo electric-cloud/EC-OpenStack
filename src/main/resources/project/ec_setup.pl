@@ -46,6 +46,20 @@ my %associate = (
   category    => "Resource Management"
 );
 
+my %createvolume = (
+                 label       => "OpenStack - CreateVolume",
+                 procedure   => "CreateVolume",
+                 description => "Create a new volume.",
+                 category    => "Resource Management"
+                );
+
+my %attachvolume = (
+                 label       => "OpenStack - AttachVolume",
+                 procedure   => "AttachVolume",
+                 description => "Attach a volume to a server.",
+                 category    => "Resource Management"
+                );
+
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - Deploy");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - Cleanup");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - CreateKeyPair");
@@ -53,8 +67,10 @@ $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - DeleteKe
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - AllocateIP");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - ReleaseIP");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - AssociateFloatingIP");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - CreateVolume");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - AttachVolume");
 
-@::createStepPickerSteps = (\%deploy, \%cleanup, \%createkey, \%deletekey, \%allocate, \%release, \%associate);
+@::createStepPickerSteps = (\%deploy, \%cleanup, \%createkey, \%deletekey, \%allocate, \%release, \%associate, \%createvolume, \%attachvolume);
 
 my $pluginName = "@PLUGIN_NAME@";
 my $pluginKey  = "@PLUGIN_KEY@";
@@ -240,6 +256,22 @@ if ($upgradeAction eq "upgrade") {
                                         stepName      => 'sync'
                                      }
                                     );
+            $batch->attachCredential(
+                                     "\$[/plugins/$pluginName/project]",
+                                     $cred,
+                                     {
+                                        procedureName => 'CreateVolume',
+                                        stepName      => 'CreateVolume'
+                                     }
+                                    );
+            $batch->attachCredential(
+                                     "\$[/plugins/$pluginName/project]",
+                                     $cred,
+                                     {
+                                        procedureName => 'AttachVolume',
+                                        stepName      => 'AttachVolume'
+                                     }
+                                    );            
         }
     }
 }

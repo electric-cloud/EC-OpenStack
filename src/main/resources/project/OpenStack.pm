@@ -791,6 +791,255 @@ sub release_ip {
     return;
 }
 
+############################################################################
+# create_volume - Create a new volume
+#
+# Arguments:
+#   -
+#
+# Returns:
+#   -
+#
+############################################################################
+sub create_volume {
+    my ($self) = @_;
+
+    $self->debug_msg($DEBUG_LEVEL_1, '---------------------------------------------------------------------');
+    $self->debug_msg($DEBUG_LEVEL_1, '-- Creating a volume -------');
+    $self->initialize();
+    $self->initializePropPrefix;
+    if ($self->opts->{exitcode}) { return; }
+
+    my $message;
+    my $result;
+    my $xml;
+    my $body;
+    my $data;
+
+    my $blockstorage_service_url = $self->opts->{blockstorage_service_url};
+    my $url = $blockstorage_service_url . q{/v1/}  . $self->opts->{tenant_id};
+    my $tenant_url = $url;
+    $url .= q{/volumes};
+
+   $data->{volume}->{display_name} = $self->opts->{display_name};
+   $data->{volume}->{size} = $self->opts->{size};
+   $data->{volume}->{volume_type} = $self->opts->{volume_type};
+   $data->{volume}->{availability_zone} = $self->opts->{availability_zone};
+    $body = to_json($data);
+    
+    ## Make POST request
+    $result = $self->rest_request('POST', $url, 'application/json', $body);
+    if ($self->opts->{exitcode}) { return; }
+    
+    $self->debug_msg($DEBUG_LEVEL_1, q{Volume } . $self->opts->{display_name} . q{ created.});
+    return;
+}
+
+############################################################################
+# attach_volume - Attach a volume to given server
+#
+# Arguments:
+#   -
+#
+# Returns:
+#   -
+#
+############################################################################
+sub attach_volume {
+    my ($self) = @_;
+
+    $self->debug_msg($DEBUG_LEVEL_1, '---------------------------------------------------------------------');
+    $self->debug_msg($DEBUG_LEVEL_1, '-- Attaching a volume -------');
+    $self->initialize();
+    $self->initializePropPrefix;
+    if ($self->opts->{exitcode}) { return; }
+
+    my $message;
+    my $result;
+    my $xml;
+    my $body;
+    my $data;
+
+   my $compute_service_url = $self->opts->{compute_service_url};
+
+
+    #openstack
+    my $url = $compute_service_url . q{/v2/}  . $self->opts->{tenant_id};
+   
+    my $tenant_url = $url;
+    $url = $url . q{/servers/} . $self->opts->{server_id} . q{/os-volume_attachments} ;
+   
+
+   $data->{volumeAttachment}->{volumeId} = $self->opts->{volume_id};
+   
+   # Give device name, if specified
+    if (length($self->opts->{device})) {
+       $data->{volumeAttachment}->{device} = $self->opts->{device};
+    }
+    $body = to_json($data);
+
+    ## Make POST request
+    $result = $self->rest_request('POST', $url, 'application/json', $body);
+    if ($self->opts->{exitcode}) { return; }
+    my $json_result = $json->decode($result);
+
+    my $attachment_id = $json_result->{volumeAttachment}->{id};
+    my $volume_id = $json_result->{volumeAttachment}->{volumeId};
+   my $server_id = $json_result->{volumeAttachment}->{serverId};
+
+    if ("$attachment_id" eq $EMPTY) {
+        $self->debug_msg($DEBUG_LEVEL_1, "Error attaching the volume to instance.\n");
+        return;
+    }
+
+    #store properties
+    $self->setProp(q{/id}, "$attachment_id");
+   $self->setProp(q{/volumeId}, "$volume_id");
+    $self->setProp(q{/serverId}, "$server_id");
+    $self->debug_msg($DEBUG_LEVEL_1, "Volume $volume_id attached to server\n"); # $server_id .
+
+    return;
+}
+
+############################################################################
+# detach_volume - Detach a volume from server
+#
+# Arguments:
+#   -
+#
+# Returns:
+#   -
+#
+############################################################################
+sub detach_volume {
+    my ($self) = @_;
+
+    $self->debug_msg($DEBUG_LEVEL_1, '---------------------------------------------------------------------');
+    $self->debug_msg($DEBUG_LEVEL_1, '-- Detaching a volume -------');
+    $self->initialize();
+    $self->initializePropPrefix;
+    if ($self->opts->{exitcode}) { return; }
+
+    my $message;
+    my $result;
+    my $xml;
+    my $body;
+    my $data;
+
+   my $compute_service_url = $self->opts->{compute_service_url};
+
+
+    #openstack
+    my $url = $compute_service_url . q{/v1/}  . $self->opts->{tenant_id};
+   
+    my $tenant_url = $url;
+    $url = $url . q{/servers/} . $self->opts->{server_id} . q{/os-volume_attachments} . $self->opts->{attachment_id};
+   
+    ## Make POST request
+    $result = $self->rest_request('DELETE', $url, $EMPTY, $EMPTY);
+    if ($self->opts->{exitcode}) {
+        $self->debug_msg($DEBUG_LEVEL_1, q{Error detaching volume.});
+        return;
+    }
+
+    $self->debug_msg($DEBUG_LEVEL_1, q{Volume detached from server } . $self->opts->{server_id} . q{ successfully.});
+
+    return;
+}
+    
+############################################################################
+# delete_volume - Delete already existing volume
+#
+# Arguments:
+#   -
+#
+# Returns:
+#   -
+#
+############################################################################
+sub delete_volume {
+    my ($self) = @_;
+    my $result;
+
+    $self->debug_msg($DEBUG_LEVEL_1, '---------------------------------------------------------------------');
+    $self->debug_msg($DEBUG_LEVEL_1, '-- Deleting a volume -------');
+    $self->initialize();
+    $self->initializePropPrefix;
+    if ($self->opts->{exitcode}) { return; }
+
+    #openstack
+    my $blockstorage_service_url = $self->opts->{blockstorage_service_url};
+    my $url = $blockstorage_service_url . q{/v1/}  . $self->opts->{tenant_id};
+    my $tenant_url = $url;
+    $url .= q{/volumes} . $self->opts->{volume_id};
+
+
+    ## Make DELETE request
+    $result = $self->rest_request('DELETE', $url, $EMPTY, $EMPTY);
+        
+    if ($self->opts->{exitcode}) { 
+       if($result ne $EMPTY){
+           my $json_result = $json->decode($result);
+           my $error_message = $json_result->{badRequest}->{message};
+           $self->debug_msg($DEBUG_LEVEL_1, q{Error deleting volume.\nError msg :\n } . $error_message);
+       }
+       return; 
+    }
+    
+    $self->opts->{exitcode}    = $SUCCESS;
+    $self->debug_msg($DEBUG_LEVEL_1, q{Volume } . $self->opts->{volume_id} . q{ deleted successfully.\n});
+    
+
+    return;
+}
+
+############################################################################
+# delete_instance - Delete an existing instance
+#
+# Arguments:
+#   -
+#
+# Returns:
+#   -
+#
+############################################################################
+sub delete_instance {
+    my ($self) = @_;
+
+    $self->debug_msg($DEBUG_LEVEL_1, '---------------------------------------------------------------------');
+    $self->debug_msg($DEBUG_LEVEL_1, '-- Detaching a volume -------');
+    $self->initialize();
+    $self->initializePropPrefix;
+    if ($self->opts->{exitcode}) { return; }
+
+    my $message;
+    my $result;
+    my $xml;
+    my $body;
+    my $data;
+
+   my $compute_service_url = $self->opts->{compute_service_url};
+
+
+    #openstack
+    my $url = $compute_service_url . q{/v2/}  . $self->opts->{tenant_id};
+   
+    my $tenant_url = $url;
+    $url = $url . q{/servers/} . $self->opts->{server_id} . q{/os-volume_attachments} . $self->opts->{attachment_id};
+   
+    ## Make POST request
+    $result = $self->rest_request('DELETE', $url, $EMPTY, $EMPTY);
+    if ($self->opts->{exitcode}) {
+        $self->debug_msg($DEBUG_LEVEL_1, q{Error detaching volume.});
+        return;
+    }
+
+    $self->debug_msg($DEBUG_LEVEL_1, q{Volume detached from server } . $self->opts->{server_id} . q{ successfully.});
+
+    return;
+}
+
+
 # -------------------------------------------------------------------------
 # Helper functions
 # -------------------------------------------------------------------------

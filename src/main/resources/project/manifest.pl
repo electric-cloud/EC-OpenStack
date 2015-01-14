@@ -28,6 +28,12 @@
     ['//procedure[procedureName="AssociateFloatingIP"]/propertySheet/property[propertyName="ec_parameterForm"]/value',            'ui_forms/associate_ip.xml'],
     ['//step[stepName="AssociateFloatingIP"]/command',                                                                            'procedures/associate_ip.pl'],
 
+    ['//procedure[procedureName="CreateVolume"]/propertySheet/property[propertyName="ec_parameterForm"]/value',            'ui_forms/create.volume.xml'],
+    ['//step[stepName="CreateVolume"]/command',                                                                            'procedures/create.volume.pl'],
+
+    ['//procedure[procedureName="AttachVolume"]/propertySheet/property[propertyName="ec_parameterForm"]/value',            'ui_forms/attach.volume.xml'],
+    ['//step[stepName="AttachVolume"]/command',                                                                            'procedures/attach.volume.pl'],
+
     ['//procedure[procedureName="CloudManagerGrow"]/propertySheet/property[propertyName="ec_parameterForm"]/value',   'ui_forms/grow.xml'],
     ['//step[stepName="grow"]/command',                                                                               'procedures/step.grow.pl'],
     ['//procedure[procedureName="CloudManagerShrink"]/propertySheet/property[propertyName="ec_parameterForm"]/value', 'ui_forms/shrink.xml'],

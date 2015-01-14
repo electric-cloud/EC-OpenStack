@@ -75,6 +75,14 @@ if ( defined( $opts->{connection_config} ) && $opts->{connection_config} ne "" )
 "Configuration [$cfgName] does not contain a OpenStack compute service url\n";
         exit ERROR;
     }
+
+    if ( !defined $opts->{blockstorage_service_url}
+            || $opts->{blockstorage_service_url} eq "" )
+        {
+            print
+    "Configuration [$cfgName] does not contain a OpenStack block storage service url\n";
+            exit ERROR;
+        }
 }
 
 $opts->{JobStepId} =  "$[/myJobStep/jobStepId]";

@@ -32,6 +32,14 @@
         <required>1</required>
     </formElement>
     <formElement>
+        <type>entry</type>
+        <label>Block Storage URL:</label>
+        <property>blockstorage_service_url</property>
+        <value></value>
+        <documentation>Provide the host name or IP address of the Block Storage Service for OpenStack</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
         <type>credential</type>
         <label>Login as:</label>
         <property>credential</property>
