@@ -7,7 +7,11 @@
 
 group = "com.electriccloud"
 description = "Plugins : EC-OpenStack"
-version = "1.1.2"
+
+// Set the build number if it exists
+def buildNumber = System.env.BUILD_NUMBER ? System.env.BUILD_NUMBER : "0"
+
+version = "1.2.0." + buildNumber
 
 project.ext {
 	pluginName = "$name-$version".toString()
@@ -70,7 +74,7 @@ processResources {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.0'
+    gradleVersion = '2.2'
 }
 
 task processProjectXml(type:Exec, dependsOn: processResources) {
@@ -79,44 +83,70 @@ task processProjectXml(type:Exec, dependsOn: processResources) {
 	commandLine ecperl, "../build/buildProject-mvn.pl", "$resourcesPath/project", "$resourcesPath/META-INF"
 }
 
-task rearrange {
-
+task copy_pages(type: Copy) {
+    
     // disable caching
     outputs.upToDateWhen { false }
+    from "pages"
+    into "${buildDir}/resources/main/pages"
+    filter(org.apache.tools.ant.filters.ReplaceTokens,
+           tokens: [PLUGIN_NAME: project.pluginName, PLUGIN_KEY: project.name, PLUGIN_VERSION: project.version])
 
-    // insert the pages directory into staging
-    copy {
-        from "pages"
-        into "${buildDir}/resources/main/pages"
-        filter(org.apache.tools.ant.filters.ReplaceTokens,
-                tokens: [PLUGIN_NAME: project.pluginName, PLUGIN_KEY: project.name, PLUGIN_VERSION: project.version])
-    }
+}
 
-    // insert the cgi-bin directory into staging
-    copy {
+task copy_cgi_bin(type: Copy) {
+    
+    // disable caching
+    outputs.upToDateWhen { false }
         from "cgi-bin"
         into "${buildDir}/resources/main/cgi-bin"
         filter(org.apache.tools.ant.filters.ReplaceTokens,
                 tokens: [PLUGIN_NAME: project.pluginName, PLUGIN_KEY: project.name, PLUGIN_VERSION: project.version])
-    }
 
-    copy {
+}
+
+task copy_htdocs(type: Copy) {
+    
+    // disable caching
+    outputs.upToDateWhen { false }
         from "htdocs"
         into "${buildDir}/resources/main/htdocs"
-    }
 
-    copy {
+}
+
+task copy_gwt_out(type: Copy) {
+    
+    // disable caching
+    	outputs.upToDateWhen { false }
         from "${buildDir}/gwt/out"
         into "${buildDir}/resources/main/htdocs/war"
-    }
 
-    delete '${buildDir}/gwt/out/WEB-INF'
-    delete '${buildDir}/project'
+
+}
+
+task delete_ecplugin_dir (type: Delete) {
+    outputs.upToDateWhen { false }
     delete '${buildDir}/ecplugins'
 
 }
 
+task delete_project_dir (type: Delete) {
+	outputs.upToDateWhen { false }
+	delete '${buildDir}/project'
+}
+
+task delete_webinf_dir (type: Delete) {
+	outputs.upToDateWhen { false }
+	    delete '${buildDir}/gwt/out/WEB-INF'
+}
+
+task rearrange (dependsOn: [copy_pages,copy_cgi_bin,copy_htdocs,copy_gwt_out, delete_webinf_dir, delete_project_dir, delete_ecplugin_dir])  {
+    // disable caching
+    outputs.upToDateWhen { false }
+}
+
 task assemblePluginJar(type: Jar, dependsOn: [processProjectXml,compileGwt,rearrange]) {
+	outputs.upToDateWhen { false }
 	appendix = "plugin"
 	destinationDir = buildDir
 	includeEmptyDirs = false
