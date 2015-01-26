@@ -1,8 +1,9 @@
-// build.gradle                                                 -*- Groovy -*-
+// -*- Groovy -*-
+// build.gradle
 //
 // Gradle build script for EC-OpenStack plugin.
 //
-// Copyright (c) 2014 Electric Cloud, Inc.
+// Copyright (c) 2015 Electric Cloud, Inc.
 // All rights reserved
 
 import javax.xml.parsers.DocumentBuilderFactory
@@ -35,12 +36,6 @@ sourceCompatibility = 1.6
 
 defaultTasks "assemblePluginJar"
 
-if(commanderHome) {
-	println "Using commander home:   $commanderHome"
-}
-
-println "Using commander server: $commanderServer"
-
 buildscript {
 	repositories {
         maven { url "https://github.com/steffenschaefer/gwt-gradle-plugin/raw/maven-repo/" }
@@ -67,22 +62,20 @@ dependencies {
 	compile group: "com.google.gwt", name: "gwt-servlet", version: "2.5.0"
 	compile group: "com.google.gwt", name: "gwt-user", version: "2.5.0"
 	compile "com.intellij:annotations:132.839-PATCH1"
-    compile "com.google.guava:guava-gwt:16.+"
-    compile "com.google.gwt.inject:gin:1.5.0"
-    compile "com.gwtplatform:gwtp-all:0.8-PATCH5"
+	compile "com.google.guava:guava-gwt:16.+"
+	compile "com.google.gwt.inject:gin:1.5.0"
+	compile "com.gwtplatform:gwtp-all:0.8-PATCH5"
 }
 
 processResources {
 	// Clear readonly flag, set by perforce
 	setFileMode(0644)
 	
-	with copySpec {
-		from(projectDir) {
+	from(projectDir, {
 			include "cgi-bin/**"
 			include "pages/**"
 			include "htdocs/**"
-		}
-	}
+	})
 	
 	filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
 		PLUGIN_NAME: project.pluginName,
@@ -92,6 +85,16 @@ processResources {
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.2'
+}
+
+task printEnvironment {
+	println project.description
+	
+	if(commanderHome) {
+		println "Using commander home:   $commanderHome"
+	}
+	
+	println "Using commander server: $commanderServer"
 }
 
 task processProjectXml(dependsOn: processResources) << {
@@ -122,14 +125,20 @@ task processProjectXml(dependsOn: processResources) << {
 	transformer.transform(source, result)
 }
 
-task copy_gwt_out(type: Copy) {
-    // disable caching
-    outputs.upToDateWhen { false }
-    from "${buildDir}/gwt/out"
-    into "${buildDir}/resources/main/htdocs/war"
-}
+task assemblePluginJar(type: Jar, dependsOn: [processProjectXml, compileGwt]) {
+	doFirst {
+		println "Building plugin jar: $archiveName"
+	}
+	
+	manifest {
+		attributes (
+			'Implementation-Vendor': 'Electric Cloud, Inc.',
+			'Implementation-Title': project.pluginName,
+			'Implementation-Version': project.version,
+			'Implementation-Vendor-Id': project.group
+		)
+	}
 
-task assemblePluginJar(type: Jar, dependsOn: [processProjectXml,compileGwt,copy_gwt_out]) {
 	outputs.upToDateWhen { false }
 	appendix = "plugin"
 	destinationDir = buildDir
@@ -143,6 +152,9 @@ task assemblePluginJar(type: Jar, dependsOn: [processProjectXml,compileGwt,copy_
 	]
 
 	from sourceSets.main.output
+	from (tasks.compileGwt.outputs, {
+		into('htdocs/war')
+	})
 }
 
 task deployPluginJar(dependsOn: assemblePluginJar) << {
