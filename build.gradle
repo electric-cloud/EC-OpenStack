@@ -19,10 +19,10 @@ description = "Plugins : EC-OpenStack"
 // Set the build number if it exists
 def buildNumber = System.env.BUILD_NUMBER ? System.env.BUILD_NUMBER : "0"
 
-version = "1.2.0." + buildNumber
+version = "1.2.0.$buildNumber"
 
 project.ext {
-	pluginName = "$name-$version".toString()
+	pluginName = "$name-$version"
 	commanderHome = System.env.COMMANDER_HOME
 	commanderServer = System.env.COMMANDER_SERVER ? System.env.COMMANDER_SERVER : "localhost"
 }
@@ -32,7 +32,8 @@ apply plugin: "eclipse"
 apply plugin: 'gwt-compiler'
 
 
-sourceCompatibility = 1.6
+sourceCompatibility = JavaVersion.VERSION_1_6
+targetCompatibility = JavaVersion.VERSION_1_6
 
 defaultTasks "assemblePluginJar"
 
@@ -78,9 +79,9 @@ processResources {
 	})
 	
 	filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
-		PLUGIN_NAME: project.pluginName,
-		PLUGIN_KEY: project.name,
-		PLUGIN_VERSION: project.version])
+		PLUGIN_NAME: project.pluginName.toString(),
+		PLUGIN_KEY: project.name.toString(),
+		PLUGIN_VERSION: project.version.toString()])
 }
 
 task wrapper(type: Wrapper) {
@@ -175,6 +176,9 @@ task deployPluginJar(dependsOn: assemblePluginJar) << {
 }
 
 gwt {
-    gwtVersion '2.5.0'
-    modules 'ecplugins.openstack.ConfigurationManagement'
+	minHeapSize "512M"
+	maxHeapSize "1024M"
+	gwtVersion '2.7.0'
+
+	modules 'ecplugins.openstack.ConfigurationManagement'
 }
