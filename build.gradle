@@ -171,7 +171,7 @@ task deployPluginJar(dependsOn: assemblePluginJar) << {
 	}
 
 	exec {
-		commandLine ectool, serverOpt, "promotePlugin", project.name
+		commandLine ectool, serverOpt, "promotePlugin", project.pluginName
 	}
 }
 
