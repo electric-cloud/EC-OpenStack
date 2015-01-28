@@ -27,15 +27,14 @@ project.ext {
 	commanderServer = System.env.COMMANDER_SERVER ? System.env.COMMANDER_SERVER : "localhost"
 }
 
-apply plugin: "java"
-apply plugin: "eclipse"
+apply plugin: 'java'
+apply plugin: 'eclipse'
 apply plugin: 'gwt-compiler'
-
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
 
-defaultTasks "assemblePluginJar"
+defaultTasks 'assemblePluginJar'
 
 buildscript {
 	repositories {
@@ -51,7 +50,9 @@ repositories {
 	flatDir {
        dirs 'libs'
     }
-
+	
+	/* EC internal artifactory repository */
+	maven { url "http://artifactory/artifactory/repo" }
 }
 
 dependencies {
@@ -73,15 +74,23 @@ processResources {
 	setFileMode(0644)
 	
 	from(projectDir, {
-			include "cgi-bin/**"
-			include "pages/**"
-			include "htdocs/**"
+		include 'agent/**'
+		include 'htdocs/**'
+		include 'cgi-bin/**'
+		include 'pages/**'
 	})
 	
-	filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
-		PLUGIN_NAME: project.pluginName.toString(),
-		PLUGIN_KEY: project.name.toString(),
-		PLUGIN_VERSION: project.version.toString()])
+	/* Apply macros substitution only on subset of files.
+	 * This is to ensure, that no binary resources is corrupted by filter
+	 */
+	["**/*.xml", "**/*.css", "**/*.pm", "**/*.pl", "**/*.cgi"].each {
+		filesMatching(it, {
+			filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+			PLUGIN_NAME: project.pluginName.toString(),
+			PLUGIN_KEY: project.name.toString(),
+			PLUGIN_VERSION: project.version.toString()])
+		})
+	}
 }
 
 task wrapper(type: Wrapper) {
@@ -134,7 +143,7 @@ task assemblePluginJar(type: Jar, dependsOn: [processProjectXml, compileGwt]) {
 	manifest {
 		attributes (
 			'Implementation-Vendor': 'Electric Cloud, Inc.',
-			'Implementation-Title': project.pluginName,
+			'Implementation-Title': project.name,
 			'Implementation-Version': project.version,
 			'Implementation-Vendor-Id': project.group
 		)
