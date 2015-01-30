@@ -1,5 +1,5 @@
 ##########################
-# create.volume.pl
+# create.instancesnapshot.pl
 ##########################
 use warnings;
 use strict;
@@ -15,14 +15,14 @@ $opts->{connection_config} = q{$[connection_config]};
 # Tenant: Id of the tenant.
 $opts->{tenant_id} = q{$[tenant_id]};
 
-# Server Id: ID of the server to which volume to attach.
+# Display name: Display name for the new instance snapshot.
+$opts->{display_name} = q{$[display_name]};
+
+# Server ID: ID of the server of which to create snapshot.
 $opts->{server_id} = q{$[server_id]};
 
-# Volume Id: ID of the volume to attach.
-$opts->{volume_id} = q{$[volume_id]};
-
-# Device: Name of the device such as, /dev/vdb after attachment.
-$opts->{device} = q{$[device]};
+# Metadata: Metadata for new instance snapshot in key1,value1,key2,value2 ... format.
+$opts->{metadata} = q{$[metadata]};
 
 # Results location: property path to store server information.
 $opts->{location} = q{$[location]};
@@ -32,5 +32,5 @@ $opts->{tag} = q{$[tag]};
 
 $[/myProject/procedure_helpers/preamble]
 
-$openstack->attach_volume();
+$openstack->take_instance_snapshot();
 exit($opts->{exitcode});

@@ -1,5 +1,5 @@
 ##########################
-# create.volume.pl
+# create.volumesnapshot.pl
 ##########################
 use warnings;
 use strict;
@@ -12,17 +12,20 @@ my $opts;
 # Configuration: A commander configuration previously created.
 $opts->{connection_config} = q{$[connection_config]};
 
-# Tenant: Id of the tenant.
-$opts->{tenant_id} = q{$[tenant_id]};
+# Display name: Display name for the new snapshot.
+$opts->{display_name} = q{$[display_name]};
 
-# Server Id: ID of the server to which volume to attach.
-$opts->{server_id} = q{$[server_id]};
+# Display Description: Display description for the new snapshot.
+$opts->{display_desc} = q{$[display_desc]};
 
-# Volume Id: ID of the volume to attach.
+# Force: Create snapshot forcefully of already attached volume.
+$opts->{force} = q{$[force]};
+
+# Volume ID: ID of the volume of which to take the snapshot.
 $opts->{volume_id} = q{$[volume_id]};
 
-# Device: Name of the device such as, /dev/vdb after attachment.
-$opts->{device} = q{$[device]};
+# Tenant: Id of the tenant.
+$opts->{tenant_id} = q{$[tenant_id]};
 
 # Results location: property path to store server information.
 $opts->{location} = q{$[location]};
@@ -32,5 +35,5 @@ $opts->{tag} = q{$[tag]};
 
 $[/myProject/procedure_helpers/preamble]
 
-$openstack->attach_volume();
+$openstack->take_volume_snapshot();
 exit($opts->{exitcode});

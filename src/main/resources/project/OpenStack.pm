@@ -418,6 +418,8 @@ sub deploy_vm {
     my $data;
     my $public_ip  = $EMPTY;
     my $private_ip = $EMPTY;
+    my $availability_zone = $EMPTY;
+    my $customization_script = $EMPTY;
 
     my $keypair    = $self->opts->{keyPairName};
 
@@ -440,6 +442,16 @@ sub deploy_vm {
             $self->constructSecurityGroupArray($self->opts->{security_groups});
 
       $data->{server}->{security_groups} = \@result;
+    }
+
+    # Assign availability zone, if specified.
+    if ($self->opts->{availability_zone}) {
+         $data->{server}->{availability_zone} = $self->opts->{availability_zone};
+    }
+
+    # Assign customization script, if specified.
+    if ($self->opts->{customization_script}) {
+         $data->{server}->{customization_script} = MIME::Base64::encode($self->opts->{customization_script});
     }
 
     $body = to_json($data);
@@ -491,6 +503,8 @@ sub deploy_vm {
     my $addresses = $json_result->{server}->{addresses};
     if ($addresses->{public}[0]->{addr})  { $public_ip  = $addresses->{public}[0]->{addr}; }
     if ($addresses->{private}[0]->{addr}) { $private_ip = $addresses->{private}[0]->{addr}; }
+    if ($json_result->{server}->{availability_zone}) { $availability_zone = $json_result->{server}->{availability_zone}; }
+    if ($json_result->{server}->{customization_script}) { $customization_script = $json_result->{server}->{customization_script}; }
 
     if ("$vms_list" ne $EMPTY) { $vms_list .= q{;}; }
     $vms_list .= $id;
@@ -533,7 +547,8 @@ sub deploy_vm {
     $self->setProp("/Server-$id/AMI",     "$image_id");
     $self->setProp("/Server-$id/Address", "$public_ip");
     $self->setProp("/Server-$id/Private", "$private_ip");
-
+    $self->setProp("/Server-$id/AvailabilityZone", "$availability_zone");
+    $self->setProp("/Server-$id/CustomizationScript", "$customization_script");
     
     $self->debug_msg($DEBUG_LEVEL_1, q{Server } . $name . q{ deployed.});
     return;
@@ -598,6 +613,61 @@ sub cleanup {
     return;
 
 }
+
+############################################################################
+# reboot - Reboots an given instance of server
+#
+# Arguments:
+#   -
+#
+# Returns:
+#   -
+#
+############################################################################
+sub reboot {
+    my ($self) = @_;
+
+    $self->debug_msg($DEBUG_LEVEL_1, '---------------------------------------------------------------------');
+    $self->debug_msg($DEBUG_LEVEL_1, '-- Rebooting an instance -------');
+    $self->initialize();
+    $self->initializePropPrefix;
+    if ($self->opts->{exitcode}) { return; }
+
+    my $message;
+    my $result;
+    my $xml;
+    my $body;
+    my $data;
+
+    my $compute_service_url = $self->opts->{compute_service_url};
+
+
+    #openstack
+    my $url = $compute_service_url . q{/v2/}  . $self->opts->{tenant_id} . q{/servers/} . $self->opts->{server_id} . q{/action};
+
+    #Check reboot type
+    if (uc($self->opts->{reboot_type}) eq q{SOFT}){
+        $data->{reboot}->{type} = '' . q{SOFT};
+    } elsif (uc($self->opts->{reboot_type}) eq q{HARD}){
+        $data->{reboot}->{type} = '' . q{HARD};
+    } else {
+        $self->debug_msg($DEBUG_LEVEL_1,q{Unrecognized reboot type.Terminating ...});
+        return;
+    }
+    $body = to_json($data);
+
+    ## Make POST request
+    $result = $self->rest_request('POST', $url, 'application/json', $body);
+    if ($self->opts->{exitcode}) {
+
+        $self->debug_msg($DEBUG_LEVEL_1,q{Failed to reboot server});
+        return;
+    }
+
+    $self->debug_msg($DEBUG_LEVEL_1, q{Server } . $self->opts->{server_id} . q{ rebooted successfully.Reboot type : } . $self->opts->{reboot_type});
+    return;
+}
+
 
 ############################################################################
 # create_key_pair - Create a new OpenStack Key Pair
@@ -815,22 +885,51 @@ sub create_volume {
     my $xml;
     my $body;
     my $data;
+    my $blockstorage_api_version;
+    my $availability_zone = $EMPTY;
+    my $volume_type = $EMPTY;
+    my $size = $EMPTY;
+
 
     my $blockstorage_service_url = $self->opts->{blockstorage_service_url};
-    my $url = $blockstorage_service_url . q{/v1/}  . $self->opts->{tenant_id};
+
+    if ($self->opts->{blockstorage_api_version} eq "1") {
+        $blockstorage_api_version = q{/v1/};
+    } elsif ($self->opts->{blockstorage_api_version} eq "2") {
+        $blockstorage_api_version = q{/v2/};
+    } else {
+        $self->debug_msg($DEBUG_LEVEL_1,q{Unsupported block storage API version.Exiting...});
+        return;
+    }
+    my $url = $blockstorage_service_url . $blockstorage_api_version . $self->opts->{tenant_id};
     my $tenant_url = $url;
     $url .= q{/volumes};
 
-   $data->{volume}->{display_name} = $self->opts->{display_name};
-   $data->{volume}->{size} = $self->opts->{size};
-   $data->{volume}->{volume_type} = $self->opts->{volume_type};
-   $data->{volume}->{availability_zone} = $self->opts->{availability_zone};
+    $data->{volume}->{display_name} = $self->opts->{display_name};
+    $data->{volume}->{size} = $self->opts->{size};
+    $data->{volume}->{volume_type} = $self->opts->{volume_type};
+    $data->{volume}->{availability_zone} = $self->opts->{availability_zone};
     $body = to_json($data);
     
     ## Make POST request
     $result = $self->rest_request('POST', $url, 'application/json', $body);
     if ($self->opts->{exitcode}) { return; }
-    
+
+    my $json_result = $json->decode($result);
+
+    my $volume_id = $json_result->{volume}->{id};
+    my $volume_name = $json_result->{volume}->{name};
+
+    if ($json_result->{volume}->{availability_zone} ) { $availability_zone = $json_result->{volume}->{availability_zone};}
+    if ($json_result->{volume}->{volume_type} ) { $volume_type = $json_result->{volume}->{volume_type}; }
+    if ($json_result->{volume}->{size} ) {  $size = $json_result->{volume}->{size}; }
+
+    $self->setProp("/Volume/ID",    "$volume_id");
+    $self->setProp("/Volume/Name",  "$volume_name");
+    $self->setProp("/Volume/AvailabilityZone",  "$availability_zone");
+    $self->setProp("/Volume/VolumeType",  "$volume_type");
+    $self->setProp("/Volume/Size",  "$size");
+
     $self->debug_msg($DEBUG_LEVEL_1, q{Volume } . $self->opts->{display_name} . q{ created.});
     return;
 }
@@ -860,19 +959,19 @@ sub attach_volume {
     my $body;
     my $data;
 
-   my $compute_service_url = $self->opts->{compute_service_url};
+    my $compute_service_url = $self->opts->{compute_service_url};
 
 
-    #openstack
+    #openstack compute URL
     my $url = $compute_service_url . q{/v2/}  . $self->opts->{tenant_id};
    
     my $tenant_url = $url;
     $url = $url . q{/servers/} . $self->opts->{server_id} . q{/os-volume_attachments} ;
    
 
-   $data->{volumeAttachment}->{volumeId} = $self->opts->{volume_id};
+    $data->{volumeAttachment}->{volumeId} = $self->opts->{volume_id};
    
-   # Give device name, if specified
+    # Give device name, if specified
     if (length($self->opts->{device})) {
        $data->{volumeAttachment}->{device} = $self->opts->{device};
     }
@@ -885,7 +984,7 @@ sub attach_volume {
 
     my $attachment_id = $json_result->{volumeAttachment}->{id};
     my $volume_id = $json_result->{volumeAttachment}->{volumeId};
-   my $server_id = $json_result->{volumeAttachment}->{serverId};
+    my $server_id = $json_result->{volumeAttachment}->{serverId};
 
     if ("$attachment_id" eq $EMPTY) {
         $self->debug_msg($DEBUG_LEVEL_1, "Error attaching the volume to instance.\n");
@@ -893,10 +992,10 @@ sub attach_volume {
     }
 
     #store properties
-    $self->setProp(q{/id}, "$attachment_id");
-   $self->setProp(q{/volumeId}, "$volume_id");
-    $self->setProp(q{/serverId}, "$server_id");
-    $self->debug_msg($DEBUG_LEVEL_1, "Volume $volume_id attached to server\n"); # $server_id .
+    $self->setProp(q{/VolumeAttachment/ID}, "$attachment_id");
+    $self->setProp(q{/VolumeAttachment/VolumeId}, "$volume_id");
+    $self->setProp(q{/VolumeAttachment/ServerId}, "$server_id");
+    $self->debug_msg($DEBUG_LEVEL_1, "Volume $volume_id attached to server\n");
 
     return;
 }
@@ -926,14 +1025,14 @@ sub detach_volume {
     my $body;
     my $data;
 
-   my $compute_service_url = $self->opts->{compute_service_url};
+    my $compute_service_url = $self->opts->{compute_service_url};
 
 
-    #openstack
-    my $url = $compute_service_url . q{/v1/}  . $self->opts->{tenant_id};
+    #openstack compute URL
+    my $url = $compute_service_url . q{/v2/}  . $self->opts->{tenant_id};
    
     my $tenant_url = $url;
-    $url = $url . q{/servers/} . $self->opts->{server_id} . q{/os-volume_attachments} . $self->opts->{attachment_id};
+    $url = $url . q{/servers/} . $self->opts->{server_id} . q{/os-volume_attachments/} . $self->opts->{attachment_id};
    
     ## Make POST request
     $result = $self->rest_request('DELETE', $url, $EMPTY, $EMPTY);
@@ -967,11 +1066,11 @@ sub delete_volume {
     $self->initializePropPrefix;
     if ($self->opts->{exitcode}) { return; }
 
-    #openstack
+    #openstack block storage URL
     my $blockstorage_service_url = $self->opts->{blockstorage_service_url};
-    my $url = $blockstorage_service_url . q{/v1/}  . $self->opts->{tenant_id};
+    my $url = $blockstorage_service_url . q{/} . $self->opts->{blockstorage_api_version} . q{/} . $self->opts->{tenant_id};
     my $tenant_url = $url;
-    $url .= q{/volumes} . $self->opts->{volume_id};
+    $url .= q{/volumes/} . $self->opts->{volume_id};
 
 
     ## Make DELETE request
@@ -993,8 +1092,9 @@ sub delete_volume {
     return;
 }
 
+
 ############################################################################
-# delete_instance - Delete an existing instance
+# create_image - Creates a new image
 #
 # Arguments:
 #   -
@@ -1003,11 +1103,241 @@ sub delete_volume {
 #   -
 #
 ############################################################################
-sub delete_instance {
+sub create_image {
     my ($self) = @_;
 
     $self->debug_msg($DEBUG_LEVEL_1, '---------------------------------------------------------------------');
-    $self->debug_msg($DEBUG_LEVEL_1, '-- Detaching a volume -------');
+    $self->debug_msg($DEBUG_LEVEL_1, '-- Creating an image -------');
+    $self->initialize();
+    $self->initializePropPrefix;
+    if ($self->opts->{exitcode}) { return; }
+
+    if ( $self->opts->{image_api_version} eq '1') {
+            create_image_v1($self);
+    } elsif ( $self->opts->{image_api_version} eq '2' ) {
+            create_image_v2($self);
+    } else {
+            $self->debug_msg($DEBUG_LEVEL_1, "Unsupported Image service version");
+            return;
+    }
+
+}
+
+############################################################################
+# create_image_v1 - Creates a new image with GLANCE API v1
+#
+# Arguments:
+#   -
+#
+# Returns:
+#   -
+#
+############################################################################
+sub create_image_v1 {
+
+    my ($self) = @_;
+
+    my $result;
+    my $body;
+    my %headers;
+    my $json_result;
+    my $file_contents;
+    my $image_service_url = $self->opts->{image_service_url};
+    my $image_api_version = q{/v} . $self->opts->{image_api_version} . q{/};
+    my $url = $image_service_url . $image_api_version . q{images};
+    my $tenant_url = $url;
+    my $status = $EMPTY;
+    my $response;
+
+    ## Add all image meta-data in HTTP request headers
+    ## Since, request body contains raw image itself
+
+    $headers{'x-image-meta-name'} = $self->opts->{name};
+    $headers{'x-image-meta-disk_format'} = $self->opts->{disk_format};
+    $headers{'x-image-meta-container_format'} = $self->opts->{container_format};
+
+    ##Add optional headers, if specified by user.
+    if ($self->opts->{size}) {
+        $headers{'x-image-meta-size'} = $self->opts->{size};
+    }
+    if ($self->opts->{checksum}) {
+        $headers{'x-image-meta-checksum'} = $self->opts->{checksum};
+    }
+    if ($self->opts->{min_ram}) {
+        $headers{'x-image-meta-min-ram'} = $self->opts->{min_ram};
+    }
+    if ($self->opts->{min_disk}) {
+        $headers{'x-image-meta-min-disk'} = $self->opts->{min_disk};
+    }
+    if ($self->opts->{owner_name}) {
+        $headers{'x-image-meta-owner'} = $self->opts->{owner_name};
+    }
+
+
+
+    if($self->opts->{is_local}){
+
+         ## Add code to read from file and attach as a data.
+         open FILE, "<", $self->opts->{image_path};
+         binmode FILE;
+
+         $file_contents = do { local $/; <FILE> };
+
+    }else {
+
+        ## URL is specified as image location.
+        $headers{'x-image-meta-location'} = $self->opts->{image_path};
+        $file_contents = $EMPTY;
+
+    }
+    ## Make POST request
+
+    $result = $self->rest_request('POST', $url, 'application/octet-stream', $file_contents, \%headers);
+    $json_result = $json->decode($result);
+    if ($self->opts->{exitcode}) { return; }
+
+    # Wait for action to complete
+    $self->debug_msg($DEBUG_LEVEL_1, q{Waiting for action to complete...});
+    my $image_id = $json_result->{image}->{id};
+
+    # Describe
+    $url = $image_service_url . $image_api_version . q{images/} . $image_id;
+
+    while ($status ne 'active') {
+
+        # Make HEAD request, poll for X-Image-Meta-Status in response header
+        $response = $self->rest_request_with_header('HEAD', $url, $EMPTY, $EMPTY);
+        $status = $response->header('X-Image-Meta-Status');
+        if ($self->opts->{exitcode}) { return; }
+            $self->debug_msg($DEBUG_LEVEL_1, q{no exit code...});
+        if ($status eq 'ERROR') {
+            $self->opts->{exitcode} = $ERROR;
+            return;
+        }
+
+            sleep $WAIT_SLEEP_TIME;
+    }
+
+       #store properties
+
+       $self->setProp(q{/Image/ID}, $image_id);
+       if ($response->header('X-Image-Meta-Owner')) { $self->setProp(q{/Image/Owner}, $response->header('X-Image-Meta-Owner'));}
+       if ($response->header('X-Image-Meta-Name')) { $self->setProp(q{/Image/Name}, $response->header('X-Image-Meta-Name'));}
+       if ($response->header('X-Image-Meta-Container_format')) { $self->setProp(q{/Image/ContainerFormat}, $response->header('X-Image-Meta-Container_format'));}
+       if ($response->header('X-Image-Meta-Property-Image_type')) { $self->setProp(q{/Image/PropertyImageType}, $response->header('X-Image-Meta-Property-Image_type'));}
+       if ($response->header('X-Image-Meta-Property-Instance_uuid')) { $self->setProp(q{/Image/PropertyInstanceUuid}, $response->header('X-Image-Meta-Property-Instance_uuid'));}
+       if ($response->header('X-Image-Meta-Checksum')) { $self->setProp(q{/Image/Checksum}, $response->header('X-Image-Meta-Checksum') );}
+       if ($response->header('X-Image-Meta-Size')) { $self->setProp(q{/Image/Size}, $response->header('X-Image-Meta-Size'));}
+       if ($response->header('X-Image-Meta-Disk_format')) { $self->setProp(q{/Image/DiskFormat}, $response->header('X-Image-Meta-Disk_format'));}
+
+       $self->debug_msg($DEBUG_LEVEL_1, q{Image  } . $self->opts->{name} . q{ created.});
+       return;
+}
+
+############################################################################
+# create_image_v2 - Creates a new image with GLANCE API v2
+#
+# Arguments:
+#   -
+#
+# Returns:
+#   -
+#
+############################################################################
+sub create_image_v2 {
+
+        my ($self) = @_;
+
+        my $result;
+        my $body;
+        my %headers;
+        my $json_result;
+        my $file_contents;
+        my $response;
+        my $data;
+
+        my $image_service_url = $self->opts->{image_service_url};
+        my $image_api_version = q{/v} . $self->opts->{image_api_version} . q{/};
+        my $url = $image_service_url . $image_api_version . q{images};
+        my $tenant_url = $url;
+
+        $data->{name} = $self->opts->{name};
+        $data->{container_format} = $self->opts->{container_format};
+        $data->{disk_format} = $self->opts->{disk_format};
+
+        ##Add optional headers, if specified by user.
+        if ($self->opts->{size}) {
+           $data->{size} = $self->opts->{size};
+        }
+        if ($self->opts->{checksum}) {
+           $data->{checksum}  = $self->opts->{checksum};
+        }
+        if ($self->opts->{min_ram}) {
+           $data->{min_ram} = $self->opts->{min_ram};
+        }
+        if ($self->opts->{min_disk}) {
+           $data->{min_disk} = $self->opts->{min_disk};
+        }
+        if ($self->opts->{owner_name}) {
+           $data->{owner_name} = $self->opts->{owner_name};
+        }
+
+        $body = to_json($data);
+        #Send POST request
+        $result = $self->rest_request('POST', $url, 'application/json', $body, $EMPTY);
+
+        $json_result = $json->decode($result);
+        if ($self->opts->{exitcode}) { return; }
+
+
+        if ($json_result->{id}) { $self->setProp(q{/Image/ID}, $json_result->{id});}
+        if ($json_result->{name}) { $self->setProp(q{/Image/Name}, $json_result->{name});}
+        if ($json_result->{owner}) { $self->setProp(q{/Image/Owner}, $json_result->{owner});}
+        if ($json_result->{container_format}) { $self->setProp(q{/Image/ContainerFormat}, $json_result->{container_format});}
+        if ($json_result->{disk_format}) { $self->setProp(q{/Image/DiskFormat}, $json_result->{disk_format} );}
+
+        if($self->opts->{is_local}){
+
+          #Read binary image data from file.
+          open FILE, "<", $self->opts->{image_path};
+          binmode FILE;
+
+          $file_contents = do { local $/; <FILE> };
+
+        }else {
+
+             ## URL is specified as image location remaining.
+             # $headers{'x-image-meta-location'} = $self->opts->{image_path};
+             # $file_contents = $EMPTY;
+
+        }
+
+        $url .= q{/} . $json_result->{id} . q{/file};
+        ## Make POST request
+
+        $result = $self->rest_request('PUT', $url, 'application/octet-stream', $file_contents);
+
+        if ($self->opts->{exitcode}) { return; }
+
+        $self->debug_msg($DEBUG_LEVEL_1, q{Image  } . $self->opts->{name} . q{ created.});
+        return;
+}
+
+############################################################################
+# take_volume_snapshot - Creates a new snapshot of given volume
+#
+# Arguments:
+#   -
+#
+# Returns:
+#   -
+#
+############################################################################
+sub take_volume_snapshot {
+    my ($self) = @_;
+
+    $self->debug_msg($DEBUG_LEVEL_1, '---------------------------------------------------------------------');
+    $self->debug_msg($DEBUG_LEVEL_1, '-- Creating a snapshot of a volume-------');
     $self->initialize();
     $self->initializePropPrefix;
     if ($self->opts->{exitcode}) { return; }
@@ -1018,27 +1348,347 @@ sub delete_instance {
     my $body;
     my $data;
 
-   my $compute_service_url = $self->opts->{compute_service_url};
+    my $compute_service_url = $self->opts->{compute_service_url};
 
-
-    #openstack
     my $url = $compute_service_url . q{/v2/}  . $self->opts->{tenant_id};
-   
     my $tenant_url = $url;
-    $url = $url . q{/servers/} . $self->opts->{server_id} . q{/os-volume_attachments} . $self->opts->{attachment_id};
-   
+    $url .= q{/os-snapshots};
+
+    $data->{snapshot}->{display_name} = $self->opts->{display_name};
+    $data->{snapshot}->{display_description} = $self->opts->{display_description};
+    $data->{snapshot}->{force} = $self->opts->{force};
+    $data->{snapshot}->{volume_id} = $self->opts->{volume_id};
+    $body = to_json($data);
+
     ## Make POST request
-    $result = $self->rest_request('DELETE', $url, $EMPTY, $EMPTY);
-    if ($self->opts->{exitcode}) {
-        $self->debug_msg($DEBUG_LEVEL_1, q{Error detaching volume.});
-        return;
-    }
+    $result = $self->rest_request('POST', $url, 'application/json', $body);
+    if ($self->opts->{exitcode}) { return; }
 
-    $self->debug_msg($DEBUG_LEVEL_1, q{Volume detached from server } . $self->opts->{server_id} . q{ successfully.});
+    my $json_result = $json->decode($result);
 
+    my $snapshot_id = $json_result->{snapshot}->{id};
+    my $snapshot_name = $json_result->{snapshot}->{name};
+    my $volume_id = $json_result->{snapshot}->{volume_id};
+
+    $self->setProp("/VolumeSnapshot/ID",    "$snapshot_id");
+    $self->setProp("/VolumeSnapshot/Name",  "$snapshot_name");
+    $self->setProp("/VolumeSnapshot/VolumeID",  "$volume_id");
+
+    $self->debug_msg($DEBUG_LEVEL_1, q{Snapshot  } . $self->opts->{display_name} . q{ created.});
     return;
 }
 
+############################################################################
+# take_instance_snapshot - Creates a new snapshot of given instance
+#
+# Arguments:
+#   -
+#
+# Returns:
+#   -
+#
+############################################################################
+sub take_instance_snapshot {
+    my ($self) = @_;
+
+    $self->debug_msg($DEBUG_LEVEL_1, '---------------------------------------------------------------------');
+    $self->debug_msg($DEBUG_LEVEL_1, '-- Creating a snapshot of an instance-------');
+    $self->initialize();
+    $self->initializePropPrefix;
+    if ($self->opts->{exitcode}) { return; }
+
+    my $message;
+    my $result;
+    my $json_result;
+    my $xml;
+    my $body;
+    my $data;
+    my $status = $EMPTY;
+    my $response;
+
+    my $compute_service_url = $self->opts->{compute_service_url};
+
+    my $url = $compute_service_url . q{/v2/}  . $self->opts->{tenant_id}; # . q{/servers};
+    my $tenant_url = $url;
+    $url .= q{/servers/} . $self->opts->{server_id} . q{/action};
+
+    #Request body
+    $data->{createImage}->{name} = $self->opts->{display_name};
+
+    my %metadata = $self->constructMetadataHash($self->opts->{metadata});
+    foreach my $key (keys %metadata) {
+            $data->{createImage}->{metadata}->{$key} = $metadata{$key};
+    }
+    $body = to_json($data);
+
+    ## Make POST request
+    $result = $self->rest_request_with_header('POST', $url, 'application/json', $body);
+  
+    if ($self->opts->{exitcode}) { return; }
+
+    # Retrieve image id from Location header of HTTP response.
+    my $snapshot_location = $result->header('Location');
+    my ($uri, $image_id) = split "/images/", $snapshot_location;
+
+    # Wait for action to complete
+    $self->debug_msg($DEBUG_LEVEL_1, q{Waiting for action to complete...});
+
+
+    # Describe
+    my $image_service_url = $self->opts->{image_service_url};
+    my $image_api_version = q{/v} . $self->opts->{image_api_version} . q{/};
+
+    $url = $image_service_url . $image_api_version . q{images/} . $image_id;
+
+    while ($status ne 'active') {
+
+        if ( $self->opts->{image_api_version} eq '1' ) {
+
+            $response = $self->rest_request_with_header('HEAD', $url, $EMPTY, $EMPTY);
+            $status = $response->header('X-Image-Meta-Status');
+            if ($self->opts->{exitcode}) { return; }
+            if ($status eq 'ERROR') {
+                   $self->opts->{exitcode} = $ERROR;
+                   return;
+            }
+        } elsif ( $self->opts->{image_api_version} eq '2') {
+
+            $result = $self->rest_request('GET', $url, $EMPTY, $EMPTY);
+            if ($self->opts->{exitcode}) { return; }
+            $json_result = $json->decode($result);
+            $status = $json_result->{status};
+
+            if ($status eq 'ERROR') {
+                $self->opts->{exitcode} = $ERROR;
+                return;
+            }
+
+        }
+
+            sleep $WAIT_SLEEP_TIME;
+    }
+
+    $self->setProp("/InstanceSnapshot/ID",  "$image_id");
+
+    if ( $self->opts->{image_api_version} eq '1' ) {
+
+        if ( $response->header('X-Image-Meta-Name') ) { $self->setProp("/InstanceSnapshot/Name",  $response->header('X-Image-Meta-Name')); }
+        if ( $response->header('X-Image-Meta-Owner') ) { $self->setProp("/InstanceSnapshot/Owner",  $response->header('X-Image-Meta-Owner')); }
+        if ( $response->header('X-Image-Meta-Disk_format') ) { $self->setProp("/InstanceSnapshot/DiskFormat",  $response->header('X-Image-Meta-Disk_format')); }
+        if ( $response->header('X-Image-Meta-Container_format') ) { $self->setProp("/InstanceSnapshot/ContainerFormat",  $response->header('X-Image-Meta-Container_format')); }
+        if ( $response->header('X-Image-Meta-Min_disk') ) { $self->setProp("/InstanceSnapshot/MinDisk",  $response->header('X-Image-Meta-Min_disk')); }
+        if ( $response->header('X-Image-Meta-Min_ram') ) { $self->setProp("/InstanceSnapshot/MinRam",  $response->header('X-Image-Meta-Min_ram')); }
+
+    } elsif ( $self->opts->{image_api_version} eq '2' ) {
+
+        if ( $json_result->{name} ) { $self->setProp("/InstanceSnapshot/Name",  $json_result->{name}); }
+        if ( $json_result->{owner} ) { $self->setProp("/InstanceSnapshot/Owner",   $json_result->{owner}); }
+        if ( $json_result->{disk_format} ) { $self->setProp("/InstanceSnapshot/DiskFormat",  $json_result->{disk_format}); }
+        if ( $json_result->{container_format} ) { $self->setProp("/InstanceSnapshot/ContainerFormat",  $json_result->{container_format}); }
+        if ( $json_result->{min_disk} ) { $self->setProp("/InstanceSnapshot/MinDisk",  $json_result->{min_disk}); }
+        if ( $json_result->{min_ram} ) { $self->setProp("/InstanceSnapshot/MinRam",  $json_result->{min_ram}); }
+
+    }
+
+    $self->debug_msg($DEBUG_LEVEL_1, q{Snapshot } . $self->opts->{display_name} . q{ created.});
+    return;
+}
+
+############################################################################
+# create_stack - Creates a new heat stack from a template.
+#
+# Arguments:
+#   -
+#
+# Returns:
+#   -
+#
+############################################################################
+sub create_stack {
+    my ($self) = @_;
+
+    $self->debug_msg($DEBUG_LEVEL_1, '---------------------------------------------------------------------');
+    $self->debug_msg($DEBUG_LEVEL_1, '-- Creating a stack -------');
+    $self->initialize();
+    $self->initializePropPrefix;
+    if ($self->opts->{exitcode}) { return; }
+
+
+    my $result = $EMPTY;
+    my $body = $EMPTY;
+    my $data;
+    my $json_result = $EMPTY;
+    my $status = $EMPTY;
+    my $orchestration_service_url = $self->opts->{orchestration_service_url};
+
+
+    my $url = $orchestration_service_url . q{/v1/} . $self->opts->{tenant_id};
+    my $tenant_url = $url;
+    $url .= q{/stacks};
+
+    $data->{stack_name} = $self->opts->{stack_name};
+
+    # If user has supplied both template and template_url,
+    # the template gets preference over template_url.
+
+    if ( $self->opts->{template} ) {
+        $data->{template} = $json->decode($self->opts->{template});
+    } elsif ( $self->opts->{template_url} ) {
+        $data->{template_url} = $self->opts->{template_url};
+    } else {
+         $self->debug_msg($DEBUG_LEVEL_1, q{Either of template or template URL must be specified.});
+    }
+
+    $body = to_json($data);
+
+    ## Make POST request
+    $result = $self->rest_request('POST', $url, 'application/json', $body);
+    if ($self->opts->{exitcode}) { return; }
+
+    $json_result = $json->decode($result);
+
+    my $stack_id = $json_result->{stack}->{id};
+
+
+    $self->debug_msg($DEBUG_LEVEL_1, q{Waiting for complete stack  to get deployed ...});
+
+    # Describe openstack orchestration URL
+    $url = $orchestration_service_url . q{/v1/} . $self->opts->{tenant_id} . q{/stacks/} . $self->opts->{stack_name} . q{/} . $stack_id;
+
+    while ( $status ne 'CREATE_COMPLETE') {
+
+            ## Make GET request
+            $result = $self->rest_request('GET', $url, $EMPTY, $EMPTY);
+            if ($self->opts->{exitcode} ) { return; }
+
+            $json_result = $json->decode($result);
+            $status      = $json_result->{stack}->{stack_status};
+            if ($status eq 'CREATE_FAILED') {
+                $self->opts->{exitcode} = $ERROR;
+                return;
+            }
+
+            sleep $WAIT_SLEEP_TIME;
+    }
+
+    $self->debug_msg($DEBUG_LEVEL_1, q{Stack } . $self->opts->{stack_name} . q{ created.});
+
+    # Now describe them one more time to capture the attributes
+    $result = $self->rest_request('GET', $url, $EMPTY, $EMPTY);
+    if ($self->opts->{exitcode}) { return; }
+
+    $json_result = $json->decode($result);
+
+    my $stack_status = $json_result->{stack}->{stack_status};
+
+    $self->setProp("/Stack/ID",    "$stack_id");
+    $self->setProp("/Stack/StackStatus",    "$stack_status");
+
+    if ( $json_result->{stack}->{disable_rollback} ) { $self->setProp("/Stack/DisableRollback",  $json_result->{stack}->{disable_rollback}); }
+    if ( $json_result->{stack}->{parent} ) { $self->setProp("/Stack/Parent",  $json_result->{stack}->{parent}); }
+    if ( $json_result->{stack}->{stack_name} ) { $self->setProp("/Stack/StackName",  $json_result->{stack}->{stack_name}); }
+    if ( $json_result->{stack}->{stack_owner} ) { $self->setProp("/Stack/StackOwner",  $json_result->{stack}->{stack_owner}); }
+    if ( $json_result->{stack}->{creation_time} ) { $self->setProp("/Stack/CreationTime",  $json_result->{stack}->{creation_time}); }
+    if ( $json_result->{stack}->{stack_owner} ) { $self->setProp("/Stack/StackOwner",  $json_result->{stack}->{stack_owner}); }
+    if ( $json_result->{stack}->{timeout_mins} ) { $self->setProp("/Stack/TimeoutMins", $json_result->{stack}->{timeout_mins}); }
+    if ( $json_result->{stack}->{stack_owner} ) { $self->setProp("/Stack/StackOwner",  $json_result->{stack}->{stack_owner}); }
+
+    $self->debug_msg($DEBUG_LEVEL_1, q{Stack } . $self->opts->{stack_name} . q{ created.});
+    return;
+}
+
+############################################################################
+# update_stack - Updates a specified stack.
+#
+# Arguments:
+#   -
+#
+# Returns:
+#   -
+#
+############################################################################
+sub update_stack {
+    my ($self) = @_;
+
+    $self->debug_msg($DEBUG_LEVEL_1, '---------------------------------------------------------------------');
+    $self->debug_msg($DEBUG_LEVEL_1, '-- Updating a stack -------');
+    $self->initialize();
+    $self->initializePropPrefix;
+    if ($self->opts->{exitcode}) { return; }
+
+
+    my $result = $EMPTY;
+    my $body = $EMPTY;
+    my $data;
+    my $json_result = $EMPTY;
+    my $status = $EMPTY;
+    my $orchestration_service_url = $self->opts->{orchestration_service_url};
+
+
+    my $url = $orchestration_service_url . q{/v1/} . $self->opts->{tenant_id};
+    my $tenant_url = $url;
+    $url .= q{/stacks/} . $self->opts->{stack_name} . q{/} . $self->opts->{stack_id};
+
+    # If user has supplied both template and template_url,
+    # the template gets preference over template_url.
+
+    if ( $self->opts->{template} ) {
+        $data->{template} = $json->decode($self->opts->{template});
+    } elsif ( $self->opts->{template_url} ) {
+        $data->{template_url} = $self->opts->{template_url};
+    } else {
+         $self->debug_msg($DEBUG_LEVEL_1, q{Either of template or template URL must be specified.});
+    }
+
+    $body = to_json($data);
+
+    ## Make POST request
+    $result = $self->rest_request('PUT', $url, 'application/json', $body);
+    if ($self->opts->{exitcode}) { return; }
+
+    $self->debug_msg($DEBUG_LEVEL_1, q{Stack } . $self->opts->{stack_name} . q{ updated.});
+    return;
+}
+
+############################################################################
+# delete_stack - Deletes a specified stack.
+#
+# Arguments:
+#   -
+#
+# Returns:
+#   -
+#
+############################################################################
+sub delete_stack {
+    my ($self) = @_;
+
+    $self->debug_msg($DEBUG_LEVEL_1, '---------------------------------------------------------------------');
+    $self->debug_msg($DEBUG_LEVEL_1, '-- Deleting a stack -------');
+    $self->initialize();
+    $self->initializePropPrefix;
+    if ($self->opts->{exitcode}) { return; }
+
+
+    my $result = $EMPTY;
+    my $body = $EMPTY;
+    my $data;
+    my $json_result = $EMPTY;
+    my $status = $EMPTY;
+    my $orchestration_service_url = $self->opts->{orchestration_service_url};
+
+
+    my $url = $orchestration_service_url . q{/v1/} . $self->opts->{tenant_id};
+    my $tenant_url = $url;
+    $url .= q{/stacks/} . $self->opts->{stack_name} . q{/} . $self->opts->{stack_id};
+
+    ## Make DELETE request
+    $result = $self->rest_request('DELETE', $url, $EMPTY, $body);
+    if ($self->opts->{exitcode}) { return; }
+
+    $self->debug_msg($DEBUG_LEVEL_1, q{Stack } . $self->opts->{stack_name} . q{ deleted.});
+    return;
+}
 
 # -------------------------------------------------------------------------
 # Helper functions
@@ -1139,6 +1789,9 @@ sub get_authentication {
                         user    =>  {
                             name        =>  '' . $self->opts->{config_user},
                             password    =>  '' . $self->opts->{config_pass},
+                            domain      =>  {
+                                                id    =>   'default'
+                                            },
                         },
                     },
                 },
@@ -1159,6 +1812,9 @@ sub get_authentication {
 
     my $request_as_string = $req->as_string();
     $request_as_string =~ s/"password"\s?:\s?".*?"/"password":"***"/gs;
+
+    my $user = '' . $self->opts->{config_user};
+    my $pass = '' . $self->opts->{config_pass};
 
     $self->debug_msg($DEBUG_LEVEL_6, "\nRequest:" . $request_as_string);
 
@@ -1240,7 +1896,7 @@ sub get_error_by_code {
 #   response - the HTTP response
 ############################################################################
 sub rest_request {
-    my ($self, $post_type, $url_text, $content_type, $content) = @_;
+    my ($self, $post_type, $url_text, $content_type, $content, $headers) = @_;
 
     my $url;
     my $req;
@@ -1271,6 +1927,12 @@ sub rest_request {
     ## Create authorization to server
     $req->header('X-Auth-Token' => $self->opts->{auth_token});
 
+    if ( $headers ne $EMPTY) {
+        # If additional headers have to be added to request
+        foreach my $key ( keys %{$headers}){
+            $req->header( $key => $headers->{$key});
+        }
+    }
     ## Set Request Content type
     if ($content_type ne $EMPTY) {
         $req->content_type($content_type);
@@ -1281,7 +1943,25 @@ sub rest_request {
     }
 
     ## Print Request
-    $self->debug_msg($DEBUG_LEVEL_5, "HTTP Request:\n" . $req->as_string);
+    if ($content_type eq 'application/octet-stream') {
+
+        ## If request body is binary data, no need to print body.Print only the headers.
+        $self->debug_msg($DEBUG_LEVEL_5, "HTTP Request:\n");
+
+
+
+
+
+
+        $self->debug_msg($DEBUG_LEVEL_5, $req->method . " " . $req->uri);
+        $self->debug_msg($DEBUG_LEVEL_5, $req->headers->as_string);
+        $self->debug_msg($DEBUG_LEVEL_5, "\<Raw image contents...\>");
+
+    } else {
+        ## Plain JSON request, print whole request.
+        $self->debug_msg($DEBUG_LEVEL_5, "HTTP Request:\n" . $req->as_string);
+    }
+
 
     ## Make Request
     $response = $browser->request($req);
@@ -1301,6 +1981,87 @@ sub rest_request {
     ## Return Response
     my $xml = $response->content;
     return $xml;
+}
+
+############################################################################
+# rest_request_with_header - issue the HTTP HEAD request, do special processing, and return requested response header
+#
+# Arguments:
+#   req      - the HTTP req
+#
+# Returns:
+#   response - the HTTP response
+############################################################################
+sub rest_request_with_header {
+    my ($self, $post_type, $url_text, $content_type, $content, $request_headers) = @_;
+
+    my $url;
+    my $req;
+    my $response;
+
+    ## Check url
+    if ($url_text eq $EMPTY) {
+        $self->debug_msg($DEBUG_LEVEL_0, q{Error: blank URL in rest_request.});
+        $self->opts->{exitcode} = $ERROR;
+        return $EMPTY;
+    }
+
+    ## Set Request Method
+    $url = URI->new($url_text);
+    if ($post_type eq 'POST') {
+        $req = HTTP::Request->new(POST => $url);
+    }
+    elsif ($post_type eq 'DELETE') {
+        $req = HTTP::Request->new(DELETE => $url);
+    }
+    elsif ($post_type eq 'PUT') {
+        $req = HTTP::Request->new(PUT => $url);
+    }
+    elsif ($post_type eq 'HEAD') {
+            $req = HTTP::Request->new(HEAD => $url);
+    }
+    else {
+        $req = HTTP::Request->new(GET => $url);
+    }
+
+    ## Create authorization to server
+    $req->header('X-Auth-Token' => $self->opts->{auth_token});
+
+    foreach my $key ( keys %{$request_headers}){
+        $req->header( $key => $request_headers->{$key});
+    }
+
+    ## Set Request Content type
+    if ($content_type ne $EMPTY) {
+        $req->content_type($content_type);
+    }
+    ## Set Request Content
+    if ($content ne $EMPTY) {
+        $req->content($content);
+    }
+
+    ## Plain JSON request, print as it is.
+    $self->debug_msg($DEBUG_LEVEL_5, "HTTP Request:\n" . $req->as_string);
+
+
+
+    ## Make Request
+    $response = $browser->request($req);
+
+    ## Print Response
+    $self->debug_msg($DEBUG_LEVEL_5, "HTTP Response:\n" . $response->as_string);
+
+    ## Check for errors
+    if ($response->is_error) {
+        $self->debug_msg($DEBUG_LEVEL_6, $response->status_line);
+        $self->get_error_by_code($response->code);
+        $self->opts->{exitcode} = $ERROR;
+        $self->opts->{restcode} = $response->code;
+        return ($EMPTY);
+    }
+
+    ## Return the entire response
+    return $response;
 }
 
 ############################################################################
@@ -1453,6 +2214,30 @@ sub constructSecurityGroupArray {
 }
 
 ############################################################################
+# constructMetadataHash - Constructs key:value pair of metadata hash
+# Arguments:
+#   metadata - comma separated list of keys and values in the
+#              form of key1,value1,key2,value2
+#
+# Returns:
+#    hash
+# [{"key1" => "value1"}, {"key2" => "value2"}]
+############################################################################
+sub constructMetadataHash {
+    my ($self, $metadata) = @_;
+
+    # Get each key:value pair
+    my @pairs = split(",", $metadata);
+
+    # Convert array of key:values into hash
+
+    my %metadata = @pairs;
+
+    # return the resuling hash
+    return %metadata;
+}
+
+############################################################################
 # get_allocated_ips
 # Arguments:
 #	$compute_api_url_with_tenant_id
@@ -1547,4 +2332,3 @@ sub associate_ip_to_instance {
 }
 
 1;
-

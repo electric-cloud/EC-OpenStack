@@ -13,8 +13,7 @@
     
     ['//procedure[procedureName="CreateKeyPair"]/propertySheet/property[propertyName="ec_parameterForm"]/value',            'ui_forms/create.key.xml'],
     ['//step[stepName="CreateKeyPair"]/command',                                                                            'procedures/create.key.pl'],
-    
-    
+
     ['//procedure[procedureName="DeleteKeyPair"]/propertySheet/property[propertyName="ec_parameterForm"]/value',            'ui_forms/delete.key.xml'],
     ['//step[stepName="DeleteKeyPair"]/command',                                                                            'procedures/delete.key.pl'],
     
@@ -23,7 +22,6 @@
 
     ['//procedure[procedureName="ReleaseIP"]/propertySheet/property[propertyName="ec_parameterForm"]/value',            'ui_forms/release.ip.xml'],
     ['//step[stepName="ReleaseIP"]/command',                                                                            'procedures/release.ip.pl'],     
-    
 
     ['//procedure[procedureName="AssociateFloatingIP"]/propertySheet/property[propertyName="ec_parameterForm"]/value',            'ui_forms/associate_ip.xml'],
     ['//step[stepName="AssociateFloatingIP"]/command',                                                                            'procedures/associate_ip.pl'],
@@ -34,8 +32,36 @@
     ['//procedure[procedureName="AttachVolume"]/propertySheet/property[propertyName="ec_parameterForm"]/value',            'ui_forms/attach.volume.xml'],
     ['//step[stepName="AttachVolume"]/command',                                                                            'procedures/attach.volume.pl'],
 
+    ['//procedure[procedureName="DetachVolume"]/propertySheet/property[propertyName="ec_parameterForm"]/value',            'ui_forms/detach.volume.xml'],
+    ['//step[stepName="DetachVolume"]/command',                                                                            'procedures/detach.volume.pl'],
+
+    ['//procedure[procedureName="DeleteVolume"]/propertySheet/property[propertyName="ec_parameterForm"]/value',            'ui_forms/delete.volume.xml'],
+    ['//step[stepName="DeleteVolume"]/command',                                                                            'procedures/delete.volume.pl'],
+
+    ['//procedure[procedureName="RebootInstance"]/propertySheet/property[propertyName="ec_parameterForm"]/value',            'ui_forms/reboot.xml'],
+    ['//step[stepName="RebootInstance"]/command',                                                                            'procedures/reboot.pl'],
+
+    ['//procedure[procedureName="CreateVolumeSnapshot"]/propertySheet/property[propertyName="ec_parameterForm"]/value',            'ui_forms/create.volumesnapshot.xml'],
+    ['//step[stepName="CreateVolumeSnapshot"]/command',                                                                            'procedures/create.volumesnapshot.pl'],
+
+    ['//procedure[procedureName="CreateImage"]/propertySheet/property[propertyName="ec_parameterForm"]/value',            'ui_forms/create.image.xml'],
+    ['//step[stepName="CreateImage"]/command',                                                                            'procedures/create.image.pl'],
+
+    ['//procedure[procedureName="CreateInstanceSnapshot"]/propertySheet/property[propertyName="ec_parameterForm"]/value',            'ui_forms/create.instancesnapshot.xml'],
+    ['//step[stepName="CreateInstanceSnapshot"]/command',                                                                            'procedures/create.instancesnapshot.pl'],
+
+    ['//procedure[procedureName="CreateStack"]/propertySheet/property[propertyName="ec_parameterForm"]/value',            'ui_forms/create.stack.xml'],
+    ['//step[stepName="CreateStack"]/command',                                                                            'procedures/create.stack.pl'],
+
+    ['//procedure[procedureName="UpdateStack"]/propertySheet/property[propertyName="ec_parameterForm"]/value',            'ui_forms/update.stack.xml'],
+    ['//step[stepName="UpdateStack"]/command',                                                                            'procedures/update.stack.pl'],
+
+    ['//procedure[procedureName="DeleteStack"]/propertySheet/property[propertyName="ec_parameterForm"]/value',            'ui_forms/delete.stack.xml'],
+    ['//step[stepName="DeleteStack"]/command',                                                                            'procedures/delete.stack.pl'],
+
     ['//procedure[procedureName="CloudManagerGrow"]/propertySheet/property[propertyName="ec_parameterForm"]/value',   'ui_forms/grow.xml'],
     ['//step[stepName="grow"]/command',                                                                               'procedures/step.grow.pl'],
+
     ['//procedure[procedureName="CloudManagerShrink"]/propertySheet/property[propertyName="ec_parameterForm"]/value', 'ui_forms/shrink.xml'],
     ['//step[stepName="shrink"]/command',                                                                             'procedures/step.shrink.pl'],
 

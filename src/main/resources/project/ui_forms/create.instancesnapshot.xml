@@ -1,5 +1,5 @@
 <editor>
-    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#AttachVolume</help>
+    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#CreateInstanceSnapshot</help>
     <formElement>
         <label>Configuration:</label>
         <property>connection_config</property>
@@ -17,26 +17,26 @@
         <type>entry</type>
     </formElement>
     <formElement>
+        <label>Instance snapshot name:</label>
+        <property>display_name</property>
+        <value/>
+        <documentation>Display name for the new instance snapshot.</documentation>
+        <required>1</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
         <label>Server ID:</label>
         <property>server_id</property>
         <value/>
-        <documentation>ID of the server to which volume to attach.</documentation>
+        <documentation>ID of the server of which to create snapshot.</documentation>
         <required>1</required>
         <type>entry</type>
     </formElement>
     <formElement>
-        <label>Volume ID:</label>
-        <property>volume_id</property>
+        <label>Metadata:</label>
+        <property>metadata</property>
         <value/>
-        <documentation>ID of the volume to attach.</documentation>
-        <required>1</required>
-        <type>entry</type>
-    </formElement>
-    <formElement>
-        <label>Name of device:</label>
-        <property>device</property>
-        <value/>
-        <documentation>Name of the device such as, /dev/vdb after attachment.If not specified, device name will be auto-assigned.</documentation>
+        <documentation>Metadata for new instance snapshot in key1,value1,key2,value2 ... format.</documentation>
         <required>0</required>
         <type>entry</type>
     </formElement>

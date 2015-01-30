@@ -1,5 +1,5 @@
 <editor>
-    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#AttachVolume</help>
+    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#CreateVolumeSnapshot</help>
     <formElement>
         <label>Configuration:</label>
         <property>connection_config</property>
@@ -17,27 +17,35 @@
         <type>entry</type>
     </formElement>
     <formElement>
-        <label>Server ID:</label>
-        <property>server_id</property>
+        <label>Name of volume snapshot:</label>
+        <property>display_name</property>
         <value/>
-        <documentation>ID of the server to which volume to attach.</documentation>
+        <documentation>The display name for the new volume snapshot.</documentation>
         <required>1</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
+        <label>Description:</label>
+        <property>display_desc</property>
+        <value/>
+        <documentation>Description of new snapshot.</documentation>
+        <required>0</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
+        <label>Force:</label>
+        <property>force</property>
+        <value>False</value>
+        <documentation>Create snapshot forcefully or not (True / False). Default : False</documentation>
+        <required>0</required>
         <type>entry</type>
     </formElement>
     <formElement>
         <label>Volume ID:</label>
         <property>volume_id</property>
         <value/>
-        <documentation>ID of the volume to attach.</documentation>
+        <documentation>The ID of the volume from which to create a snapshot.</documentation>
         <required>1</required>
-        <type>entry</type>
-    </formElement>
-    <formElement>
-        <label>Name of device:</label>
-        <property>device</property>
-        <value/>
-        <documentation>Name of the device such as, /dev/vdb after attachment.If not specified, device name will be auto-assigned.</documentation>
-        <required>0</required>
         <type>entry</type>
     </formElement>
     <formElement>

@@ -1,4 +1,3 @@
-
 # The plugin is being promoted, create a property reference in the server's property sheet
 # Data that drives the create step picker registration for this plugin.
 my %deploy = (
@@ -60,6 +59,70 @@ my %attachvolume = (
                  category    => "Resource Management"
                 );
 
+my %detachvolume = (
+                 label       => "OpenStack - DetachVolume",
+                 procedure   => "DetachVolume",
+                 description => "Detach a volume from a server.",
+                 category    => "Resource Management"
+                );
+
+my %deletevolume = (
+                 label       => "OpenStack - DeleteVolume",
+                 procedure   => "DeleteVolume",
+                 description => "Delete a volume.",
+                 category    => "Resource Management"
+                );
+
+my %reboot = (
+                 label       => "OpenStack - RebootInstance",
+                 procedure   => "RebootInstance",
+                 description => "Reboots an instance.",
+                 category    => "Resource Management"
+                );
+
+my %createvolumesnapshot = (
+                 label       => "OpenStack - CreateVolumeSnapshot",
+                 procedure   => "CreateVolumeSnapshot",
+                 description => "Creates a new snapshot of a volume.",
+                 category    => "Resource Management"
+                );
+
+my %createimage = (
+                 label       => "OpenStack - CreateImage",
+                 procedure   => "CreateImage",
+                 description => "Creates a new image.",
+                 category    => "Resource Management"
+                );
+
+
+my %createinstancesnapshot = (
+                 label       => "OpenStack - CreateInstanceSnapshot",
+                 procedure   => "CreateInstanceSnapshot",
+                 description => "Creates a new snapshot of an instance.",
+                 category    => "Resource Management"
+                );
+
+my %createstack = (
+                 label       => "OpenStack - CreateHeatStack",
+                 procedure   => "CreateStack",
+                 description => "Creates a new heat stack from a template.",
+                 category    => "Resource Management"
+                );
+
+my %updatestack = (
+                 label       => "OpenStack - UpdateHeatStack",
+                 procedure   => "UpdateStack",
+                 description => "Updates existing stack to specified template.",
+                 category    => "Resource Management"
+                );
+
+my %deletestack = (
+                 label       => "OpenStack - DeleteHeatStack",
+                 procedure   => "DeleteStack",
+                 description => "Deletes existing stack.",
+                 category    => "Resource Management"
+                );
+
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - Deploy");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - Cleanup");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - CreateKeyPair");
@@ -69,8 +132,17 @@ $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - ReleaseI
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - AssociateFloatingIP");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - CreateVolume");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - AttachVolume");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - DetachVolume");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - DeleteVolume");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - RebootInstance");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - CreateVolumeSnapshot");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - CreateImage");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - CreateInstanceSnapshot");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - CreateHeatStack");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - UpdateHeatStack");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - DeleteHeatStack");
 
-@::createStepPickerSteps = (\%deploy, \%cleanup, \%createkey, \%deletekey, \%allocate, \%release, \%associate, \%createvolume, \%attachvolume);
+@::createStepPickerSteps = (\%deploy, \%cleanup, \%createkey, \%deletekey, \%allocate, \%release, \%associate, \%createvolume, \%attachvolume, \%detachvolume, \%deletevolume, \%reboot, \%createvolumesnapshot, \%createimage, \%createinstancesnapshot, \%createstack, \%updatestack, \%deletestack);
 
 my $pluginName = "@PLUGIN_NAME@";
 my $pluginKey  = "@PLUGIN_KEY@";
@@ -271,7 +343,84 @@ if ($upgradeAction eq "upgrade") {
                                         procedureName => 'AttachVolume',
                                         stepName      => 'AttachVolume'
                                      }
-                                    );            
+                                    );
+            $batch->attachCredential(
+                                     "\$[/plugins/$pluginName/project]",
+                                     $cred,
+                                     {
+                                        procedureName => 'DetachVolume',
+                                        stepName      => 'DetachVolume'
+                                     }
+                                    );
+            $batch->attachCredential(
+                                     "\$[/plugins/$pluginName/project]",
+                                     $cred,
+                                     {
+                                        procedureName => 'DeleteVolume',
+                                        stepName      => 'DeleteVolume'
+                                     }
+                                    );
+            $batch->attachCredential(
+                                     "\$[/plugins/$pluginName/project]",
+                                     $cred,
+                                     {
+                                        procedureName => 'RebootInstance',
+                                        stepName      => 'RebootInstance'
+                                     }
+                                    );
+
+            $batch->attachCredential(
+                                     "\$[/plugins/$pluginName/project]",
+                                     $cred,
+                                     {
+                                         procedureName => 'CreateVolumeSnapshot',
+                                         stepName      => 'CreateVolumeSnapshot'
+                                     }
+                                    );
+
+            $batch->attachCredential(
+                                     "\$[/plugins/$pluginName/project]",
+                                     $cred,
+                                     {
+                                         procedureName => 'CreateImage',
+                                         stepName      => 'CreateImage'
+                                     }
+                                    );
+
+            $batch->attachCredential(
+                                     "\$[/plugins/$pluginName/project]",
+                                     $cred,
+                                     {
+                                         procedureName => 'CreateInstanceSnapshot',
+                                         stepName      => 'CreateInstanceSnapshot'
+                                     }
+                                    );
+
+            $batch->attachCredential(
+                                     "\$[/plugins/$pluginName/project]",
+                                     $cred,
+                                     {
+                                          procedureName => 'CreateStack',
+                                          stepName      => 'CreateStack'
+                                     }
+                                    );
+
+            $batch->attachCredential(
+                                     "\$[/plugins/$pluginName/project]",
+                                     $cred,
+                                     {
+                                          procedureName => 'UpdateStack',
+                                          stepName      => 'UpdateStack'
+                                     }
+                                    );
+            $batch->attachCredential(
+                                     "\$[/plugins/$pluginName/project]",
+                                     $cred,
+                                     {
+                                          procedureName => 'DeleteStack',
+                                          stepName      => 'DeleteStack'
+                                     }
+                                    );
         }
     }
 }

@@ -1,5 +1,5 @@
 ##########################
-# create.volume.pl
+# create.stack.pl
 ##########################
 use warnings;
 use strict;
@@ -15,14 +15,14 @@ $opts->{connection_config} = q{$[connection_config]};
 # Tenant: Id of the tenant.
 $opts->{tenant_id} = q{$[tenant_id]};
 
-# Server Id: ID of the server to which volume to attach.
-$opts->{server_id} = q{$[server_id]};
+# Stack Name: Display name for the new stack.
+$opts->{stack_name} = q{$[stack_name]};
 
-# Volume Id: ID of the volume to attach.
-$opts->{volume_id} = q{$[volume_id]};
+# Template: The stack template to instantiate.
+$opts->{template} = q{$[template]};
 
-# Device: Name of the device such as, /dev/vdb after attachment.
-$opts->{device} = q{$[device]};
+# Template URL: A URI to the location containing the stack template to instantiate. 
+$opts->{template_url} = q{$[template_url]};
 
 # Results location: property path to store server information.
 $opts->{location} = q{$[location]};
@@ -32,5 +32,5 @@ $opts->{tag} = q{$[tag]};
 
 $[/myProject/procedure_helpers/preamble]
 
-$openstack->attach_volume();
+$openstack->create_stack();
 exit($opts->{exitcode});

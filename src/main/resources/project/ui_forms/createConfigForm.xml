@@ -38,7 +38,23 @@
         <value></value>
         <documentation>Provide the host name or IP address of the Block Storage Service for OpenStack</documentation>
         <required>1</required>
-    </formElement>    
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Image Service URL:</label>
+        <property>image_service_url</property>
+        <value></value>
+        <documentation>Provide the host name or IP address of the Image Service for OpenStack</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Orchestration Service URL:</label>
+        <property>orchestration_service_url</property>
+        <value></value>
+        <documentation>Provide the host name or IP address of the Orchestration Service for OpenStack</documentation>
+        <required>1</required>
+    </formElement>
     <formElement>
         <type>credential</type>
         <label>Login as:</label>
@@ -60,6 +76,22 @@
         <property>keystone_api_version</property>
         <value>3</value>
         <documentation> The Keystone API version</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Blockstorage API version:</label>
+        <property>blockstorage_api_version</property>
+        <value>1</value>
+        <documentation> The OpenStack block storage API version</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Image API version:</label>
+        <property>image_api_version</property>
+        <value>1</value>
+        <documentation> The Image Service API version</documentation>
         <required>1</required>
     </formElement>
     <formElement>

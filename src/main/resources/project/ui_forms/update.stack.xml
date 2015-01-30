@@ -1,5 +1,5 @@
 <editor>
-    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#AttachVolume</help>
+    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#UpdateStack</help>
     <formElement>
         <label>Configuration:</label>
         <property>connection_config</property>
@@ -16,27 +16,35 @@
         <required>1</required>
         <type>entry</type>
     </formElement>
-    <formElement>
-        <label>Server ID:</label>
-        <property>server_id</property>
+     <formElement>
+        <label>Stack Name:</label>
+        <property>stack_name</property>
         <value/>
-        <documentation>ID of the server to which volume to attach.</documentation>
+        <documentation>Display name of the stack to update.</documentation>
         <required>1</required>
         <type>entry</type>
     </formElement>
     <formElement>
-        <label>Volume ID:</label>
-        <property>volume_id</property>
+        <label>Stack ID:</label>
+        <property>stack_id</property>
         <value/>
-        <documentation>ID of the volume to attach.</documentation>
+        <documentation>ID of the stack to update.</documentation>
         <required>1</required>
         <type>entry</type>
     </formElement>
     <formElement>
-        <label>Name of device:</label>
-        <property>device</property>
+        <label>Template:</label>
+        <property>template</property>
         <value/>
-        <documentation>Name of the device such as, /dev/vdb after attachment.If not specified, device name will be auto-assigned.</documentation>
+        <documentation>The template with which the stack should get updated.</documentation>
+        <required>0</required>
+        <type>textarea</type>
+    </formElement>
+    <formElement>
+        <label>Template URL:</label>
+        <property>template_url</property>
+        <value/>
+        <documentation>A URI to the location containing the updated stack template to instantiate.Specify URL only if you are not supplying template.(One should either supply the template or template URL.)</documentation>
         <required>0</required>
         <type>entry</type>
     </formElement>
@@ -57,3 +65,4 @@
         <type>entry</type>
     </formElement>
 </editor>
+
