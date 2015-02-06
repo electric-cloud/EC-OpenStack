@@ -25,6 +25,14 @@
         <type>entry</type>
     </formElement>
     <formElement>
+        <label>Volume ID:</label>
+        <property>volume_id</property>
+        <value/>
+        <documentation>ID of the volume to detach.</documentation>
+        <required>1</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
         <label>Attachment ID:</label>
         <property>attachment_id</property>
         <value/>

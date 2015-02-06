@@ -18,6 +18,9 @@ $opts->{tenant_id} = q{$[tenant_id]};
 # Server Id: ID of the server from which volume to detach.
 $opts->{server_id} = q{$[server_id]};
 
+# Volume Id: ID of the volume to attach.
+$opts->{volume_id} = q{$[volume_id]};
+
 # Attachment Id: Volume attachment ID. 
 $opts->{attachment_id} = q{$[attachment_id]};
 

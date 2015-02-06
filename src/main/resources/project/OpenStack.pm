@@ -638,7 +638,8 @@ sub reboot {
     my $xml;
     my $body;
     my $data;
-
+    my $status = $EMPTY;
+    my $json_result;
     my $compute_service_url = $self->opts->{compute_service_url};
 
 
@@ -662,6 +663,23 @@ sub reboot {
 
         $self->debug_msg($DEBUG_LEVEL_1,q{Failed to reboot server});
         return;
+    }
+
+    $self->debug_msg($DEBUG_LEVEL_1, q{Waiting for server to get rebooted...});
+
+    $url = $compute_service_url . q{/v2/}  . $self->opts->{tenant_id} . q{/servers/} . $self->opts->{server_id};
+
+
+    while ( $status ne 'ACTIVE') {
+
+                  ## Make GET request
+                  $result = $self->rest_request('GET', $url, $EMPTY, $EMPTY);
+                  if ($self->opts->{exitcode} ) { return; }
+
+                  $json_result = $json->decode($result);
+                  $status      = $json_result->{server}->{status};
+
+                  sleep $WAIT_SLEEP_TIME;
     }
 
     $self->debug_msg($DEBUG_LEVEL_1, q{Server } . $self->opts->{server_id} . q{ rebooted successfully.Reboot type : } . $self->opts->{reboot_type});
@@ -885,6 +903,8 @@ sub create_volume {
     my $xml;
     my $body;
     my $data;
+    my $status = $EMPTY;
+    my $json_result;
     my $blockstorage_api_version;
     my $availability_zone = $EMPTY;
     my $volume_type = $EMPTY;
@@ -930,6 +950,26 @@ sub create_volume {
     $self->setProp("/Volume/VolumeType",  "$volume_type");
     $self->setProp("/Volume/Size",  "$size");
 
+    $self->debug_msg($DEBUG_LEVEL_1, q{Waiting for volume to get created...});
+
+    $url .= q{/} . $volume_id;
+
+    while ( $status ne 'available') {
+
+              ## Make GET request
+              $result = $self->rest_request('GET', $url, $EMPTY, $EMPTY);
+              if ($self->opts->{exitcode} ) { return; }
+
+              $json_result = $json->decode($result);
+              $status      = $json_result->{volume}->{status};
+              if ($status eq 'error' || $status eq 'ERROR') {
+                   $self->opts->{exitcode} = $ERROR;
+                   return;
+              }
+
+              sleep $WAIT_SLEEP_TIME;
+    }
+
     $self->debug_msg($DEBUG_LEVEL_1, q{Volume } . $self->opts->{display_name} . q{ created.});
     return;
 }
@@ -958,9 +998,10 @@ sub attach_volume {
     my $xml;
     my $body;
     my $data;
-
+    my $status = $EMPTY;
     my $compute_service_url = $self->opts->{compute_service_url};
-
+    my $blockstorage_service_url = $self->opts->{blockstorage_service_url};
+    my $blockstorage_api_version = $self->opts->{blockstorage_api_version};
 
     #openstack compute URL
     my $url = $compute_service_url . q{/v2/}  . $self->opts->{tenant_id};
@@ -989,6 +1030,36 @@ sub attach_volume {
     if ("$attachment_id" eq $EMPTY) {
         $self->debug_msg($DEBUG_LEVEL_1, "Error attaching the volume to instance.\n");
         return;
+    }
+
+    $self->debug_msg($DEBUG_LEVEL_1, q{Waiting for volume to get attached...});
+
+    #Consturct Block storage URL
+    if ($self->opts->{blockstorage_api_version} eq "1") {
+        $blockstorage_api_version = q{/v1/};
+    } elsif ($self->opts->{blockstorage_api_version} eq "2") {
+        $blockstorage_api_version = q{/v2/};
+    } else {
+        $self->debug_msg($DEBUG_LEVEL_1,q{Unsupported block storage API version.Exiting...});
+        return;
+    }
+
+    $url = $blockstorage_service_url . $blockstorage_api_version . $self->opts->{tenant_id} . q{/volumes/} . $self->opts->{volume_id};
+
+    while ( $status ne 'in-use') {
+
+          ## Make GET request
+          $result = $self->rest_request('GET', $url, $EMPTY, $EMPTY);
+          if ($self->opts->{exitcode} ) { return; }
+
+          $json_result = $json->decode($result);
+          $status      = $json_result->{volume}->{status};
+          if ($status eq 'error' || $status eq 'ERROR') {
+               $self->opts->{exitcode} = $ERROR;
+               return;
+          }
+
+          sleep $WAIT_SLEEP_TIME;
     }
 
     #store properties
@@ -1024,9 +1095,11 @@ sub detach_volume {
     my $xml;
     my $body;
     my $data;
-
+    my $status = $EMPTY;
+    my $json_result;
     my $compute_service_url = $self->opts->{compute_service_url};
-
+    my $blockstorage_service_url = $self->opts->{blockstorage_service_url};
+    my $blockstorage_api_version = $self->opts->{blockstorage_api_version};
 
     #openstack compute URL
     my $url = $compute_service_url . q{/v2/}  . $self->opts->{tenant_id};
@@ -1039,6 +1112,36 @@ sub detach_volume {
     if ($self->opts->{exitcode}) {
         $self->debug_msg($DEBUG_LEVEL_1, q{Error detaching volume.});
         return;
+    }
+
+    $self->debug_msg($DEBUG_LEVEL_1, q{Waiting for volume to get detached...});
+
+    #Consturct Block storage URL
+    if ($self->opts->{blockstorage_api_version} eq "1") {
+        $blockstorage_api_version = q{/v1/};
+    } elsif ($self->opts->{blockstorage_api_version} eq "2") {
+        $blockstorage_api_version = q{/v2/};
+    } else {
+         $self->debug_msg($DEBUG_LEVEL_1,q{Unsupported block storage API version.Exiting...});
+         return;
+    }
+
+    $url = $blockstorage_service_url . $blockstorage_api_version . $self->opts->{tenant_id} . q{/volumes/} . $self->opts->{volume_id};
+
+    while ( $status ne 'available') {
+
+          ## Make GET request
+          $result = $self->rest_request('GET', $url, $EMPTY, $EMPTY);
+          if ($self->opts->{exitcode} ) { return; }
+
+              $json_result = $json->decode($result);
+              $status      = $json_result->{volume}->{status};
+              if ($status eq 'error' || $status eq 'ERROR') {
+                   $self->opts->{exitcode} = $ERROR;
+                   return;
+              }
+
+              sleep $WAIT_SLEEP_TIME;
     }
 
     $self->debug_msg($DEBUG_LEVEL_1, q{Volume detached from server } . $self->opts->{server_id} . q{ successfully.});
@@ -1059,6 +1162,9 @@ sub detach_volume {
 sub delete_volume {
     my ($self) = @_;
     my $result;
+    my $json_result;
+
+    my $blockstorage_api_version;
 
     $self->debug_msg($DEBUG_LEVEL_1, '---------------------------------------------------------------------');
     $self->debug_msg($DEBUG_LEVEL_1, '-- Deleting a volume -------');
@@ -1066,9 +1172,18 @@ sub delete_volume {
     $self->initializePropPrefix;
     if ($self->opts->{exitcode}) { return; }
 
+    if ($self->opts->{blockstorage_api_version} eq "1") {
+         $blockstorage_api_version = q{/v1/};
+    } elsif ($self->opts->{blockstorage_api_version} eq "2") {
+         $blockstorage_api_version = q{/v2/};
+    } else {
+         $self->debug_msg($DEBUG_LEVEL_1,q{Unsupported block storage API version.Exiting...});
+         return;
+    }
+
     #openstack block storage URL
     my $blockstorage_service_url = $self->opts->{blockstorage_service_url};
-    my $url = $blockstorage_service_url . q{/} . $self->opts->{blockstorage_api_version} . q{/} . $self->opts->{tenant_id};
+    my $url = $blockstorage_service_url . $blockstorage_api_version . $self->opts->{tenant_id};
     my $tenant_url = $url;
     $url .= q{/volumes/} . $self->opts->{volume_id};
 
@@ -1084,7 +1199,28 @@ sub delete_volume {
        }
        return; 
     }
-    
+
+    $self->debug_msg($DEBUG_LEVEL_1, q{Waiting for volume to get deleted...});
+
+    my $status = 'deleting';
+
+    while ( $status eq 'deleting') {
+
+              ## Make GET request
+              $result = $self->rest_request('GET', $url, $EMPTY, $EMPTY);
+              if ($self->opts->{exitcode} ) { return; }
+
+              $json_result = $json->decode($result);
+              $status      = $json_result->{volume}->{status};
+              if ($status eq 'error_deleting' || $status eq 'ERROR_DELETING') {
+                   $self->debug_msg($DEBUG_LEVEL_1, q{Error occurred while deleting volume } . $self->opts->{volume_id});
+                   $self->opts->{exitcode} = $ERROR;
+                   return;
+              }
+
+              sleep $WAIT_SLEEP_TIME;
+    }
+
     $self->opts->{exitcode}    = $SUCCESS;
     $self->debug_msg($DEBUG_LEVEL_1, q{Volume } . $self->opts->{volume_id} . q{ deleted successfully.\n});
     
@@ -1209,7 +1345,7 @@ sub create_image_v1 {
         $response = $self->rest_request_with_header('HEAD', $url, $EMPTY, $EMPTY);
         $status = $response->header('X-Image-Meta-Status');
         if ($self->opts->{exitcode}) { return; }
-            $self->debug_msg($DEBUG_LEVEL_1, q{no exit code...});
+
         if ($status eq 'ERROR') {
             $self->opts->{exitcode} = $ERROR;
             return;
@@ -1252,10 +1388,11 @@ sub create_image_v2 {
         my $body;
         my %headers;
         my $json_result;
+        my $status = $EMPTY;
         my $file_contents;
         my $response;
         my $data;
-
+        my $image_id;
         my $image_service_url = $self->opts->{image_service_url};
         my $image_api_version = q{/v} . $self->opts->{image_api_version} . q{/};
         my $url = $image_service_url . $image_api_version . q{images};
@@ -1290,7 +1427,7 @@ sub create_image_v2 {
         if ($self->opts->{exitcode}) { return; }
 
 
-        if ($json_result->{id}) { $self->setProp(q{/Image/ID}, $json_result->{id});}
+        if ($json_result->{id}) { $self->setProp(q{/Image/ID}, $json_result->{id}); $image_id = $json_result->{id};}
         if ($json_result->{name}) { $self->setProp(q{/Image/Name}, $json_result->{name});}
         if ($json_result->{owner}) { $self->setProp(q{/Image/Owner}, $json_result->{owner});}
         if ($json_result->{container_format}) { $self->setProp(q{/Image/ContainerFormat}, $json_result->{container_format});}
@@ -1319,12 +1456,34 @@ sub create_image_v2 {
 
         if ($self->opts->{exitcode}) { return; }
 
+        $self->debug_msg($DEBUG_LEVEL_1, q{Waiting for image to get created...});
+
+
+        # Describe Image service URL.
+        $url = $image_service_url . $image_api_version . q{images/} . $image_id;
+
+        while ($status ne 'active') {
+
+              # Make GET request, poll for image status in response body.
+              $result = $self->rest_request('GET', $url, $EMPTY, $EMPTY);
+              $json_result = $json->decode($result);
+              if ($self->opts->{exitcode}) { return; }
+
+              $status = $json_result->{status};
+              if ($status eq 'ERROR') {
+                  $self->opts->{exitcode} = $ERROR;
+                  return;
+              }
+
+              sleep $WAIT_SLEEP_TIME;
+        }
+
         $self->debug_msg($DEBUG_LEVEL_1, q{Image  } . $self->opts->{name} . q{ created.});
         return;
 }
 
 ############################################################################
-# take_volume_snapshot - Creates a new snapshot of given volume
+# take_volume_snapshot - Creates a new snapshot of given volume using nova api
 #
 # Arguments:
 #   -
@@ -1347,6 +1506,7 @@ sub take_volume_snapshot {
     my $xml;
     my $body;
     my $data;
+    my $status = $EMPTY;
 
     my $compute_service_url = $self->opts->{compute_service_url};
 
@@ -1367,12 +1527,31 @@ sub take_volume_snapshot {
     my $json_result = $json->decode($result);
 
     my $snapshot_id = $json_result->{snapshot}->{id};
-    my $snapshot_name = $json_result->{snapshot}->{name};
-    my $volume_id = $json_result->{snapshot}->{volume_id};
+    my $snapshot_name = $json_result->{snapshot}->{displayName};
+    my $volume_id = $json_result->{snapshot}->{volumeId};
 
     $self->setProp("/VolumeSnapshot/ID",    "$snapshot_id");
     $self->setProp("/VolumeSnapshot/Name",  "$snapshot_name");
     $self->setProp("/VolumeSnapshot/VolumeID",  "$volume_id");
+
+    # Describe  URL.
+    $url .=  q{/} . $snapshot_id;
+
+    while ($status ne 'available') {
+
+          # Make GET request, poll for image status in response body.
+          $result = $self->rest_request('GET', $url, $EMPTY, $EMPTY);
+          $json_result = $json->decode($result);
+          if ($self->opts->{exitcode}) { return; }
+
+          $status = $json_result->{snapshot}->{status};
+          if ($status eq 'ERROR') {
+               $self->opts->{exitcode} = $ERROR;
+               return;
+          }
+
+          sleep $WAIT_SLEEP_TIME;
+    }
 
     $self->debug_msg($DEBUG_LEVEL_1, q{Snapshot  } . $self->opts->{display_name} . q{ created.});
     return;
@@ -1589,9 +1768,7 @@ sub create_stack {
     if ( $json_result->{stack}->{stack_name} ) { $self->setProp("/Stack/StackName",  $json_result->{stack}->{stack_name}); }
     if ( $json_result->{stack}->{stack_owner} ) { $self->setProp("/Stack/StackOwner",  $json_result->{stack}->{stack_owner}); }
     if ( $json_result->{stack}->{creation_time} ) { $self->setProp("/Stack/CreationTime",  $json_result->{stack}->{creation_time}); }
-    if ( $json_result->{stack}->{stack_owner} ) { $self->setProp("/Stack/StackOwner",  $json_result->{stack}->{stack_owner}); }
     if ( $json_result->{stack}->{timeout_mins} ) { $self->setProp("/Stack/TimeoutMins", $json_result->{stack}->{timeout_mins}); }
-    if ( $json_result->{stack}->{stack_owner} ) { $self->setProp("/Stack/StackOwner",  $json_result->{stack}->{stack_owner}); }
 
     $self->debug_msg($DEBUG_LEVEL_1, q{Stack } . $self->opts->{stack_name} . q{ created.});
     return;
@@ -1620,7 +1797,7 @@ sub update_stack {
     my $result = $EMPTY;
     my $body = $EMPTY;
     my $data;
-    my $json_result = $EMPTY;
+    my $json_result;
     my $status = $EMPTY;
     my $orchestration_service_url = $self->opts->{orchestration_service_url};
 
@@ -1645,6 +1822,20 @@ sub update_stack {
     ## Make POST request
     $result = $self->rest_request('PUT', $url, 'application/json', $body);
     if ($self->opts->{exitcode}) { return; }
+
+    $self->debug_msg($DEBUG_LEVEL_1, q{Waiting for stack to get updated...});
+
+    while ( $status ne 'UPDATE_COMPLETE') {
+
+          ## Make GET request
+          $result = $self->rest_request('GET', $url, $EMPTY, $EMPTY);
+          if ($self->opts->{exitcode} ) { return; }
+
+          $json_result = $json->decode($result);
+          $status      = $json_result->{stack}->{stack_status};
+
+          sleep $WAIT_SLEEP_TIME;
+    }
 
     $self->debug_msg($DEBUG_LEVEL_1, q{Stack } . $self->opts->{stack_name} . q{ updated.});
     return;
@@ -1674,7 +1865,7 @@ sub delete_stack {
     my $body = $EMPTY;
     my $data;
     my $json_result = $EMPTY;
-    my $status = $EMPTY;
+    my $status = 'DELETE_IN_PROGRESS';
     my $orchestration_service_url = $self->opts->{orchestration_service_url};
 
 
@@ -1685,6 +1876,25 @@ sub delete_stack {
     ## Make DELETE request
     $result = $self->rest_request('DELETE', $url, $EMPTY, $body);
     if ($self->opts->{exitcode}) { return; }
+
+    $self->debug_msg($DEBUG_LEVEL_1, q{Waiting for stack to get deleted...});
+
+    while ( $status eq 'DELETE_IN_PROGRESS') {
+
+          ## Make GET request
+          $result = $self->rest_request('GET', $url, $EMPTY, $EMPTY);
+          if ($self->opts->{exitcode} ) { return; }
+
+          $json_result = $json->decode($result);
+          $status      = $json_result->{stack}->{stack_status};
+
+          if ($status eq 'DELETE_FAILED') {
+               $self->opts->{exitcode} = $ERROR;
+               return;
+          }
+
+          sleep $WAIT_SLEEP_TIME;
+    }
 
     $self->debug_msg($DEBUG_LEVEL_1, q{Stack } . $self->opts->{stack_name} . q{ deleted.});
     return;
@@ -1927,6 +2137,7 @@ sub rest_request {
     ## Create authorization to server
     $req->header('X-Auth-Token' => $self->opts->{auth_token});
 
+    if ( ! defined $headers) { $headers = $EMPTY; }
     if ( $headers ne $EMPTY) {
         # If additional headers have to be added to request
         foreach my $key ( keys %{$headers}){
