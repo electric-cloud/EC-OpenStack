@@ -13,17 +13,19 @@ import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.TransformerFactory
 
+
 group = "com.electriccloud"
 description = "Plugins : EC-OpenStack"
 
 // Set the build number if it exists
 def buildNumber = System.env.BUILD_NUMBER ? System.env.BUILD_NUMBER : "0"
 
-version = "1.2.0.$buildNumber"
+version = "1.1.2.$buildNumber"
 
 project.ext {
 	pluginName = "$name-$version"
 	commanderHome = System.env.COMMANDER_HOME
+
 	commanderServer = System.env.COMMANDER_SERVER ? System.env.COMMANDER_SERVER : "localhost"
 }
 
@@ -67,6 +69,19 @@ dependencies {
 	compile "com.google.guava:guava-gwt:16.+"
 	compile "com.google.gwt.inject:gin:1.5.0"
 	compile "com.gwtplatform:gwtp-all:0.8-PATCH5"
+    testCompile 'junit:junit:[4,)'
+    testCompile 'org.pacesys:openstack4j:2.0.0'
+
+
+}
+
+test {
+
+ testLogging {
+     // Show that tests are run in the command-line output
+     events 'started', 'passed'
+     exceptionFormat = 'full'
+ }
 }
 
 processResources {
@@ -138,6 +153,7 @@ task processProjectXml(dependsOn: processResources) << {
 task assemblePluginJar(type: Jar, dependsOn: [processProjectXml, compileGwt]) {
 	doFirst {
 		println "Building plugin jar: $archiveName"
+
 	}
 	
 	manifest {
