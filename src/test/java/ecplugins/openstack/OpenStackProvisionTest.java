@@ -24,23 +24,19 @@ public class OpenStackProvisionTest {
 
     private static OSClient m_osClient;
     private String COMMANDER_SERVER = System.getProperty("COMMANDER_SERVER");
+    private static String IDENTITY_URL = System.getProperty("OPENSTACK_IDENTITY_URL");
+    private static String USER = System.getProperty("OPENSTACK_USER");
+    private static String PASSWORD = System.getProperty("OPENSTACK_PASSWORD");
+    private static String TENANTID = System.getProperty("OPENSTACK_TENANTID");
 
     @BeforeClass
     public static void setup(){
 
-        // TODO: Switch these over
-        String endpoint = "https://region-a.geo-1.identity.hpcloudsvc.com:35357/v2.0"; //System.getProperty("OPENSTACK_IDENTITY_URL");
-        String user = "";//System.getProperty("OPENSTACK_IDENTITY_URL");
-        String  password = "";//System.getProperty("OPENSTACK_IDENTITY_URL");
-        String  tenantId = "";//System.getProperty("OPENSTACK_IDENTITY_URL");
-
         m_osClient = OSFactory.builder()
-                .endpoint(endpoint)
-                .credentials(user,password)
-                .tenantId(tenantId)
+                .endpoint(IDENTITY_URL)
+                .credentials(USER,PASSWORD)
+                .tenantId(TENANTID)
                 .authenticate();
-
-
     }
 
     @Test public void testkeyPairCreation() {
