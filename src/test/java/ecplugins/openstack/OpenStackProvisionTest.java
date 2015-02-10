@@ -1,6 +1,5 @@
 package ecplugins.openstack;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -24,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 public class OpenStackProvisionTest {
 
     private static OSClient m_osClient;
+    private String COMMANDER_SERVER = System.getProperty("COMMANDER_SERVER");
 
     @BeforeClass
     public static void setup(){
@@ -102,7 +102,7 @@ public class OpenStackProvisionTest {
         HttpClient httpClient = new DefaultHttpClient();
 
         try {
-            HttpPost httpPostRequest = new HttpPost("http://admin:changeme@192.168.158.20:8000/rest/v1.0/jobs?request=runProcedure");
+            HttpPost httpPostRequest = new HttpPost("http://admin:changeme@"+ COMMANDER_SERVER + ":8000/rest/v1.0/jobs?request=runProcedure");
             StringEntity input = new StringEntity(jo.toString());
 
             input.setContentType("application/json");
