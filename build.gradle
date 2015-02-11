@@ -80,6 +80,8 @@ test {
     props.load(new FileInputStream("openstack-test.properties"))
 
     systemProperties['COMMANDER_SERVER'] = "$commanderServer"
+    systemProperties['COMMANDER_USER'] = props.getProperty("COMMANDER_USER")
+    systemProperties['COMMANDER_PASSWORD'] = props.getProperty("COMMANDER_PASSWORD")
     systemProperties['OPENSTACK_USER'] = props.getProperty("OPENSTACK_USER")
     systemProperties['OPENSTACK_PASSWORD'] = props.getProperty("OPENSTACK_PASSWORD")
     systemProperties['OPENSTACK_TENANTID'] = props.getProperty("OPENSTACK_TENANTID")
