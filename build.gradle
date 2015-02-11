@@ -86,6 +86,7 @@ test {
     systemProperties['OPENSTACK_PASSWORD'] = props.getProperty("OPENSTACK_PASSWORD")
     systemProperties['OPENSTACK_TENANTID'] = props.getProperty("OPENSTACK_TENANTID")
     systemProperties['OPENSTACK_IDENTITY_URL'] = props.getProperty("OPENSTACK_IDENTITY_URL")
+    systemProperties['PLUGIN_VERSION'] = version
 
 
  testLogging {
