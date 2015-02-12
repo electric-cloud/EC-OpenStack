@@ -18,6 +18,7 @@ import org.openstack4j.model.compute.Keypair;
 
 import org.openstack4j.openstack.OSFactory;
 
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -49,7 +50,7 @@ public class OpenStackProvisionTest {
     @Test
     public void testkeyPairCreation() {
 
-        String keyNameToCreate = "automatedTest-commandLine3";
+        String keyNameToCreate = "automatedTest-testkeyPairCreation";
 
         // Clean the environment / clean result from previous runs
         m_osClient.compute().keypairs().delete(keyNameToCreate);
@@ -203,7 +204,7 @@ public class OpenStackProvisionTest {
     /**
      * Delete the openstack configuration used for this test suite (clear previous runs)
      */
-    private static void deleteConfiguration(){
+    private static void deleteConfiguration() {
         JSONObject param1 = new JSONObject();
         JSONObject jo = new JSONObject();
 
@@ -223,19 +224,21 @@ public class OpenStackProvisionTest {
             e.printStackTrace();
         }
 
+
         String jobId = callRunProcedure(jo);
 
-        String response = waitForJob(jobId);
+        // Block on job completion
+        waitForJob(jobId);
 
-        // Check job status
-        assertEquals("Job completed without errors", "success", response);
+        // Do not check job status. Delete will error if it does not exist
+        // which is OK since that is the expected state.
 
     }
 
     /**
      * Create the openstack configuration used for this test suite
      */
-    private static void createConfiguration(){
+    private static void createConfiguration() {
         JSONObject param1 = new JSONObject();
         JSONObject param2 = new JSONObject();
         JSONObject param3 = new JSONObject();
@@ -245,7 +248,6 @@ public class OpenStackProvisionTest {
         JSONObject param7 = new JSONObject();
         JSONObject param8 = new JSONObject();
         JSONObject param9 = new JSONObject();
-
 
 
         JSONObject jo = new JSONObject();
@@ -298,13 +300,13 @@ public class OpenStackProvisionTest {
             JSONArray credentialArray = new JSONArray();
 
             JSONObject credentialName = new JSONObject();
-            credentialName.put("credentialName","hp");
+            credentialName.put("credentialName", "hp");
 
 
-            credentialName.put("userName",USER);
+            credentialName.put("userName", USER);
 
 
-            credentialName.put("password",PASSWORD);
+            credentialName.put("password", PASSWORD);
 
             credentialArray.put(credentialName);
 

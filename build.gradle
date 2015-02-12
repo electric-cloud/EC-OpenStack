@@ -77,7 +77,14 @@ dependencies {
 
 test {
     Properties props = new Properties()
-    props.load(new FileInputStream("openstack-test.properties"))
+
+    def propFileName = "openstack-test.properties"
+
+    def propertyFile = new File( propFileName )
+
+    if( propertyFile.exists() ) {
+        props.load(new FileInputStream(propFileName))
+    }
 
     systemProperties['COMMANDER_SERVER'] = "$commanderServer"
     systemProperties['COMMANDER_USER'] = props.getProperty("COMMANDER_USER")

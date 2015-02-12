@@ -12,7 +12,7 @@ Run gradlew to compile the plugin
 ## Tests ##
 
 #### Creating openstack-test.properties ####
-Create an openstack-test.properties with the following content
+Create an openstack-test.properties at the root of this repository with the following content
 
     COMMANDER_USER=<COMMANDER_USER>
     COMMANDER_PASSWORD=<COMMANDER_PASSWORD>
