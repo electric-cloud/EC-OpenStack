@@ -53,8 +53,6 @@ repositories {
        dirs 'libs'
     }
 	
-	/* EC internal artifactory repository */
-	maven { url "http://artifactory/artifactory/repo" }
 }
 
 dependencies {
