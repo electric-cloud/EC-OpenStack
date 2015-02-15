@@ -76,7 +76,7 @@ dependencies {
 test {
     Properties props = new Properties()
 
-    def propFileName = "openstack-test.properties"
+    def propFileName = "ecplugin.properties"
 
     def propertyFile = new File( propFileName )
 
