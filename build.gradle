@@ -41,7 +41,7 @@ defaultTasks 'assemblePluginJar'
 buildscript {
 	repositories {
         maven { url "https://github.com/steffenschaefer/gwt-gradle-plugin/raw/maven-repo/" }
-		mavenCentral()
+        mavenCentral()
 	}
 
 	dependencies { classpath "de.richsource.gradle.plugins:gwt-gradle-plugin:0.4" }
@@ -51,6 +51,10 @@ repositories {
 	mavenCentral()
 	flatDir {
        dirs 'libs'
+    }
+
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
     }
 	
 }
@@ -68,7 +72,7 @@ dependencies {
 	compile "com.google.gwt.inject:gin:1.5.0"
 	compile "com.gwtplatform:gwtp-all:0.8-PATCH5"
     testCompile 'junit:junit:[4,)'
-    testCompile 'org.pacesys:openstack4j:2.0.0'
+    testCompile 'org.pacesys:openstack4j:2.0.2-SNAPSHOT'
 
 
 }
