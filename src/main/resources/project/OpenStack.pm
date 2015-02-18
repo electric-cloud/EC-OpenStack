@@ -1200,26 +1200,8 @@ sub delete_volume {
        return; 
     }
 
-    $self->debug_msg($DEBUG_LEVEL_1, q{Waiting for volume to get deleted...});
-
-    my $status = 'deleting';
-
-    while ( $status eq 'deleting') {
-
-              ## Make GET request
-              $result = $self->rest_request('GET', $url, $EMPTY, $EMPTY);
-              if ($self->opts->{exitcode} ) { return; }
-
-              $json_result = $json->decode($result);
-              $status      = $json_result->{volume}->{status};
-              if ($status eq 'error_deleting' || $status eq 'ERROR_DELETING') {
-                   $self->debug_msg($DEBUG_LEVEL_1, q{Error occurred while deleting volume } . $self->opts->{volume_id});
-                   $self->opts->{exitcode} = $ERROR;
-                   return;
-              }
-
-              sleep $WAIT_SLEEP_TIME;
-    }
+    // No need to poll for status on volume being deleted.
+    // At one point, when volume no longer exists, polling for status on it will give error.
 
     $self->opts->{exitcode}    = $SUCCESS;
     $self->debug_msg($DEBUG_LEVEL_1, q{Volume } . $self->opts->{volume_id} . q{ deleted successfully.\n});
@@ -1487,7 +1469,7 @@ sub create_image_v2 {
               sleep $WAIT_SLEEP_TIME;
         }
 
-        $self->debug_msg($DEBUG_LEVEL_1, q{Image  } . $self->opts->{name} . q{ created.});
+        $self->debug_msg($DEBUG_Lhttp://www.perlmonks.org/?node_id=1000500EVEL_1, q{Image  } . $self->opts->{name} . q{ created.});
         return;
 }
 
