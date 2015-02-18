@@ -16,11 +16,13 @@ import org.junit.Test;
 import org.openstack4j.api.OSClient;
 import org.openstack4j.model.compute.Keypair;
 
+import org.openstack4j.model.heat.Stack;
 import org.openstack4j.openstack.OSFactory;
 
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class OpenStackProvisionTest {
 
@@ -33,6 +35,7 @@ public class OpenStackProvisionTest {
     private final static String PASSWORD = System.getProperty("OPENSTACK_PASSWORD");
     private final static String TENANTID = System.getProperty("OPENSTACK_TENANTID");
     private final static String PLUGIN_VERSION = System.getProperty("PLUGIN_VERSION");
+    private final static long WAIT_TIME = 100;
 
     @BeforeClass
     public static void setup() {
@@ -105,6 +108,261 @@ public class OpenStackProvisionTest {
 
         // Grab the keypair name and check its name
         assertEquals("Keypair name is set correctly", keyNameToCreate, keypair.getName());
+
+    }
+
+    @Test
+    public void testOrchestrationServices() {
+
+        String stackNameToCreate = "automatedTest-testStackCreation";
+        Stack stackFromOpenstack = null;
+        String stackId = "";
+
+        // Clean the environment / clean result from previous runs
+        System.out.println("Cleaning up the environment.");
+        for (Stack stack : m_osClient.heat().stacks().list()) {
+            if (stack.getName().equalsIgnoreCase(stackNameToCreate)) {
+                System.out.println("Found the stack with name [" + stackNameToCreate + "] already exists.Deleting it.");
+                m_osClient.heat().stacks().delete(stackNameToCreate, stack.getId());
+
+                // wait for stack to get completely deleted.
+                System.out.println("Waiting for stack to get completely deleted.");
+                Stack details = m_osClient.heat().stacks().getDetails(stackNameToCreate, stack.getId());
+                try {
+                    while(!details.getStatus().toString().equalsIgnoreCase("DELETE_COMPLETE")) {
+
+                        Thread.sleep(WAIT_TIME);
+                        details = m_osClient.heat().stacks().getDetails(stackNameToCreate, stack.getId());
+
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("Stack [" + stackNameToCreate + "] deleted successfully.");
+            }
+        }
+        System.out.println("Cleaned up the environment.");
+
+        {
+            // limit the variable scope so that same variable names like param1, param2 ...
+            // can be used in the same Junit test.
+            // Scope : Create Stack
+
+            // Make image_id and key name configurable.
+            String template = "{\"heat_template_version\": \"2013-05-23\",\"description\": \"Simple template to test heat commands\", \"parameters\": { \"flavor\": { \"default\": \"m1.tiny\",\"type\": \"string\"}},\"resources\": {\"StackInstance\": {\"type\":\"OS::Nova::Server\",\"properties\": { \"key_name\": \"secondKey\",\"flavor\": {\"get_param\": \"flavor\"},\"image\": \"f6289218-995b-4471-a6e0-8f437f506ecc\",\"user_data\": \"#!/bin/bash -xv\\necho \\\"hello world\\\" &gt; /root/hello-world.txt\\n\"}}}}";
+
+
+            JSONObject param1 = new JSONObject();
+            JSONObject param2 = new JSONObject();
+            JSONObject param3 = new JSONObject();
+            JSONObject param4 = new JSONObject();
+            JSONObject param5 = new JSONObject();
+            JSONObject param6 = new JSONObject();
+
+            JSONObject jo = new JSONObject();
+
+            try {
+                jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
+                jo.put("procedureName", "CreateStack");
+
+                param1.put("value", "hp");
+                param1.put("actualParameterName", "connection_config");
+
+                param2.put("actualParameterName", "tenant_id");
+                param2.put("value", TENANTID);
+
+                param3.put("actualParameterName", "stack_name");
+                param3.put("value", stackNameToCreate);
+
+                param4.put("actualParameterName", "template");
+                param4.put("value", template);
+
+                param5.put("actualParameterName", "template_url");
+                param5.put("value", "");
+
+                param6.put("actualParameterName", "tag");
+                param6.put("value", "1");
+
+                JSONArray actualParameterArray = new JSONArray();
+                actualParameterArray.put(param1);
+                actualParameterArray.put(param2);
+                actualParameterArray.put(param3);
+                actualParameterArray.put(param4);
+                actualParameterArray.put(param5);
+                actualParameterArray.put(param6);
+
+                jo.put("actualParameter", actualParameterArray);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            System.out.println("Creating stack [" + stackNameToCreate + "] with template : ." + template);
+            String jobId = callRunProcedure(jo);
+
+            String response = waitForJob(jobId);
+
+            // Check job status
+            assertEquals("Job completed without errors", "success", response);
+
+
+            // Get the stack from OpenStack
+            for (Stack stack : m_osClient.heat().stacks().list()) {
+
+                if (stack.getName().equalsIgnoreCase(stackNameToCreate)) {
+
+                    stackFromOpenstack = stack;
+                    stackId = stackFromOpenstack.getId();
+                }
+            }
+
+
+            // Assert stack is not null
+            assertNotNull(stackFromOpenstack);
+
+            // Grab the stack details and verify it.
+            assertEquals("Stack name is set correctly", stackNameToCreate, stackFromOpenstack.getName());
+            assertEquals("Stack status is correct", "CREATE_COMPLETE", stackFromOpenstack.getStatus().toString());
+
+        } // end Scope : Create Stack
+
+
+        {
+            // Scope : Update Stack
+
+            // Make image_id and key name configurable.
+            String template = "{\"heat_template_version\": \"2013-05-23\",\"description\": \"Simple template to test heat commands\", \"parameters\": { \"flavor\": { \"default\": \"m1.tiny\",\"type\": \"string\"}},\"resources\": {\"StackInstance\": {\"type\":\"OS::Nova::Server\",\"properties\": { \"key_name\": \"secondKey\",\"flavor\": {\"get_param\": \"flavor\"},\"image\": \"f6289218-995b-4471-a6e0-8f437f506ecc\",\"user_data\": \"#!/bin/bash -xv\\necho \\\"hello world\\\" &gt; /root/hello-world.txt\\n\"}}}}";
+            System.out.println("Updating stack to template : " + template);
+
+            // Assert that before update of stack, updated time is null
+            assertNull(m_osClient.heat().stacks().getDetails(stackNameToCreate,stackId).getUpdatedTime());
+
+            JSONObject param1 = new JSONObject();
+            JSONObject param2 = new JSONObject();
+            JSONObject param3 = new JSONObject();
+            JSONObject param4 = new JSONObject();
+            JSONObject param5 = new JSONObject();
+            JSONObject param6 = new JSONObject();
+            JSONObject param7 = new JSONObject();
+
+            JSONObject jo = new JSONObject();
+
+            try {
+                jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
+                jo.put("procedureName", "UpdateStack");
+
+                param1.put("value", "hp");
+                param1.put("actualParameterName", "connection_config");
+
+                param2.put("actualParameterName", "tenant_id");
+                param2.put("value", TENANTID);
+
+                param3.put("actualParameterName", "stack_name");
+                param3.put("value", stackNameToCreate);
+
+                param4.put("actualParameterName", "stack_id");
+                param4.put("value", stackId);
+
+                param5.put("actualParameterName", "template");
+                param5.put("value", template);
+
+                param6.put("actualParameterName", "template_url");
+                param6.put("value", "");
+
+                param7.put("actualParameterName", "tag");
+                param7.put("value", "1");
+
+                JSONArray actualParameterArray = new JSONArray();
+                actualParameterArray.put(param1);
+                actualParameterArray.put(param2);
+                actualParameterArray.put(param3);
+                actualParameterArray.put(param4);
+                actualParameterArray.put(param5);
+                actualParameterArray.put(param6);
+                actualParameterArray.put(param7);
+
+                jo.put("actualParameter", actualParameterArray);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            System.out.println("Updating stack [" + stackNameToCreate + "] to template : " + template);
+            String jobId = callRunProcedure(jo);
+
+            String response = waitForJob(jobId);
+
+            // Check job status
+            assertEquals("Job completed without errors", "success", response);
+
+            // Assert that after updation of stack , updated time is not null
+            assertNotNull(m_osClient.heat().stacks().getDetails(stackNameToCreate, stackId).getUpdatedTime());
+            assertEquals("UPDATE_COMPLETE",m_osClient.heat().stacks().getDetails(stackNameToCreate, stackId).getStatus().toString());
+
+        } // end Scope : Update Stack
+
+        {
+            // Scope : Delete Stack
+
+            JSONObject param1 = new JSONObject();
+            JSONObject param2 = new JSONObject();
+            JSONObject param3 = new JSONObject();
+            JSONObject param4 = new JSONObject();
+            JSONObject param5 = new JSONObject();
+
+            JSONObject jo = new JSONObject();
+
+            try {
+                jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
+                jo.put("procedureName", "DeleteStack");
+
+                param1.put("value", "hp");
+                param1.put("actualParameterName", "connection_config");
+
+                param2.put("actualParameterName", "tenant_id");
+                param2.put("value", TENANTID);
+
+                param3.put("actualParameterName", "stack_name");
+                param3.put("value", stackNameToCreate);
+
+                param4.put("actualParameterName", "stack_id");
+                param4.put("value", stackId);
+
+                param5.put("actualParameterName", "tag");
+                param5.put("value", "1");
+
+                JSONArray actualParameterArray = new JSONArray();
+                actualParameterArray.put(param1);
+                actualParameterArray.put(param2);
+                actualParameterArray.put(param3);
+                actualParameterArray.put(param4);
+                actualParameterArray.put(param5);
+
+                jo.put("actualParameter", actualParameterArray);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            System.out.println("Deleting stack [" + stackNameToCreate + "].");
+            String jobId = callRunProcedure(jo);
+
+            String response = waitForJob(jobId);
+
+            // Check job status
+            assertEquals("Job completed without errors", "success", response);
+
+            // Assert that the stack with name "automatedTest-testStackCreation" no longer exists.
+            stackFromOpenstack = null;
+            for (Stack stack : m_osClient.heat().stacks().list()) {
+                if (stack.getName().equalsIgnoreCase(stackNameToCreate)) {
+                    stackFromOpenstack = stack;
+                }
+            }
+
+            assertNull(stackFromOpenstack);
+
+        } // end Scope : Delete Stack
 
     }
 
