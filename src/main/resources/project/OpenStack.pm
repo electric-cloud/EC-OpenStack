@@ -1469,7 +1469,7 @@ sub create_image_v2 {
               sleep $WAIT_SLEEP_TIME;
         }
 
-        $self->debug_msg($DEBUG_Lhttp://www.perlmonks.org/?node_id=1000500EVEL_1, q{Image  } . $self->opts->{name} . q{ created.});
+        $self->debug_msg($DEBUG_LEVEL_1, q{Image  } . $self->opts->{name} . q{ created.});
         return;
 }
 
