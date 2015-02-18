@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.openstack4j.api.OSClient;
 import org.openstack4j.model.compute.Keypair;
 
+import org.openstack4j.model.image.Image;
 import org.openstack4j.openstack.OSFactory;
 
 
@@ -105,6 +106,131 @@ public class OpenStackProvisionTest {
 
         // Grab the keypair name and check its name
         assertEquals("Keypair name is set correctly", keyNameToCreate, keypair.getName());
+
+    }
+
+    @Test
+    public void testImageServices(){
+
+        String imageNameToCreate = "automatedTest-testImageCreation";
+
+        // Clean the environment / clean result from previous runs
+        for (Image image : m_osClient.images().list()) {
+            if (image.getName().equalsIgnoreCase(imageNameToCreate)) {
+                m_osClient.images().delete(image.getId());
+            }
+        }
+
+        JSONObject param1 = new JSONObject();
+        JSONObject param2 = new JSONObject();
+        JSONObject param3 = new JSONObject();
+        JSONObject param4 = new JSONObject();
+        JSONObject param5 = new JSONObject();
+        JSONObject param6 = new JSONObject();
+        JSONObject param7 = new JSONObject();
+        JSONObject param8 = new JSONObject();
+        JSONObject param9 = new JSONObject();
+        JSONObject param10 = new JSONObject();
+        JSONObject param11 = new JSONObject();
+        JSONObject param12 = new JSONObject();
+        JSONObject param13 = new JSONObject();
+
+        JSONObject jo = new JSONObject();
+
+        try {
+            jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
+            jo.put("procedureName", "CreateImage");
+
+            param1.put("value", "hp");
+            param1.put("actualParameterName", "connection_config");
+
+            param2.put("actualParameterName", "tenant_id");
+            param2.put("value", TENANTID);
+
+            param3.put("actualParameterName", "name");
+            param3.put("value", imageNameToCreate);
+
+            // temporarily hardcoded.
+            param4.put("actualParameterName", "disk_format");
+            param4.put("value", "qcow2");
+
+            param5.put("actualParameterName", "container_format");
+            param5.put("value", "bare");
+
+            param6.put("actualParameterName", "is_local");
+            param6.put("value", "1");
+
+            // temporarily hard coding following values.
+            param7.put("actualParameterName", "image_path");
+            param7.put("value", "/home/vinayak/electricCloud/Openstack/cirros-0.3.3-x86_64-disk.img");
+
+            param8.put("actualParameterName", "size");
+            param8.put("value", "");
+
+            param9.put("actualParameterName", "checksum");
+            param9.put("value", "");
+
+            param10.put("actualParameterName", "min_ram");
+            param10.put("value", "1");
+
+            param11.put("actualParameterName", "min_disk");
+            param11.put("value", "1");
+
+            param12.put("actualParameterName", "owner_name");
+            param12.put("value", TENANTID);
+
+            param13.put("actualParameterName", "tag");
+            param13.put("value", "1");
+
+            JSONArray actualParameterArray = new JSONArray();
+            actualParameterArray.put(param1);
+            actualParameterArray.put(param2);
+            actualParameterArray.put(param3);
+            actualParameterArray.put(param4);
+            actualParameterArray.put(param5);
+            actualParameterArray.put(param6);
+            actualParameterArray.put(param7);
+            actualParameterArray.put(param8);
+            actualParameterArray.put(param9);
+            actualParameterArray.put(param10);
+            actualParameterArray.put(param11);
+            actualParameterArray.put(param12);
+            actualParameterArray.put(param13);
+
+
+            jo.put("actualParameter", actualParameterArray);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Creating image [" + imageNameToCreate + "].");
+        String jobId = callRunProcedure(jo);
+
+        String response = waitForJob(jobId);
+
+        // Check job status
+        assertEquals("Job completed without errors", "warning", response);
+
+        // Get the keypair from OpenStack
+        Image imageFromOpenstack = null;
+
+        for (Image image : m_osClient.images().list()) {
+            if (image.getName().equalsIgnoreCase(imageNameToCreate)) {
+                imageFromOpenstack = image;
+            }
+        }
+
+        // Assert Image with name "automatedTest-testImageCreation" is created
+        assertNotNull(imageFromOpenstack);
+
+        // Grab the image attributes and verify it.
+        assertEquals("Image name is set correctly", imageNameToCreate, imageFromOpenstack.getName());
+        assertEquals("Disk format is set correctly", "qcow2", imageFromOpenstack.getDiskFormat().value().toString());
+        assertEquals("Container format is set correctly", "bare", imageFromOpenstack.getContainerFormat().value().toString());
+        assertEquals("Min-disk is set correctly", "1", Long.toString(imageFromOpenstack.getMinDisk()));
+        assertEquals("Min-ram is set correctly", "1", Long.toString(imageFromOpenstack.getMinRam()));
+        assertEquals("Owner is set correctly", TENANTID, imageFromOpenstack.getOwner().toString());
 
     }
 
