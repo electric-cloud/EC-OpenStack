@@ -1043,7 +1043,7 @@ sub attach_volume {
         $self->debug_msg($DEBUG_LEVEL_1,q{Unsupported block storage API version.Exiting...});
         return;
     }
-
+to_json
     $url = $blockstorage_service_url . $blockstorage_api_version . $self->opts->{tenant_id} . q{/volumes/} . $self->opts->{volume_id};
 
     while ( $status ne 'in-use') {
@@ -1443,9 +1443,18 @@ sub create_image_v2 {
 
         }else {
 
-             ## URL is specified as image location remaining.
-             # $headers{'x-image-meta-location'} = $self->opts->{image_path};
-             # $file_contents = $EMPTY;
+             my $ua = LWP::UserAgent->new;
+
+             my $response = $ua->get($self->opts->{image_path});
+
+             if ($response->is_success) {
+                
+                 $file_contents = $response->decoded_content;
+             }
+             else {
+                 die $response->status_line;
+             }
+
 
         }
 
