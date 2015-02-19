@@ -935,7 +935,7 @@ sub create_volume {
     $result = $self->rest_request('POST', $url, 'application/json', $body);
     if ($self->opts->{exitcode}) { return; }
 
-    my $json_result = $json->decode($result);
+    $json_result = $json->decode($result);
 
     my $volume_id = $json_result->{volume}->{id};
     my $volume_name = $json_result->{volume}->{name};
