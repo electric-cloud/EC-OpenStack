@@ -1200,8 +1200,8 @@ sub delete_volume {
        return; 
     }
 
-    // No need to poll for status on volume being deleted.
-    // At one point, when volume no longer exists, polling for status on it will give error.
+    ## No need to poll for status on volume being deleted.
+    ## At one point, when volume no longer exists, polling for status on it will give error.
 
     $self->opts->{exitcode}    = $SUCCESS;
     $self->debug_msg($DEBUG_LEVEL_1, q{Volume } . $self->opts->{volume_id} . q{ deleted successfully.\n});
