@@ -143,6 +143,43 @@ public class OpenStackProvisionTest {
     }
 
     /**
+     * getProperty
+     *
+     * @path a property path
+     * @return the value of the property
+     */
+    public static String getProperty(String path) {
+
+        HttpClient httpClient = new DefaultHttpClient();
+        JSONObject result = null;
+        try {
+            HttpGet httpPostRequest = new HttpGet("http://" + COMMANDER_USER
+                    + ":" + COMMANDER_PASSWORD + "@" + COMMANDER_SERVER
+                    + ":8000/rest/v1.0/properties/" + path);
+
+
+            HttpResponse httpResponse = httpClient.execute(httpPostRequest);
+
+            result = new JSONObject(EntityUtils.toString(httpResponse.getEntity()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+
+        if (result != null) {
+            try {
+                return result.getJSONObject("property").getString("value");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return "";
+
+    }
+
+    /**
      * waitForJob: Waits for job to be completed and reports outcome
      *
      * @param jobId
