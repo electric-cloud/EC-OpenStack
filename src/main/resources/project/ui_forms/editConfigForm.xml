@@ -75,7 +75,7 @@
         <property>orchestration_service_url</property>
         <value></value>
         <documentation>Provide the host name or IP address of the Orchestration Service for OpenStack</documentation>
-        <required>1</required>
+        <required>0</required>
     </formElement>
     <formElement>
         <type>credential</type>

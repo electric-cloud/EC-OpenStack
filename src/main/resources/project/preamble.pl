@@ -92,14 +92,6 @@ if ( defined( $opts->{connection_config} ) && $opts->{connection_config} ne "" )
 "Configuration [$cfgName] does not contain a OpenStack image service url\n";
          exit ERROR;
     }
-
-    if ( !defined $opts->{orchestration_service_url}
-         || $opts->{orchestration_service_url} eq "" )
-    {
-         print
-"Configuration [$cfgName] does not contain a OpenStack orchestration(HEAT) service url\n";
-         exit ERROR;
-    }
 }
 
 $opts->{JobStepId} =  "$[/myJobStep/jobStepId]";
