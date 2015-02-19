@@ -1296,7 +1296,7 @@ sub create_image_v1 {
     if($self->opts->{is_local}){
 
          ## Add code to read from file and attach as a data.
-         open FILE, "<", $self->opts->{image_path};
+         open FILE, "<", $self->opts->{image_path} or die "Error : Could not open file " . $self->opts->{image_path} . ", $!";
          binmode FILE;
 
          $file_contents = do { local $/; <FILE> };
@@ -1418,7 +1418,7 @@ sub create_image_v2 {
         if($self->opts->{is_local}){
 
           #Read binary image data from file.
-          open FILE, "<", $self->opts->{image_path};
+          open FILE, "<", $self->opts->{image_path} or die "Error : Could not open file " . $self->opts->{image_path} . ", $!";
           binmode FILE;
 
           $file_contents = do { local $/; <FILE> };
