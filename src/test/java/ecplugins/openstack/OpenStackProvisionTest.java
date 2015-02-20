@@ -20,6 +20,11 @@ import org.openstack4j.model.heat.Stack;
 import org.openstack4j.openstack.OSFactory;
 
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -27,6 +32,7 @@ import static org.junit.Assert.assertNull;
 public class OpenStackProvisionTest {
 
     private static OSClient m_osClient;
+    private static Properties prop;
     private final static String COMMANDER_SERVER = System.getProperty("COMMANDER_SERVER");
     private final static String COMMANDER_USER = System.getProperty("COMMANDER_USER");
     private final static String COMMANDER_PASSWORD = System.getProperty("COMMANDER_PASSWORD");
@@ -35,6 +41,16 @@ public class OpenStackProvisionTest {
     private final static String PASSWORD = System.getProperty("OPENSTACK_PASSWORD");
     private final static String TENANTID = System.getProperty("OPENSTACK_TENANTID");
     private final static String PLUGIN_VERSION = System.getProperty("PLUGIN_VERSION");
+    private final static String FLAVOR_ID = "flavor_id";
+    private final static String IMAGE_ID = "image_id";
+    private final static String KEY_NAME = "key_name";
+    private final static String IDENTITY_SERVICE_URL = "identity_service_url";
+    private final static String COMPUTE_SERVICE_URL = "compute_service_url";
+    private final static String BLOCKSTORAGE_SERVICE_URL = "blockstorage_service_url";
+    private final static String IMAGE_SERVICE_URL = "image_service_url";
+    private final static String ORCHESTRATION_SERVICE_URL = "orchestration_service_url";
+    private final static String COMPUTE_SERVICE_VERSION = "compute_api_version";
+    private final static String KEYSTONE_API_VERSION = "keystone_api_version";
     private final static long WAIT_TIME = 100;
 
     @BeforeClass
@@ -46,6 +62,7 @@ public class OpenStackProvisionTest {
                 .tenantId(TENANTID)
                 .authenticate();
 
+        prop = loadProperties();
         deleteConfiguration();
         createConfiguration();
     }
@@ -149,47 +166,38 @@ public class OpenStackProvisionTest {
             // Scope : Create Stack
 
             // Make image_id and key name configurable.
-            String template = "{\"heat_template_version\": \"2013-05-23\",\"description\": \"Simple template to test heat commands\", \"parameters\": { \"flavor\": { \"default\": \"m1.tiny\",\"type\": \"string\"}},\"resources\": {\"StackInstance\": {\"type\":\"OS::Nova::Server\",\"properties\": { \"key_name\": \"secondKey\",\"flavor\": {\"get_param\": \"flavor\"},\"image\": \"f6289218-995b-4471-a6e0-8f437f506ecc\",\"user_data\": \"#!/bin/bash -xv\\necho \\\"hello world\\\" &gt; /root/hello-world.txt\\n\"}}}}";
-
-
-            JSONObject param1 = new JSONObject();
-            JSONObject param2 = new JSONObject();
-            JSONObject param3 = new JSONObject();
-            JSONObject param4 = new JSONObject();
-            JSONObject param5 = new JSONObject();
-            JSONObject param6 = new JSONObject();
+            String template = "{\"heat_template_version\": \"2013-05-23\",\"description\": \"Simple template to test heat commands\", \"parameters\": { \"flavor\": { \"default\": \"" + prop.get(FLAVOR_ID) + "\",\"type\": \"string\"}},\"resources\": {\"StackInstance\": {\"type\":\"OS::Nova::Server\",\"properties\": { \"key_name\": \"" + prop.get(KEY_NAME) + "\",\"flavor\": {\"get_param\": \"flavor\"},\"image\": \"" + prop.get(IMAGE_ID) + "\",\"user_data\": \"#!/bin/bash -xv\\necho \\\"hello world\\\" &gt; /root/hello-world.txt\\n\"}}}}";
 
             JSONObject jo = new JSONObject();
+            JSONArray actualParameterArray = new JSONArray();
 
             try {
                 jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
                 jo.put("procedureName", "CreateStack");
 
-                param1.put("value", "hp");
-                param1.put("actualParameterName", "connection_config");
+                actualParameterArray.put(new JSONObject()
+                        .put("value", "hp")
+                        .put("actualParameterName", "connection_config"));
 
-                param2.put("actualParameterName", "tenant_id");
-                param2.put("value", TENANTID);
+                actualParameterArray.put(new JSONObject()
+                        .put("actualParameterName", "stack_name")
+                        .put("value", stackNameToCreate));
 
-                param3.put("actualParameterName", "stack_name");
-                param3.put("value", stackNameToCreate);
+                actualParameterArray.put(new JSONObject()
+                        .put("actualParameterName", "tenant_id")
+                        .put("value", TENANTID));
 
-                param4.put("actualParameterName", "template");
-                param4.put("value", template);
+                actualParameterArray.put(new JSONObject()
+                        .put("actualParameterName", "template")
+                        .put("value", template));
 
-                param5.put("actualParameterName", "template_url");
-                param5.put("value", "");
+                actualParameterArray.put(new JSONObject()
+                        .put("actualParameterName", "template_url")
+                        .put("value", ""));
 
-                param6.put("actualParameterName", "tag");
-                param6.put("value", "1");
-
-                JSONArray actualParameterArray = new JSONArray();
-                actualParameterArray.put(param1);
-                actualParameterArray.put(param2);
-                actualParameterArray.put(param3);
-                actualParameterArray.put(param4);
-                actualParameterArray.put(param5);
-                actualParameterArray.put(param6);
+                actualParameterArray.put(new JSONObject()
+                        .put("actualParameterName", "tag")
+                        .put("value", "1"));
 
                 jo.put("actualParameter", actualParameterArray);
 
@@ -231,55 +239,45 @@ public class OpenStackProvisionTest {
             // Scope : Update Stack
 
             // Make image_id and key name configurable.
-            String template = "{\"heat_template_version\": \"2013-05-23\",\"description\": \"Simple template to test heat commands\", \"parameters\": { \"flavor\": { \"default\": \"m1.tiny\",\"type\": \"string\"}},\"resources\": {\"StackInstance\": {\"type\":\"OS::Nova::Server\",\"properties\": { \"key_name\": \"secondKey\",\"flavor\": {\"get_param\": \"flavor\"},\"image\": \"f6289218-995b-4471-a6e0-8f437f506ecc\",\"user_data\": \"#!/bin/bash -xv\\necho \\\"hello world\\\" &gt; /root/hello-world.txt\\n\"}}}}";
-            System.out.println("Updating stack to template : " + template);
+            String updatedTemplate = "{\"heat_template_version\": \"2013-05-23\",\"description\": \"Simple template to test heat commands\", \"parameters\": { \"flavor\": { \"default\": \"" + prop.get(FLAVOR_ID) + "\",\"type\": \"string\"}},\"resources\": {\"hello_world6\": {\"type\":\"OS::Nova::Server\",\"properties\": { \"key_name\": \"" + prop.get(KEY_NAME)+ "\",\"flavor\": {\"get_param\": \"flavor\"},\"image\": \"" + prop.get(IMAGE_ID) + "\",\"user_data\": \"#!/bin/bash -xv\\necho \\\"hello world\\\" &gt; /root/hello-world.txt\\n\"}},\"hello_world7\": {\"type\":\"OS::Nova::Server\",\"properties\": { \"key_name\": \"" + prop.get(KEY_NAME) + "\",\"flavor\": {\"get_param\": \"flavor\"},\"image\": \"" + prop.get(IMAGE_ID) + "\",\"user_data\": \"#!/bin/bash -xv\\necho \\\"hello world\\\" &gt; /root/hello-world.txt\\n\"}}}}";
 
             // Assert that before update of stack, updated time is null
             assertNull(m_osClient.heat().stacks().getDetails(stackNameToCreate,stackId).getUpdatedTime());
 
-            JSONObject param1 = new JSONObject();
-            JSONObject param2 = new JSONObject();
-            JSONObject param3 = new JSONObject();
-            JSONObject param4 = new JSONObject();
-            JSONObject param5 = new JSONObject();
-            JSONObject param6 = new JSONObject();
-            JSONObject param7 = new JSONObject();
-
             JSONObject jo = new JSONObject();
+            JSONArray actualParameterArray = new JSONArray();
 
             try {
                 jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
                 jo.put("procedureName", "UpdateStack");
 
-                param1.put("value", "hp");
-                param1.put("actualParameterName", "connection_config");
+                actualParameterArray.put(new JSONObject()
+                        .put("value", "hp")
+                        .put("actualParameterName", "connection_config"));
 
-                param2.put("actualParameterName", "tenant_id");
-                param2.put("value", TENANTID);
+                actualParameterArray.put(new JSONObject()
+                        .put("actualParameterName", "tenant_id")
+                        .put("value", TENANTID));
 
-                param3.put("actualParameterName", "stack_name");
-                param3.put("value", stackNameToCreate);
+                actualParameterArray.put(new JSONObject()
+                        .put("actualParameterName", "stack_name")
+                        .put("value", stackNameToCreate));
 
-                param4.put("actualParameterName", "stack_id");
-                param4.put("value", stackId);
+                actualParameterArray.put(new JSONObject()
+                        .put("actualParameterName", "stack_id")
+                        .put("value", stackId));
 
-                param5.put("actualParameterName", "template");
-                param5.put("value", template);
+                actualParameterArray.put(new JSONObject()
+                        .put("actualParameterName", "template")
+                        .put("value", updatedTemplate));
 
-                param6.put("actualParameterName", "template_url");
-                param6.put("value", "");
+                actualParameterArray.put(new JSONObject()
+                        .put("actualParameterName", "template_url")
+                        .put("value", ""));
 
-                param7.put("actualParameterName", "tag");
-                param7.put("value", "1");
-
-                JSONArray actualParameterArray = new JSONArray();
-                actualParameterArray.put(param1);
-                actualParameterArray.put(param2);
-                actualParameterArray.put(param3);
-                actualParameterArray.put(param4);
-                actualParameterArray.put(param5);
-                actualParameterArray.put(param6);
-                actualParameterArray.put(param7);
+                actualParameterArray.put(new JSONObject()
+                        .put("actualParameterName", "tag")
+                        .put("value", "1"));
 
                 jo.put("actualParameter", actualParameterArray);
 
@@ -287,7 +285,7 @@ public class OpenStackProvisionTest {
                 e.printStackTrace();
             }
 
-            System.out.println("Updating stack [" + stackNameToCreate + "] to template : " + template);
+            System.out.println("Updating stack to template : " + updatedTemplate);
             String jobId = callRunProcedure(jo);
 
             String response = waitForJob(jobId);
@@ -304,39 +302,32 @@ public class OpenStackProvisionTest {
         {
             // Scope : Delete Stack
 
-            JSONObject param1 = new JSONObject();
-            JSONObject param2 = new JSONObject();
-            JSONObject param3 = new JSONObject();
-            JSONObject param4 = new JSONObject();
-            JSONObject param5 = new JSONObject();
-
             JSONObject jo = new JSONObject();
+            JSONArray actualParameterArray = new JSONArray();
 
             try {
                 jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
                 jo.put("procedureName", "DeleteStack");
 
-                param1.put("value", "hp");
-                param1.put("actualParameterName", "connection_config");
+                actualParameterArray.put(new JSONObject()
+                        .put("value", "hp")
+                        .put("actualParameterName", "connection_config"));
 
-                param2.put("actualParameterName", "tenant_id");
-                param2.put("value", TENANTID);
+                actualParameterArray.put(new JSONObject()
+                        .put("actualParameterName", "tenant_id")
+                        .put("value", TENANTID));
 
-                param3.put("actualParameterName", "stack_name");
-                param3.put("value", stackNameToCreate);
+                actualParameterArray.put(new JSONObject()
+                        .put("actualParameterName", "stack_name")
+                        .put("value", stackNameToCreate));
 
-                param4.put("actualParameterName", "stack_id");
-                param4.put("value", stackId);
+                actualParameterArray.put(new JSONObject()
+                        .put("actualParameterName", "stack_id")
+                        .put("value", stackId));
 
-                param5.put("actualParameterName", "tag");
-                param5.put("value", "1");
-
-                JSONArray actualParameterArray = new JSONArray();
-                actualParameterArray.put(param1);
-                actualParameterArray.put(param2);
-                actualParameterArray.put(param3);
-                actualParameterArray.put(param4);
-                actualParameterArray.put(param5);
+                actualParameterArray.put(new JSONObject()
+                        .put("actualParameterName", "tag")
+                        .put("value", "1"));
 
                 jo.put("actualParameter", actualParameterArray);
 
@@ -365,6 +356,8 @@ public class OpenStackProvisionTest {
         } // end Scope : Delete Stack
 
     }
+
+
 
     /**
      * callRunProcedure
@@ -497,60 +490,74 @@ public class OpenStackProvisionTest {
      * Create the openstack configuration used for this test suite
      */
     private static void createConfiguration() {
-        JSONObject param1 = new JSONObject();
-        JSONObject param2 = new JSONObject();
-        JSONObject param3 = new JSONObject();
-        JSONObject param4 = new JSONObject();
-        JSONObject param5 = new JSONObject();
-        JSONObject param6 = new JSONObject();
-        JSONObject param7 = new JSONObject();
-        JSONObject param8 = new JSONObject();
-        JSONObject param9 = new JSONObject();
-
 
         JSONObject jo = new JSONObject();
+        JSONArray actualParameterArray = new JSONArray();
+        for (Object o : prop.keySet()) {
+            System.out.println(o + " : " + prop.get(o));
+        }
 
+        
         try {
             jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
             jo.put("procedureName", "CreateConfiguration");
 
-            param1.put("value", "hp");
-            param1.put("actualParameterName", "config");
+            actualParameterArray.put(new JSONObject()
+                    .put("value", "hp")
+                    .put("actualParameterName", "config"));
 
-            param2.put("actualParameterName", "identity_service_url");
-            param2.put("value", "https://region-a.geo-1.identity.hpcloudsvc.com:35357/");
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "identity_service_url")
+                    .put("value", prop.getProperty(IDENTITY_SERVICE_URL)));
 
-            param3.put("actualParameterName", "compute_service_url");
-            param3.put("value", "https://region-b.geo-1.compute.hpcloudsvc.com/");
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "compute_service_url")
+                    .put("value", prop.getProperty(COMPUTE_SERVICE_URL)));
 
-            param4.put("actualParameterName", "api_version");
-            param4.put("value", "2");
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "api_version")
+                    .put("value", prop.getProperty(COMPUTE_SERVICE_VERSION)));
 
-            param5.put("actualParameterName", "keystone_api_version");
-            param5.put("value", "2.0");
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "keystone_api_version")
+                    .put("value", prop.getProperty(KEYSTONE_API_VERSION)));
 
-            param6.put("actualParameterName", "debug_level");
-            param6.put("value", "1");
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "debug_level")
+                    .put("value", "1"));
 
-            param7.put("actualParameterName", "credential");
-            param7.put("value", "hp");
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "credential")
+                    .put("value", "hp"));
 
-            param8.put("actualParameterName", "resource");
-            param8.put("value", "local");
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "resource")
+                    .put("value", "local"));
 
-            param9.put("actualParameterName", "workspace");
-            param9.put("value", "default");
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "workspace")
+                    .put("value", "default"));
 
-            JSONArray actualParameterArray = new JSONArray();
-            actualParameterArray.put(param1);
-            actualParameterArray.put(param2);
-            actualParameterArray.put(param3);
-            actualParameterArray.put(param4);
-            actualParameterArray.put(param5);
-            actualParameterArray.put(param6);
-            actualParameterArray.put(param7);
-            actualParameterArray.put(param8);
-            actualParameterArray.put(param9);
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "blockstorage_service_url")
+                    .put("value", prop.getProperty(BLOCKSTORAGE_SERVICE_URL)));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "blockstorage_api_version")
+                    .put("value", "1"));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "image_service_url")
+                    .put("value", prop.getProperty(IMAGE_SERVICE_URL)));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "image_api_version")
+                    .put("value", "1"));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "orchestration_service_url")
+                    .put("value", prop.getProperty(ORCHESTRATION_SERVICE_URL)));
+
 
 
             jo.put("actualParameter", actualParameterArray);
@@ -583,5 +590,33 @@ public class OpenStackProvisionTest {
         // Check job status
         assertEquals("Job completed without errors", "success", response);
 
+    }
+    /**
+     * Load the properties file
+     */
+    private static Properties loadProperties() {
+
+        Properties prop = new Properties();
+        InputStream input = null;
+
+        try {
+
+            input = new FileInputStream("ecplugin_test.properties");
+            // load a properties file
+            prop.load(input);
+
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return prop;
     }
 }
