@@ -50,5 +50,24 @@ push (@::gMatchers,
                               setProperty("summary", $desc . "\n");
                              },
   },
-  
+  {
+        id =>          "createvolume",
+        pattern =>     q{^Volume\s(.+)\screated.},
+        action =>           q{
+
+                                my $desc = ((defined $::gProperties{"summary"}) ? $::gProperties{"summary"} : '');
+                                $desc .= "Volume \'$1\' created.";
+                                setProperty("summary", $desc . "\n");
+                             },
+  },
+  {
+        id =>          "attachvolume",
+        pattern =>     q{^Volume\s(.+)\sattached to server},
+        action =>           q{
+
+                                my $desc = ((defined $::gProperties{"summary"}) ? $::gProperties{"summary"} : '');
+                                $desc .= "Volume \'$1\' attached.";
+                                setProperty("summary", $desc . "\n");
+                             },
+  }    
 );
