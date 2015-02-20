@@ -23,6 +23,8 @@ import org.openstack4j.openstack.OSFactory;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.String;
+import java.lang.System;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
@@ -53,9 +55,10 @@ public class OpenStackProvisionTest {
     private final static String COMPUTE_SERVICE_VERSION = "compute_api_version";
     private final static String KEYSTONE_API_VERSION = "keystone_api_version";
     private final static long WAIT_TIME = 100;
+    private final static long TIMEOUT_PERIOD_SEC = 300;    // Timeout period of 5 mins.
 
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws JSONException{
 
         m_osClient = OSFactory.builder()
                 .endpoint(IDENTITY_URL)
@@ -69,7 +72,7 @@ public class OpenStackProvisionTest {
     }
 
     @Test
-    public void testkeyPairCreation() {
+    public void testkeyPairCreation() throws JSONException {
 
         String keyNameToCreate = "automatedTest-testkeyPairCreation";
 
@@ -79,7 +82,7 @@ public class OpenStackProvisionTest {
 
         JSONObject jo = new JSONObject();
 
-        try {
+
             jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
             jo.put("procedureName", "CreateKeyPair");
 
@@ -102,9 +105,6 @@ public class OpenStackProvisionTest {
 
             jo.put("actualParameter", actualParameterArray);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         String jobId = callRunProcedure(jo);
 
@@ -125,7 +125,7 @@ public class OpenStackProvisionTest {
     }
 
     @Test
-    public void testOrchestrationServices() {
+    public void testOrchestrationServices() throws JSONException {
 
         String stackNameToCreate = "automatedTest-testStackCreation";
         Stack stackFromOpenstack = null;
@@ -141,16 +141,22 @@ public class OpenStackProvisionTest {
                 // wait for stack to get completely deleted.
                 System.out.println("Waiting for stack to get completely deleted.");
                 Stack details = m_osClient.heat().stacks().getDetails(stackNameToCreate, stack.getId());
-                try {
+                long timeTaken = 0;
                     while(!details.getStatus().toString().equalsIgnoreCase("DELETE_COMPLETE")) {
-
-                        Thread.sleep(WAIT_TIME);
-                        details = m_osClient.heat().stacks().getDetails(stackNameToCreate, stack.getId());
-
+                        try {
+                             Thread.sleep(WAIT_TIME);
+                             timeTaken += WAIT_TIME;
+                             if(timeTaken >= TIMEOUT_PERIOD_SEC) {
+                                 System.out.println("Could not to delete the stack [" + stackNameToCreate + "] within time." +
+                                         "Delete the stack and re-run the test.");
+                                 return;
+                             }
+                             details = m_osClient.heat().stacks().getDetails(stackNameToCreate, stack.getId());
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+
                 System.out.println("Stack [" + stackNameToCreate + "] deleted successfully.");
             }
         }
@@ -487,13 +493,15 @@ public class OpenStackProvisionTest {
     /**
      * Delete the openstack configuration used for this test suite (clear previous runs)
      */
-    private static void deleteConfiguration() {
 
+    private static void deleteConfiguration() throws  JSONException{
         String jobId = "";
-        try {
-            JSONObject jo = new JSONObject()
-                    .put("projectName", "EC-OpenStack-" + PLUGIN_VERSION)
-                    .put("procedureName", "DeleteConfiguration");
+        JSONObject param1 = new JSONObject();
+        JSONObject jo = new JSONObject();
+
+
+            jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
+            jo.put("procedureName", "DeleteConfiguration");
 
             JSONArray actualParameterArray = new JSONArray();
             actualParameterArray.put(new JSONObject()
@@ -503,10 +511,6 @@ public class OpenStackProvisionTest {
             jo.put("actualParameter", actualParameterArray);
 
             jobId = callRunProcedure(jo);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         // Block on job completion
         waitForJob(jobId);
@@ -519,98 +523,89 @@ public class OpenStackProvisionTest {
     /**
      * Create the openstack configuration used for this test suite
      */
-    private static void createConfiguration() {
+    private static void createConfiguration() throws  JSONException {
 
         String response = "";
         JSONObject parentJSONObject = new JSONObject();
         JSONArray actualParameterArray = new JSONArray();
-        for (Object o : prop.keySet()) {
-            System.out.println(o + " : " + prop.get(o));
-        }
 
-        
-        try {
-            parentJSONObject.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
-            parentJSONObject.put("procedureName", "CreateConfiguration");
 
-            actualParameterArray.put(new JSONObject()
-                    .put("value", "hp")
-                    .put("actualParameterName", "config"));
+        parentJSONObject.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
+        parentJSONObject.put("procedureName", "CreateConfiguration");
 
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "identity_service_url")
-                    .put("value", prop.getProperty(IDENTITY_SERVICE_URL)));
+        actualParameterArray.put(new JSONObject()
+                .put("value", "hp")
+                .put("actualParameterName", "config"));
 
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "compute_service_url")
-                    .put("value", prop.getProperty(COMPUTE_SERVICE_URL)));
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "identity_service_url")
+                .put("value", prop.getProperty(IDENTITY_SERVICE_URL)));
 
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "api_version")
-                    .put("value", prop.getProperty(COMPUTE_SERVICE_VERSION)));
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "compute_service_url")
+                .put("value", prop.getProperty(COMPUTE_SERVICE_URL)));
 
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "keystone_api_version")
-                    .put("value", prop.getProperty(KEYSTONE_API_VERSION)));
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "api_version")
+                .put("value", prop.getProperty(COMPUTE_SERVICE_VERSION)));
 
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "debug_level")
-                    .put("value", "1"));
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "keystone_api_version")
+                .put("value", prop.getProperty(KEYSTONE_API_VERSION)));
 
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "credential")
-                    .put("value", "hp"));
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "debug_level")
+                .put("value", "1"));
 
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "resource")
-                    .put("value", "local"));
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "credential")
+                .put("value", "hp"));
 
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "workspace")
-                    .put("value", "default"));
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "resource")
+                .put("value", "local"));
 
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "blockstorage_service_url")
-                    .put("value", prop.getProperty(BLOCKSTORAGE_SERVICE_URL)));
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "workspace")
+                .put("value", "default"));
 
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "blockstorage_api_version")
-                    .put("value", "1"));
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "blockstorage_service_url")
+                .put("value", prop.getProperty(BLOCKSTORAGE_SERVICE_URL)));
 
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "image_service_url")
-                    .put("value", prop.getProperty(IMAGE_SERVICE_URL)));
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "blockstorage_api_version")
+                .put("value", "1"));
 
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "image_api_version")
-                    .put("value", "1"));
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "image_service_url")
+                .put("value", prop.getProperty(IMAGE_SERVICE_URL)));
 
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "orchestration_service_url")
-                    .put("value", prop.getProperty(ORCHESTRATION_SERVICE_URL)));
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "image_api_version")
+                .put("value", "1"));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "orchestration_service_url")
+                .put("value", prop.getProperty(ORCHESTRATION_SERVICE_URL)));
 
 
 
 
-            parentJSONObject.put("actualParameter", actualParameterArray);
+        parentJSONObject.put("actualParameter", actualParameterArray);
 
-            JSONArray credentialArray = new JSONArray();
+        JSONArray credentialArray = new JSONArray();
 
-            credentialArray.put(new JSONObject()
-                    .put("credentialName", "hp")
-                    .put("userName", USER)
-                    .put("password", PASSWORD));
+        credentialArray.put(new JSONObject()
+                .put("credentialName", "hp")
+                .put("userName", USER)
+                .put("password", PASSWORD));
 
-            parentJSONObject.put("credential", credentialArray);
+        parentJSONObject.put("credential", credentialArray);
 
-            String jobId = callRunProcedure(parentJSONObject);
+        String jobId = callRunProcedure(parentJSONObject);
 
-            response = waitForJob(jobId);
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        response = waitForJob(jobId);
 
         // Check job status
         assertEquals("Job completed without errors", "success", response);
