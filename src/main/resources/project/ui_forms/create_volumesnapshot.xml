@@ -33,12 +33,14 @@
         <type>entry</type>
     </formElement>
     <formElement>
-        <label>Force:</label>
+        <label>Create a snapshot forcefully ? :</label>
         <property>force</property>
-        <value>False</value>
+        <value/>
         <documentation>Create snapshot forcefully or not (True / False). Default : False</documentation>
         <required>0</required>
-        <type>entry</type>
+        <type>checkbox</type>
+        <checkedValue>1</checkedValue>
+        <uncheckedValue>0</uncheckedValue>
     </formElement>
     <formElement>
         <label>Volume ID:</label>

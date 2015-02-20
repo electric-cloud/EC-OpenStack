@@ -181,5 +181,31 @@ push (@::gMatchers,
 
                                   setProperty("summary", $desc . "\n");
                                   },
+    },
+    {
+                 id =>          "getIntermediateStatus",
+                 pattern =>     q{("status":\s)"([a-zA-Z]+)"},
+                 action =>           q{
+
+                                      my $desc = ((defined $::gProperties{"summary"}) ? $::gProperties{"summary"} : '');
+
+                                      $desc = "Status : \'$2\' .";
+
+                                      $::gCommander->setProperty("/myJobStep/summary", $desc . "\n");
+                                      },
+    },
+    {
+                 id =>          "getStackStatus",
+                 pattern =>     q{"stack_status":\s"([a-zA-Z_]+)"},
+                 action =>           q{
+
+                                       my $desc = ((defined $::gProperties{"summary"}) ? $::gProperties{"summary"} : '');
+
+                                       $desc = "Stack Status : \'$1\' .";
+
+                                       setProperty("summary", $desc . "\n");
+                                       },
     }
+
+
 );

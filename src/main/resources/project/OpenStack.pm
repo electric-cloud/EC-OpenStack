@@ -1507,7 +1507,12 @@ sub take_volume_snapshot {
 
     $data->{snapshot}->{display_name} = $self->opts->{display_name};
     $data->{snapshot}->{display_description} = $self->opts->{display_description};
-    $data->{snapshot}->{force} = $self->opts->{force};
+    if($self->opts->{force}) {
+        $data->{snapshot}->{force} = "true";
+    } else {
+        $data->{snapshot}->{force} = "false";
+    }
+
     $data->{snapshot}->{volume_id} = $self->opts->{volume_id};
     $body = to_json($data);
 
