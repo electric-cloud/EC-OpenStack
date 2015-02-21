@@ -1,5 +1,5 @@
 ##########################
-# create.volume.pl
+# attach.volume.pl
 ##########################
 use warnings;
 use strict;
