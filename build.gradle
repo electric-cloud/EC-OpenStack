@@ -196,6 +196,7 @@ task assemblePluginJar(type: Jar, dependsOn: [processProjectXml, compileGwt]) {
 		"project/**",
 		"**/*.pl",
 		"**/*.pm",
+        "htdocs/war/WEB-INF/deploy"
 	]
 
 	from sourceSets.main.output
