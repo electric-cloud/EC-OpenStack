@@ -1,5 +1,10 @@
 package ecplugins.openstack;
 
+import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.common.IOUtils;
+import net.schmizz.sshj.connection.channel.direct.Session;
+import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
+import net.schmizz.sshj.userauth.keyprovider.PKCS8KeyFile;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -11,31 +16,63 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openstack4j.api.Builders;
 import org.openstack4j.api.OSClient;
-import org.openstack4j.model.compute.Keypair;
+import org.openstack4j.model.compute.*;
 
 import org.openstack4j.openstack.OSFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.Security;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("HardCodedStringLiteral")
 public class OpenStackProvisionTest {
 
     private static OSClient m_osClient;
-    private static final String COMMANDER_SERVER = System.getProperty("COMMANDER_SERVER");
-    private static final String COMMANDER_USER = System.getProperty("COMMANDER_USER");
-    private static final String COMMANDER_PASSWORD = System.getProperty("COMMANDER_PASSWORD");
-    private static final String IDENTITY_URL = System.getProperty("OPENSTACK_IDENTITY_URL");
-    private static final String USER = System.getProperty("OPENSTACK_USER");
-    private static final String PASSWORD = System.getProperty("OPENSTACK_PASSWORD");
-    private static final String TENANTID = System.getProperty("OPENSTACK_TENANTID");
-    private static final String PLUGIN_VERSION = System.getProperty("PLUGIN_VERSION");
+    private final static String COMMANDER_SERVER = System.getProperty("COMMANDER_SERVER");
+    private final static String COMMANDER_USER = System.getProperty("COMMANDER_USER");
+    private final static String COMMANDER_PASSWORD = System.getProperty("COMMANDER_PASSWORD");
+    private final static String IDENTITY_URL = System.getProperty("OPENSTACK_IDENTITY_URL");
+    private final static String USER = System.getProperty("OPENSTACK_USER");
+    private final static String PASSWORD = System.getProperty("OPENSTACK_PASSWORD");
+    private final static String TENANTID = System.getProperty("OPENSTACK_TENANTID");
+    private final static String PLUGIN_VERSION = System.getProperty("PLUGIN_VERSION");
+    private final static String FLAVOR_ID = "flavor_id";
+    private final static String IMAGE_ID = "image_id";
+    private final static String KEY_NAME = "key_name";
+    private final static String PEM_FILE_LOCATION = "pem_file_location";
+    private final static String SECURITY_GROUP = "security_groups";
+    private final static String AVAILABILITY_ZONE = "availability_zone";
+    private final static String LOGIN_USER_NAME = "instance_login_user_name";
+    private final static String IDENTITY_SERVICE_URL = "identity_service_url";
+    private final static String COMPUTE_SERVICE_URL = "compute_service_url";
+    private final static String BLOCKSTORAGE_SERVICE_URL = "blockstorage_service_url";
+    private final static String IMAGE_SERVICE_URL = "image_service_url";
+    private final static String ORCHESTRATION_SERVICE_URL = "orchestration_service_url";
+    private final static String COMPUTE_SERVICE_VERSION = "compute_api_version";
+    private final static String KEYSTONE_API_VERSION = "keystone_api_version";
+    private final static long WAIT_TIME = 60000;
+    private final static long TIMEOUT_PERIOD_SEC = 180000;    // Timeout period of 3 mins.
+    private static String snapshotId = null;
+    private static String instanceId = null;
+    private static String serverId = null;
+    private static Properties prop;
 
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws JSONException {
 
         m_osClient = OSFactory.builder()
                 .endpoint(IDENTITY_URL)
@@ -43,6 +80,7 @@ public class OpenStackProvisionTest {
                 .tenantId(TENANTID)
                 .authenticate();
 
+        prop = loadProperties();
         deleteConfiguration();
         createConfiguration();
     }
@@ -100,6 +138,244 @@ public class OpenStackProvisionTest {
 
         // Grab the keypair name and check its name
         assertEquals("Keypair name is set correctly", keyNameToCreate, keypair.getName());
+
+    }
+
+
+    @Test
+    public void testComputeServices() throws JSONException{
+
+
+        String snapshotNameToCreate = "automatedTest-testSnapshotCreation";
+
+        // Create keypair and sec. group from openstack4j.
+        System.out.println("Creating server [TestServer] to take snapshot of it.");
+        ServerCreate testServer = Builders.server().name("TestServer").image(prop.getProperty(IMAGE_ID)).flavor(prop.getProperty(FLAVOR_ID)).build();
+        Server server = m_osClient.compute().servers().boot(testServer);
+        serverId = server.getId();
+        Server.Status serverStatus = m_osClient.compute().servers().get(serverId).getStatus();
+
+        System.out.println("Waiting for server [TestServer] to become active ...");
+
+        long timeTaken = 0;
+        while( !serverStatus.toString().equalsIgnoreCase("ACTIVE")) {
+
+            if(timeTaken >= TIMEOUT_PERIOD_SEC) {
+                System.out.println("Could not create instance [TestServer] within time.Check the openstack services and re-run the test.");
+                // Ensure that the test must fail
+                assertTrue(false);
+                return;
+            }
+            try {
+                Thread.sleep(WAIT_TIME);
+                timeTaken += WAIT_TIME;
+                serverStatus = m_osClient.compute().servers().get(serverId).getStatus();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        System.out.println("Server [TestServer] became " + serverStatus);
+
+        // Take snapshot of instance [TestServer]
+
+        {
+
+            JSONObject jo = new JSONObject();
+
+
+            jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
+            jo.put("procedureName", "CreateInstanceSnapshot");
+
+
+            JSONArray actualParameterArray = new JSONArray();
+            actualParameterArray.put(new JSONObject()
+                    .put("value", "hp")
+                    .put("actualParameterName", "connection_config"));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "display_name")
+                    .put("value", snapshotNameToCreate));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "tenant_id")
+                    .put("value", TENANTID));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "server_id")
+                    .put("value", serverId));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "metadata")
+                    .put("value", "desc,testSnapshot"));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "tag")
+                    .put("value", "1"));
+
+            jo.put("actualParameter", actualParameterArray);
+
+            System.out.println("Creating a snapshot [" + snapshotNameToCreate + " ] of instance [TestInstance].");
+            String jobId = callRunProcedure(jo);
+
+            String response = waitForJob(jobId);
+
+            // Check job status
+            assertEquals("Job completed without errors", "success", response);
+
+            Image instanceSnapshot = null;
+            // Get the instance snapshot from OpenStack
+            for (Image image : m_osClient.compute().images().list()) {
+                if (image.getName().equalsIgnoreCase(snapshotNameToCreate)) {
+                    instanceSnapshot = image;
+                }
+            }
+
+            // Assert that instanceSnapshot is not null
+            assertNotNull(instanceSnapshot);
+
+            // Assert that image is in fact a snapshot of an instance.
+            assertTrue(instanceSnapshot.isSnapshot());
+
+            snapshotId = instanceSnapshot.getId();
+
+            // Grab the instanceSnapshot attributes and verify them
+            assertEquals("Instance snapshot name is set correctly", snapshotNameToCreate, instanceSnapshot.getName());
+            assertEquals("Instance snapshot status is set correctly", "ACTIVE", instanceSnapshot.getStatus().toString());
+
+            Map<String, String> metadata = m_osClient.images().get(snapshotId).getProperties();
+
+            assertTrue(metadata.containsKey("desc"));
+            assertTrue(metadata.containsValue("testSnapshot"));
+
+        }
+
+        {
+            // Deploy a new VM from the snapshot created above
+            // with given availability zone, customization script and security group
+
+            String instanceNameToCreate = "automatedTest-testSnapshotCreation";
+
+            JSONObject jo = new JSONObject();
+
+
+            jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
+            jo.put("procedureName", "Deploy");
+
+
+            JSONArray actualParameterArray = new JSONArray();
+            actualParameterArray.put(new JSONObject()
+                    .put("value", "hp")
+                    .put("actualParameterName", "connection_config"));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "tenant_id")
+                    .put("value", TENANTID));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "keyPairName")
+                    .put("value", prop.getProperty(KEY_NAME)));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "quantity")
+                    .put("value", "1"));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "server_name")
+                    .put("value", instanceNameToCreate));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "image")
+                    .put("value", snapshotId));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "flavor")
+                    .put("value", prop.getProperty(FLAVOR_ID)));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "security_groups")
+                    .put("value", prop.getProperty(SECURITY_GROUP)));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "availability_zone")
+                    .put("value", prop.getProperty(AVAILABILITY_ZONE)));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "customization_script")
+                    .put("value", "#! /bin/bash\nsudo mkdir /home/testDir"));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "associate_ip")
+                    .put("value", "1"));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "tag")
+                    .put("value", "1"));
+
+            jo.put("actualParameter", actualParameterArray);
+
+            System.out.println("Deploying an instance [ " + instanceNameToCreate + " ] from a snapshot [" + snapshotNameToCreate + " ].");
+            String jobId = callRunProcedure(jo);
+
+            String response = waitForJob(jobId);
+
+            // Check job status
+            assertEquals("Job completed without errors", "success", response);
+
+            Server instanceFromOpenstack = null;
+            // Get the instance from OpenStack
+            for (Server instance : m_osClient.compute().servers().list()) {
+                if (instance.getName().equalsIgnoreCase(instanceNameToCreate)) {
+                    instanceFromOpenstack = instance;
+                }
+            }
+
+            // Assert that instanceFromOpenstack is not null
+            assertNotNull(instanceFromOpenstack);
+
+            instanceId = instanceFromOpenstack.getId();
+            String instanceIP = null;
+
+            for (FloatingIP floatingIP : m_osClient.compute().floatingIps().list()) {
+                if (instanceId.equals(floatingIP.getInstanceId())) {
+                    instanceIP = floatingIP.getFloatingIpAddress();
+                }
+            }
+
+            // Grab the instanceFromOpenstack attributes and verify them
+            assertEquals("Instance  name is set correctly", instanceNameToCreate, instanceFromOpenstack.getName());
+            assertEquals("Instance  status is set correctly", "ACTIVE", instanceFromOpenstack.getStatus().toString());
+            assertEquals("Instance  availability zone is set correctly", prop.getProperty(AVAILABILITY_ZONE), instanceFromOpenstack.getAvailabilityZone().toString());
+
+            // Verify that directory created in customization script exists.
+            String command = "#! /bin/bash\n" +
+                    "if [ -d /home/testDir ];\n" +
+                    "then\n" +
+                    "echo \"/home/testDir exists\";\n" +
+                    "else\n" +
+                    "echo \"/home/testDir does not exits\";\n" +
+                    "fi";
+
+            String responseFromShell = executeOnRemoteMachine(instanceIP, command);
+            assertEquals("/home/testDir exists",responseFromShell);
+        }
+
+    }
+
+    @AfterClass
+    public static void cleanup() throws JSONException {
+
+        System.out.println("Cleaning up Openstack resources.");
+        if (serverId != null) {
+            m_osClient.compute().servers().delete(serverId);
+        }
+        if (instanceId != null) {
+            m_osClient.compute().servers().delete(instanceId);
+        }
+        if (snapshotId != null) {
+            m_osClient.images().delete(snapshotId);
+        }
+        System.out.println("Cleaned up the resources.");
 
     }
 
@@ -267,67 +543,165 @@ public class OpenStackProvisionTest {
     /**
      * Create the openstack configuration used for this test suite
      */
-    private static void createConfiguration() {
+    private static void createConfiguration() throws  JSONException {
 
-        String response = "";
-        try {
-            JSONObject parentJSONObject = new JSONObject()
-                    .put("projectName", "EC-OpenStack-" + PLUGIN_VERSION)
-                    .put("procedureName", "CreateConfiguration");
+        JSONObject jo = new JSONObject();
+        JSONArray actualParameterArray = new JSONArray();
 
-            JSONArray actualParameterArray = new JSONArray();
+        jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
+        jo.put("procedureName", "CreateConfiguration");
 
-            actualParameterArray.put(new JSONObject()
-                    .put("value", "hp")
-                    .put("actualParameterName", "config"));
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "identity_service_url")
-                    .put("value", "https://region-a.geo-1.identity.hpcloudsvc.com:35357/"));
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "compute_service_url")
-                    .put("value", "https://region-b.geo-1.compute.hpcloudsvc.com/"));
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "api_version")
-                    .put("value", "2"));
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "keystone_api_version")
-                    .put("value", "2.0"));
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "debug_level")
-                    .put("value", "1"));
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "credential")
-                    .put("value", "hp"));
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "resource")
-                    .put("value", "local"));
-            actualParameterArray.put(new JSONObject()
-                    .put("actualParameterName", "workspace")
-                    .put("value", "default"));
+        actualParameterArray.put(new JSONObject()
+                .put("value", "hp")
+                .put("actualParameterName", "config"));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "identity_service_url")
+                .put("value", prop.getProperty(IDENTITY_SERVICE_URL)));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "compute_service_url")
+                .put("value", prop.getProperty(COMPUTE_SERVICE_URL)));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "api_version")
+                .put("value", prop.getProperty(COMPUTE_SERVICE_VERSION)));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "keystone_api_version")
+                .put("value", prop.getProperty(KEYSTONE_API_VERSION)));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "debug_level")
+                .put("value", "1"));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "credential")
+                .put("value", "hp"));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "resource")
+                .put("value", "local"));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "workspace")
+                .put("value", "default"));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "blockstorage_service_url")
+                .put("value", prop.getProperty(BLOCKSTORAGE_SERVICE_URL)));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "blockstorage_api_version")
+                .put("value", "1"));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "image_service_url")
+                .put("value", prop.getProperty(IMAGE_SERVICE_URL)));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "image_api_version")
+                .put("value", "1"));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "orchestration_service_url")
+                .put("value", prop.getProperty(ORCHESTRATION_SERVICE_URL)));
 
 
-            parentJSONObject.put("actualParameter", actualParameterArray);
 
-            JSONArray credentialArray = new JSONArray();
+        jo.put("actualParameter", actualParameterArray);
 
-            credentialArray.put(new JSONObject()
-                    .put("credentialName", "hp")
-                    .put("userName", USER)
-                    .put("password", PASSWORD));
+        JSONArray credentialArray = new JSONArray();
 
-            parentJSONObject.put("credential", credentialArray);
-
-            String jobId = callRunProcedure(parentJSONObject);
-
-            response = waitForJob(jobId);
+        JSONObject credentialName = new JSONObject();
+        credentialName.put("credentialName", "hp");
 
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        credentialName.put("userName", USER);
+
+
+        credentialName.put("password", PASSWORD);
+
+        credentialArray.put(credentialName);
+
+
+        jo.put("credential", credentialArray);
+
+
+        String jobId = callRunProcedure(jo);
+
+        String response = waitForJob(jobId);
 
         // Check job status
         assertEquals("Job completed without errors", "success", response);
+
+    }
+    /**
+     * Load the properties file
+     */
+    private static Properties loadProperties() {
+
+        Properties prop = new Properties();
+        InputStream input = null;
+
+        try {
+
+            input = new FileInputStream("ecplugin_test.properties");
+            // load a properties file
+            prop.load(input);
+
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return prop;
+    }
+
+    private static String executeOnRemoteMachine(String hostIp,String command) {
+        String response = null;
+
+        System.out.println("Connecting to : " +  hostIp);
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+
+        Session session = null;
+        SSHClient sshClient = new SSHClient();
+        sshClient.addHostKeyVerifier(new PromiscuousVerifier());
+
+        try {
+            sshClient.connect(hostIp);
+            PKCS8KeyFile keyFile = new PKCS8KeyFile();
+            keyFile.init(new File(prop.getProperty(PEM_FILE_LOCATION)));
+            sshClient.authPublickey(prop.getProperty(LOGIN_USER_NAME),keyFile);
+
+
+            session = sshClient.startSession();
+            Session.Command cmd = session.exec(command);
+            response = IOUtils.readFully(cmd.getInputStream()).toString();
+            cmd.join(10, TimeUnit.SECONDS);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+
+            try {
+                session.close();
+                sshClient.disconnect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        return response;
 
     }
 }
