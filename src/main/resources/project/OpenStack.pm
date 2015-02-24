@@ -1,3 +1,144 @@
+=head1 NAME
+
+OpenStack.pm - A Perl library for Openstack
+
+=head1 SYNOPSIS
+
+    my $ec = new ElectricCommander();
+    my $openstack = new OpenStack($ec, $opts);
+    $openstack->get_authentication();
+
+=head1 DESCRIPTION
+
+A perl library that encapsulates the logic to manipulate Servers from OpenStack
+
+=head2 Methods
+
+=over 12
+
+=item C<new>
+
+Object constructor for OpenStack.
+
+=item C<myCmd>
+
+Get ElectricCommander instance
+
+=item C<opts>
+
+Get opts hash
+
+=item C<ecode>
+
+Get exit code
+
+=item C<initialize>
+
+Set initial values
+
+=item C<initializePropPrefix>
+
+Initialize PropPrefix value and check valid location
+
+=item C<checkValidLocation>
+
+Check if location specified in PropPrefix is valid
+
+=item C<myProp>
+
+Get PropDB
+
+=item C<setProp>
+
+Use stored property prefix and PropDB to set a property
+
+=item C<getProp>
+
+Use stored property prefix and PropDB to get a property
+
+=item C<deleteProp>
+
+Use stored property prefix and PropDB to delete a property
+
+=item C<deploy>
+
+Call deploy_vm to create new server(s)
+
+=item C<cleanup>
+
+delete one or more servers and resources
+
+=item C<reboot>
+
+Reboots an given instance of server
+
+=item C<create_key_pair>
+
+Create a new OpenStack Key Pair
+
+=item C<delete_key_pair>
+
+Delete a new OpenStack Key Pair
+
+=item C<allocate_ip>
+
+Allocate a Floating IP
+
+=item C<release_ip>
+
+Release a Floating IP
+
+=item C<create_volume>
+
+Create a new volume
+
+=item C<attach_volume>
+
+Attach a volume to given server
+
+=item C<detach_volume>
+
+Detach a volume from server
+
+=item C<delete_volume>
+
+Delete already existing volume
+
+=item C<create_image>
+
+Creates a new image
+
+=item C<take_volume_snapshot>
+
+Creates a new snapshot of given volume using nova api
+
+=item C<take_instance_snapshot>
+
+Creates a new snapshot of given instance
+
+=item C<create_stack>
+
+Creates a new heat stack from a template.
+
+=item C<update_stack>
+
+Updates a specified stack.
+
+=item C<delete_stack>
+
+Deletes a specified stack.
+
+=back
+
+=head1 LICENSE
+
+Copyright (c) 2014 Electric Cloud, Inc.
+All rights reserved.
+
+=head1 AUTHOR
+
+    ---
+=cut
 # -------------------------------------------------------------------------
 # Package
 #    OpenStack.pm
