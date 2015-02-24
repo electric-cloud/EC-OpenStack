@@ -136,4 +136,12 @@
         <path>procedures/attach.volume.pl</path>
         <xpath>//step[stepName=&quot;AttachVolume&quot;]/command</xpath>
     </file>
+    <file>
+        <path>ui_forms/extend_volume.xml</path>
+        <xpath>//procedure[procedureName=&quot;ExtendVolume&quot;]/propertySheet/property[propertyName=&quot;ec_parameterForm&quot;]/value</xpath>
+    </file>
+    <file>
+        <path>procedures/extend_volume.pl</path>
+        <xpath>//step[stepName=&quot;ExtendVolume&quot;]/command</xpath>
+    </file>
 </fileset>

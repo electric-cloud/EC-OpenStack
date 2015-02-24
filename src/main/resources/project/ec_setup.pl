@@ -60,6 +60,14 @@ my %attachvolume = (
                  category    => "Resource Management"
                 );
 
+my %extendvolume = (
+                 label       => "OpenStack - ExtendVolume",
+                 procedure   => "ExtendVolume",
+                 description => "Extend the size of existing volume.",
+                 category    => "Resource Management"
+                );
+
+
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - Deploy");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - Cleanup");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - CreateKeyPair");
@@ -69,8 +77,9 @@ $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - ReleaseI
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - AssociateFloatingIP");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - CreateVolume");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - AttachVolume");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - ExtendVolume");
 
-@::createStepPickerSteps = (\%deploy, \%cleanup, \%createkey, \%deletekey, \%allocate, \%release, \%associate, \%createvolume, \%attachvolume);
+@::createStepPickerSteps = (\%deploy, \%cleanup, \%createkey, \%deletekey, \%allocate, \%release, \%associate, \%createvolume, \%attachvolume, \%extendvolume);
 
 my $pluginName = "@PLUGIN_NAME@";
 my $pluginKey  = "@PLUGIN_KEY@";
@@ -271,7 +280,15 @@ if ($upgradeAction eq "upgrade") {
                                         procedureName => 'AttachVolume',
                                         stepName      => 'AttachVolume'
                                      }
-                                    );            
+                                    );
+            $batch->attachCredential(
+                                     "\$[/plugins/$pluginName/project]",
+                                     $cred,
+                                     {
+                                        procedureName => 'ExtendVolume',
+                                        stepName      => 'ExtendVolume'
+                                     }
+                                    );
         }
     }
 }

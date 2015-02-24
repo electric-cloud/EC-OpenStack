@@ -156,6 +156,16 @@ $xpath = $ec->attachCredential(
                               );
 $errors .= $ec->checkAllErrors($xpath);
 
+$xpath = $ec->attachCredential(
+                               $projName,
+                               $credName,
+                               {
+                                  procedureName => "ExtendVolume",
+                                  stepName      => "ExtendVolume"
+                               }
+                              );
+$errors .= $ec->checkAllErrors($xpath);
+
 if ("$errors" ne "") {
 
     # Cleanup the partially created configuration we just created
