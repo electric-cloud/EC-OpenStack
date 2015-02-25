@@ -1,11 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<exportedData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="commander.xsd" version="42" buildLabel="build_3.7_34336_OPT_2010.07.26_15:26:49" buildVersion="3.7.0.34336">
+<exportedData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="commander.xsd" version="42"
+              buildLabel="build_3.7_34336_OPT_2010.07.26_15:26:49"
+              buildVersion="3.7.0.34336">
     <exportPath>/projects/@PLUGIN_KEY@-@PLUGIN_VERSION@</exportPath>
     <project>
         <projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
-        <description>A project to hold integrations with Openstack cloud</description>
+        <description>A project to hold integrations with Openstack cloud
+        </description>
         <workspaceName/>
         <propertySheet>
+            <property>
+                <propertyName>ec_cloudprovisioning_plugin</propertyName>
+                <description></description>
+                <propertySheet>
+                    <property>
+                        <propertyName>operations</propertyName>
+                        <description></description>
+                        <propertySheet>
+                            <property>
+                                <propertyName>provisionOperation</propertyName>
+                                <description></description>
+                                <expandable>1</expandable>
+                                <value>Deploy</value>
+                            </property>
+                            <property>
+                                <propertyName>createConfiguration</propertyName>
+                                <description></description>
+                                <expandable>1</expandable>
+                                <value>CreateConfiguration</value>
+                            </property>
+                            <property>
+                                <propertyName>deleteConfiguration</propertyName>
+                                <description></description>
+                                <expandable>1</expandable>
+                                <value>DeleteConfiguration</value>
+                            </property>
+                        </propertySheet>
+                    </property>
+                    <property>
+                        <propertyName>instanceParameterFormXMLref</propertyName>
+                        <description></description>
+                        <expandable>1</expandable>
+                        <value>ec_parameterForm</value>
+                    </property>
+                    <property>
+                        <propertyName>configurationFormXMLref</propertyName>
+                        <description></description>
+                        <expandable>1</expandable>
+                        <value>ui_forms/CreateConfigForm</value>
+                    </property>
+                    <property>
+                        <propertyName>configurationLocation</propertyName>
+                        <description></description>
+                        <expandable>1</expandable>
+                        <value>openstack_cfgs</value>
+                    </property>
+                    <property>
+                        <propertyName>displayName</propertyName>
+                        <description></description>
+                        <expandable>1</expandable>
+                        <value>OpenStack</value>
+                    </property>
+                    <property>
+                        <propertyName>pluginKey</propertyName>
+                        <description></description>
+                        <expandable>1</expandable>
+                        <value>EC-OpenStack</value>
+                    </property>
+                </propertySheet>
+            </property>
+
             <property>
                 <propertyName>plugin_driver</propertyName>
                 <description>Home for perl code</description>
@@ -32,7 +97,9 @@
             </property>
             <property>
                 <propertyName>ui_forms</propertyName>
-                <description>Property sheet to hold xml specification for forms for configurations</description>
+                <description>Property sheet to hold xml specification for forms
+                    for configurations
+                </description>
                 <propertySheet>
                     <property>
                         <propertyName>CreateConfigForm</propertyName>
@@ -68,7 +135,8 @@
         <procedure>
             <procedureName>CreateConfiguration</procedureName>
             <description>Create a new EC-OpenStack configuration.</description>
-            <jobNameTemplate>EC-OpenStack-CreateConfiguration-$[jobId]</jobNameTemplate>
+            <jobNameTemplate>EC-OpenStack-CreateConfiguration-$[jobId]
+            </jobNameTemplate>
             <resourceName></resourceName>
             <workspaceName/>
             <propertySheet>
@@ -82,7 +150,8 @@
                                     <propertyName>config</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -92,7 +161,8 @@
                                     <propertyName>credential</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -102,7 +172,8 @@
                                     <propertyName>debug_level</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -112,27 +183,30 @@
                                     <propertyName>resource</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
                                     </propertySheet>
                                 </property>
-				<property>
+                                <property>
                                     <propertyName>keyPairName</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
                                     </propertySheet>
                                 </property>
-				<property>
+                                <property>
                                     <propertyName>api_version</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -140,10 +214,12 @@
                                 </property>
 
                                 <property>
-                                    <propertyName>keystone_api_version</propertyName>
+                                    <propertyName>keystone_api_version
+                                    </propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -152,10 +228,12 @@
 
 
                                 <property>
-                                    <propertyName>compute_service_url</propertyName>
+                                    <propertyName>compute_service_url
+                                    </propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -163,10 +241,12 @@
                                 </property>
 
                                 <property>
-                                    <propertyName>identity_service_url</propertyName>
+                                    <propertyName>identity_service_url
+                                    </propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -174,10 +254,12 @@
                                 </property>
 
                                 <property>
-                                    <propertyName>blockstorage_service_url</propertyName>
+                                    <propertyName>blockstorage_service_url
+                                    </propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -231,7 +313,8 @@
                                     <propertyName>workspace</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -256,7 +339,10 @@
             <formalParameter>
                 <formalParameterName>config</formalParameterName>
                 <defaultValue/>
-                <description>Provide a unique name for the connection, keeping in mind that you may need to create additional connections over time.</description>
+                <description>Provide a unique name for the connection, keeping
+                    in mind that you may need to create additional connections
+                    over time.
+                </description>
                 <expansionDeferred>0</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
@@ -264,35 +350,44 @@
             <formalParameter>
                 <formalParameterName>credential</formalParameterName>
                 <defaultValue/>
-                <description>OpenStack/Openstack account username/password. This account must have enough privileges to perform API functions.</description>
+                <description>OpenStack/Openstack account username/password. This
+                    account must have enough privileges to perform API
+                    functions.
+                </description>
                 <required>1</required>
                 <type>credential</type>
             </formalParameter>
             <formalParameter>
                 <formalParameterName>debug_level</formalParameterName>
                 <defaultValue>1</defaultValue>
-                <description>Level for output: 0=errors only, 1=normal headers and responses, 2+=debugging information included.</description>
+                <description>Level for output: 0=errors only, 1=normal headers
+                    and responses, 2+=debugging information included.
+                </description>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
             <formalParameter>
                 <formalParameterName>description</formalParameterName>
                 <defaultValue/>
-                <description>Provide a brief description of this configuration.</description>
+                <description>Provide a brief description of this
+                    configuration.
+                </description>
                 <required>0</required>
                 <type>textarea</type>
             </formalParameter>
             <formalParameter>
                 <formalParameterName>resource</formalParameterName>
                 <defaultValue>local</defaultValue>
-                <description>The name of the resource (or pool) on which the integration steps can run (default is 'local').</description>
+                <description>The name of the resource (or pool) on which the
+                    integration steps can run (default is 'local').
+                </description>
                 <expansionDeferred>0</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
-  
+
             <formalParameter>
-            <formalParameterName>api_version</formalParameterName>
+                <formalParameterName>api_version</formalParameterName>
                 <defaultValue/>
                 <description>API Version</description>
                 <expansionDeferred>0</expansionDeferred>
@@ -301,7 +396,7 @@
             </formalParameter>
 
             <formalParameter>
-            <formalParameterName>keystone_api_version</formalParameterName>
+                <formalParameterName>keystone_api_version</formalParameterName>
                 <defaultValue/>
                 <description>Keystone API Version</description>
                 <expansionDeferred>0</expansionDeferred>
@@ -312,7 +407,9 @@
             <formalParameter>
                 <formalParameterName>identity_service_url</formalParameterName>
                 <defaultValue/>
-                <description>Provide the host name or IP address of the Identity Service for OpenStack</description>
+                <description>Provide the host name or IP address of the Identity
+                    Service for OpenStack
+                </description>
                 <expansionDeferred>0</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
@@ -320,20 +417,24 @@
             <formalParameter>
                 <formalParameterName>compute_service_url</formalParameterName>
                 <defaultValue/>
-                <description>Provide the host name or IP address of the Compute Service for OpenStack</description>
+                <description>Provide the host name or IP address of the Compute
+                    Service for OpenStack
+                </description>
                 <expansionDeferred>0</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
             <formalParameter>
-            <formalParameterName>blockstorage_service_url</formalParameterName>
+                <formalParameterName>blockstorage_service_url
+                </formalParameterName>
                 <defaultValue/>
-                <description>Provide the host name or IP address of the block storage Service for OpenStack</description>
+                <description>Provide the host name or IP address of the block
+                    storage Service for OpenStack
+                </description>
                 <expansionDeferred>0</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
-
             <formalParameter>
                 <formalParameterName>blockstorage_api_version</formalParameterName>
                 <defaultValue/>
@@ -373,7 +474,9 @@
             <formalParameter>
                 <formalParameterName>workspace</formalParameterName>
                 <defaultValue>default</defaultValue>
-                <description>The workspace to use for resources dynamically created by this configuration (default is 'default').</description>
+                <description>The workspace to use for resources dynamically
+                    created by this configuration (default is 'default').
+                </description>
                 <expansionDeferred>0</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
@@ -451,9 +554,10 @@
             </step>
         </procedure>
         <procedure>
-            <procedureName>DeleteConfiguration</procedureName>           
+            <procedureName>DeleteConfiguration</procedureName>
             <description>Delete an EC-OpenStack configuration.</description>
-            <jobNameTemplate>EC-OpenStack-DeleteConfiguration-$[jobId]</jobNameTemplate>
+            <jobNameTemplate>EC-OpenStack-DeleteConfiguration-$[jobId]
+            </jobNameTemplate>
             <resourceName></resourceName>
             <workspaceName/>
             <propertySheet>
@@ -467,7 +571,8 @@
                                     <propertyName>config</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -498,7 +603,8 @@
                 <broadcast>0</broadcast>
                 <command/>
                 <condition/>
-                <description>Delete a OpenStack/Openstack configuration</description>
+                <description>Delete a OpenStack/Openstack configuration
+                </description>
                 <errorHandling>failProcedure</errorHandling>
                 <exclusiveMode>none</exclusiveMode>
                 <logFileName/>
@@ -526,7 +632,7 @@
             </step>
         </procedure>
         <procedure>
-            <procedureName>Deploy</procedureName>            
+            <procedureName>Deploy</procedureName>
             <description>Create a new OpenStack server.</description>
             <jobNameTemplate>EC-OpenStack-Deploy-$[jobId]</jobNameTemplate>
             <resourceName/>
@@ -539,10 +645,12 @@
                             <propertyName>parameters</propertyName>
                             <propertySheet>
                                 <property>
-                                    <propertyName>connection_config</propertyName>
+                                    <propertyName>connection_config
+                                    </propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -552,17 +660,19 @@
                                     <propertyName>security_groups</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
                                     </propertySheet>
                                 </property>
-			                    <property>
+                                <property>
                                     <propertyName>keyPairName</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -572,7 +682,8 @@
                                     <propertyName>server_name</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -582,7 +693,8 @@
                                     <propertyName>image</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -592,7 +704,8 @@
                                     <propertyName>flavor</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -602,7 +715,8 @@
                                     <propertyName>quantity</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -632,7 +746,8 @@
                                     <propertyName>location</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -642,7 +757,8 @@
                                     <propertyName>tag</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -652,22 +768,26 @@
                                     <propertyName>resource_check</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>checkedValue</propertyName>
+                                            <propertyName>checkedValue
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>1</value>
                                         </property>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
                                         <property>
-                                            <propertyName>initiallyChecked</propertyName>
+                                            <propertyName>initiallyChecked
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>0</value>
                                         </property>
                                         <property>
-                                            <propertyName>uncheckedValue</propertyName>
+                                            <propertyName>uncheckedValue
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>0</value>
                                         </property>
@@ -679,22 +799,26 @@
                                     <propertyName>associate_ip</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>checkedValue</propertyName>
+                                            <propertyName>checkedValue
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>1</value>
                                         </property>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
                                         <property>
-                                            <propertyName>initiallyChecked</propertyName>
+                                            <propertyName>initiallyChecked
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>0</value>
                                         </property>
                                         <property>
-                                            <propertyName>uncheckedValue</propertyName>
+                                            <propertyName>uncheckedValue
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>0</value>
                                         </property>
@@ -705,17 +829,20 @@
                                     <propertyName>resource_pool</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
                                     </propertySheet>
                                 </property>
                                 <property>
-                                    <propertyName>resource_workspace</propertyName>
+                                    <propertyName>resource_workspace
+                                    </propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -725,7 +852,8 @@
                                     <propertyName>tenant_id</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -757,7 +885,7 @@
                 <required>0</required>
                 <type>textarea</type>
             </formalParameter>
-	        <formalParameter>
+            <formalParameter>
                 <formalParameterName>keyPairName</formalParameterName>
                 <defaultValue/>
                 <description>Existing Key Pair name</description>
@@ -870,9 +998,12 @@
                 <exclusiveMode>none</exclusiveMode>
                 <logFileName/>
                 <parallel>0</parallel>
-                <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
+                <postProcessor>postp --loadProperty /myProject/postp_matchers
+                </postProcessor>
                 <releaseMode>none</releaseMode>
-                <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
+                <resourceName>
+                    $[/myProject/openstack_cfgs/$[connection_config]/resource]
+                </resourceName>
                 <shell>ec-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
@@ -891,9 +1022,9 @@
                     </property>
                 </propertySheet>
             </step>
-        </procedure>       
+        </procedure>
         <procedure>
-            <procedureName>Cleanup</procedureName>           
+            <procedureName>Cleanup</procedureName>
             <description>Delete an existing OpenStack server.</description>
             <jobNameTemplate>EC-OpenStack-Cleanup-$[jobId]</jobNameTemplate>
             <resourceName/>
@@ -906,10 +1037,12 @@
                             <propertyName>parameters</propertyName>
                             <propertySheet>
                                 <property>
-                                    <propertyName>connection_config</propertyName>
+                                    <propertyName>connection_config
+                                    </propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -919,7 +1052,8 @@
                                     <propertyName>server_id</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -929,7 +1063,8 @@
                                     <propertyName>resource_name</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -939,7 +1074,8 @@
                                     <propertyName>tenant_id</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -969,14 +1105,14 @@
                 <description/>
                 <required>1</required>
                 <type>entry</type>
-            </formalParameter>           
+            </formalParameter>
             <formalParameter>
                 <formalParameterName>resource_name</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>0</required>
                 <type>entry</type>
-            </formalParameter>  
+            </formalParameter>
             <formalParameter>
                 <formalParameterName>tenant_id</formalParameterName>
                 <defaultValue/>
@@ -995,9 +1131,12 @@
                 <exclusiveMode>none</exclusiveMode>
                 <logFileName/>
                 <parallel>0</parallel>
-                <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
+                <postProcessor>postp --loadProperty /myProject/postp_matchers
+                </postProcessor>
                 <releaseMode>none</releaseMode>
-                <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
+                <resourceName>
+                    $[/myProject/openstack_cfgs/$[connection_config]/resource]
+                </resourceName>
                 <shell>ec-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
@@ -1018,7 +1157,7 @@
             </step>
         </procedure>
         <procedure>
-            <procedureName>CreateKeyPair</procedureName>            
+            <procedureName>CreateKeyPair</procedureName>
             <description>Create a new OpenStack keypair.</description>
             <jobNameTemplate>EC-OpenStack-CreateKey-$[jobId]</jobNameTemplate>
             <resourceName/>
@@ -1031,10 +1170,12 @@
                             <propertyName>parameters</propertyName>
                             <propertySheet>
                                 <property>
-                                    <propertyName>connection_config</propertyName>
+                                    <propertyName>connection_config
+                                    </propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1044,7 +1185,8 @@
                                     <propertyName>tenant_id</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1054,7 +1196,8 @@
                                     <propertyName>keyname</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1064,7 +1207,8 @@
                                     <propertyName>location</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1074,7 +1218,8 @@
                                     <propertyName>tag</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1137,9 +1282,12 @@
                 <exclusiveMode>none</exclusiveMode>
                 <logFileName/>
                 <parallel>0</parallel>
-                <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
+                <postProcessor>postp --loadProperty /myProject/postp_matchers
+                </postProcessor>
                 <releaseMode>none</releaseMode>
-                <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
+                <resourceName>
+                    $[/myProject/openstack_cfgs/$[connection_config]/resource]
+                </resourceName>
                 <shell>ec-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
@@ -1173,10 +1321,12 @@
                             <propertyName>parameters</propertyName>
                             <propertySheet>
                                 <property>
-                                    <propertyName>connection_config</propertyName>
+                                    <propertyName>connection_config
+                                    </propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1186,7 +1336,8 @@
                                     <propertyName>tenant_id</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1196,7 +1347,8 @@
                                     <propertyName>keyname</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1245,9 +1397,12 @@
                 <exclusiveMode>none</exclusiveMode>
                 <logFileName/>
                 <parallel>0</parallel>
-                <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
+                <postProcessor>postp --loadProperty /myProject/postp_matchers
+                </postProcessor>
                 <releaseMode>none</releaseMode>
-                <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
+                <resourceName>
+                    $[/myProject/openstack_cfgs/$[connection_config]/resource]
+                </resourceName>
                 <shell>ec-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
@@ -1281,10 +1436,12 @@
                             <propertyName>parameters</propertyName>
                             <propertySheet>
                                 <property>
-                                    <propertyName>connection_config</propertyName>
+                                    <propertyName>connection_config
+                                    </propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1294,7 +1451,8 @@
                                     <propertyName>tenant_id</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1304,7 +1462,8 @@
                                     <propertyName>location</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1314,7 +1473,8 @@
                                     <propertyName>tag</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1371,9 +1531,12 @@
                 <exclusiveMode>none</exclusiveMode>
                 <logFileName/>
                 <parallel>0</parallel>
-                <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
+                <postProcessor>postp --loadProperty /myProject/postp_matchers
+                </postProcessor>
                 <releaseMode>none</releaseMode>
-                <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
+                <resourceName>
+                    $[/myProject/openstack_cfgs/$[connection_config]/resource]
+                </resourceName>
                 <shell>ec-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
@@ -1407,10 +1570,12 @@
                             <propertyName>parameters</propertyName>
                             <propertySheet>
                                 <property>
-                                    <propertyName>connection_config</propertyName>
+                                    <propertyName>connection_config
+                                    </propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1420,7 +1585,8 @@
                                     <propertyName>tenant_id</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1430,12 +1596,13 @@
                                     <propertyName>address_id</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
                                     </propertySheet>
-                                </property>   
+                                </property>
                             </propertySheet>
                         </property>
                     </propertySheet>
@@ -1479,9 +1646,12 @@
                 <exclusiveMode>none</exclusiveMode>
                 <logFileName/>
                 <parallel>0</parallel>
-                <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
+                <postProcessor>postp --loadProperty /myProject/postp_matchers
+                </postProcessor>
                 <releaseMode>none</releaseMode>
-                <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
+                <resourceName>
+                    $[/myProject/openstack_cfgs/$[connection_config]/resource]
+                </resourceName>
                 <shell>ec-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
@@ -1501,109 +1671,124 @@
                 </propertySheet>
             </step>
         </procedure>
+
+
+
+
         <procedure>
             <procedureName>AssociateFloatingIP</procedureName>
-            <description>Associate Floating IP to an existing instance.</description>
-            <jobNameTemplate>EC-OpenStack-AssociateFloatingIP-$[jobId]</jobNameTemplate>
+            <description>Associate Floating IP to an existing instance.
+            </description>
+            <jobNameTemplate>EC-OpenStack-AssociateFloatingIP-$[jobId]
+            </jobNameTemplate>
             <resourceName/>
             <workspaceName/>
+            <propertySheet>
+                <property>
+                    <propertyName>ec_customEditorData</propertyName>
+                    <propertySheet>
+                        <property>
+                            <propertyName>parameters</propertyName>
+                            <propertySheet>
+                                <property>
+                                    <propertyName>connection_config
+                                    </propertyName>
+                                    <propertySheet>
+                                        <property>
+                                            <propertyName>formType
+                                            </propertyName>
+                                            <expandable>1</expandable>
+                                            <value>standard</value>
+                                        </property>
+                                    </propertySheet>
+                                </property>
+                                <property>
+                                    <propertyName>tenant_id</propertyName>
+                                    <propertySheet>
+                                        <property>
+                                            <propertyName>formType
+                                            </propertyName>
+                                            <expandable>1</expandable>
+                                            <value>standard</value>
+                                        </property>
+                                    </propertySheet>
+                                </property>
+
+                            </propertySheet>
+                        </property>
+                    </propertySheet>
+                </property>
+                <property>
+                    <propertyName>ec_parameterForm</propertyName>
+                    <description/>
+                    <expandable>0</expandable>
+                    <value/>
+                </property>
+            </propertySheet>
+            <formalParameter>
+                <formalParameterName>connection_config</formalParameterName>
+                <defaultValue/>
+                <description/>
+                <required>1</required>
+                <type>entry</type>
+            </formalParameter>
+            <formalParameter>
+                <formalParameterName>tenant_id</formalParameterName>
+                <defaultValue/>
+                <description/>
+                <required>1</required>
+                <type>entry</type>
+            </formalParameter>
+            <formalParameter>
+                <formalParameterName>server_id</formalParameterName>
+                <defaultValue/>
+                <description/>
+                <required>1</required>
+                <type>entry</type>
+            </formalParameter>
+            <step>
+                <stepName>AssociateFloatingIP</stepName>
+                <alwaysRun>0</alwaysRun>
+                <broadcast>0</broadcast>
+                <command/>
+                <condition/>
+                <description/>
+                <errorHandling>failProcedure</errorHandling>
+                <exclusiveMode>none</exclusiveMode>
+                <logFileName/>
+                <parallel>0</parallel>
+                <postProcessor>postp --loadProperty /myProject/postp_matchers
+                </postProcessor>
+                <releaseMode>none</releaseMode>
+                <resourceName>
+                    $[/myProject/openstack_cfgs/$[connection_config]/resource]
+                </resourceName>
+                <shell>ec-perl</shell>
+                <timeLimit/>
+                <timeLimitUnits>minutes</timeLimitUnits>
+                <workingDirectory/>
+                <workspaceName/>
                 <propertySheet>
                     <property>
                         <propertyName>ec_customEditorData</propertyName>
                         <propertySheet>
                             <property>
-                                <propertyName>parameters</propertyName>
-                                <propertySheet>
-                                    <property>
-                                        <propertyName>connection_config</propertyName>
-                                            <propertySheet>
-                                            <property>
-                                                <propertyName>formType</propertyName>
-                                                <expandable>1</expandable>
-                                                <value>standard</value>
-                                            </property>
-                                        </propertySheet>
-                                    </property>
-                                    <property>
-                                        <propertyName>tenant_id</propertyName>
-                                        <propertySheet>
-                                            <property>
-                                                <propertyName>formType</propertyName>
-                                                <expandable>1</expandable>
-                                                <value>standard</value>
-                                            </property>
-                                        </propertySheet>
-                                    </property>
-              
-                                </propertySheet>
+                                <propertyName>formType</propertyName>
+                                <expandable>1</expandable>
+                                <value>command</value>
                             </property>
                         </propertySheet>
                     </property>
-                    <property>
-                        <propertyName>ec_parameterForm</propertyName>
-                        <description/>
-                        <expandable>0</expandable>
-                        <value/>
-                    </property>
-                    </propertySheet>
-                    <formalParameter>
-                        <formalParameterName>connection_config</formalParameterName>
-                        <defaultValue/>
-                        <description/>
-                        <required>1</required>
-                        <type>entry</type>
-                    </formalParameter>
-                    <formalParameter>
-                        <formalParameterName>tenant_id</formalParameterName>
-                        <defaultValue/>
-                        <description/>
-                        <required>1</required>
-                        <type>entry</type>
-                    </formalParameter>
-                    <formalParameter>
-                        <formalParameterName>server_id</formalParameterName>
-                        <defaultValue/>
-                        <description/>
-                        <required>1</required>
-                        <type>entry</type>
-                    </formalParameter>
-                    <step>
-                        <stepName>AssociateFloatingIP</stepName>
-                        <alwaysRun>0</alwaysRun>
-                        <broadcast>0</broadcast>
-                        <command/>
-                        <condition/>
-                        <description/>
-                        <errorHandling>failProcedure</errorHandling>
-                        <exclusiveMode>none</exclusiveMode>
-                        <logFileName/>
-                        <parallel>0</parallel>
-                        <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
-                        <releaseMode>none</releaseMode>
-                        <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
-                        <shell>ec-perl</shell>
-                        <timeLimit/>
-                        <timeLimitUnits>minutes</timeLimitUnits>
-                        <workingDirectory/>
-                        <workspaceName/>
-                        <propertySheet>
-                            <property>
-                                <propertyName>ec_customEditorData</propertyName>
-                                <propertySheet>
-                                    <property>
-                                        <propertyName>formType</propertyName>
-                                        <expandable>1</expandable>
-                                        <value>command</value>
-                                    </property>
-                                </propertySheet>
-                            </property>
-                        </propertySheet>
-                    </step>
-                </procedure>
+                </propertySheet>
+            </step>
+        </procedure>
+
+
         <procedure>
             <procedureName>CloudManagerShrink</procedureName>
             <description>Hook for CloudManager to remove servers</description>
-            <jobNameTemplate>EC-OpenStack-CloudManagerShrink-$[jobId]</jobNameTemplate>
+            <jobNameTemplate>EC-OpenStack-CloudManagerShrink-$[jobId]
+            </jobNameTemplate>
             <resourceName></resourceName>
             <workspaceName></workspaceName>
             <propertySheet>
@@ -1612,22 +1797,25 @@
                     <propertySheet>
                         <property>
                             <propertyName>parameters</propertyName>
-                            <propertySheet>                             
+                            <propertySheet>
                                 <property>
                                     <propertyName>deployments</propertyName>
-                                    <propertySheet>                                     
+                                    <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
                                     </propertySheet>
                                 </property>
                                 <property>
-                                    <propertyName>connection_config</propertyName>
+                                    <propertyName>connection_config
+                                    </propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1654,7 +1842,9 @@
             <formalParameter>
                 <formalParameterName>connection_config</formalParameterName>
                 <defaultValue></defaultValue>
-                <description>The name of the config which holds all the connection information for OpenStack.</description>
+                <description>The name of the config which holds all the
+                    connection information for OpenStack.
+                </description>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
@@ -1697,7 +1887,8 @@
         <procedure>
             <procedureName>CloudManagerGrow</procedureName>
             <description>Hook for CloudManager to add servers</description>
-            <jobNameTemplate>EC-OpenStack-CloudManagerGrow-$[jobId]</jobNameTemplate>
+            <jobNameTemplate>EC-OpenStack-CloudManagerGrow-$[jobId]
+            </jobNameTemplate>
             <resourceName></resourceName>
             <workspaceName></workspaceName>
             <propertySheet>
@@ -1708,10 +1899,12 @@
                             <propertyName>parameters</propertyName>
                             <propertySheet>
                                 <property>
-                                    <propertyName>connection_config</propertyName>
+                                    <propertyName>connection_config
+                                    </propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1721,7 +1914,8 @@
                                     <propertyName>server_name</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1731,7 +1925,8 @@
                                     <propertyName>image</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1741,7 +1936,8 @@
                                     <propertyName>flavor</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1751,7 +1947,8 @@
                                     <propertyName>number</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1761,7 +1958,8 @@
                                     <propertyName>tag</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1771,17 +1969,20 @@
                                     <propertyName>poolName</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
                                     </propertySheet>
                                 </property>
                                 <property>
-                                    <propertyName>resource_workspace</propertyName>
+                                    <propertyName>resource_workspace
+                                    </propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1791,7 +1992,8 @@
                                     <propertyName>tenant_id</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1910,31 +2112,35 @@
         <procedure>
             <procedureName>CreateVolume</procedureName>
             <description>Creates a new OpenStack volume.</description>
-            <jobNameTemplate>EC-OpenStack-CreateVolume-$[jobId]</jobNameTemplate>
+            <jobNameTemplate>EC-OpenStack-CreateVolume-$[jobId]
+            </jobNameTemplate>
             <resourceName/>
             <workspaceName/>
             <propertySheet>
                 <property>
-                   <propertyName>ec_customEditorData</propertyName>
+                    <propertyName>ec_customEditorData</propertyName>
                     <propertySheet>
                         <property>
                             <propertyName>parameters</propertyName>
-                           <propertySheet>
+                            <propertySheet>
                                 <property>
-                                    <propertyName>connection_config</propertyName>
+                                    <propertyName>connection_config
+                                    </propertyName>
                                     <propertySheet>
-                                       <property>
-                                            <propertyName>formType</propertyName>
+                                        <property>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
                                     </propertySheet>
-                               </property>
+                                </property>
                                 <property>
                                     <propertyName>tenant_id</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1944,7 +2150,8 @@
                                     <propertyName>display_name</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1954,7 +2161,8 @@
                                     <propertyName>size</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -1964,17 +2172,20 @@
                                     <propertyName>volume_type</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
                                     </propertySheet>
                                 </property>
                                 <property>
-                                    <propertyName>availability_zone</propertyName>
+                                    <propertyName>availability_zone
+                                    </propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -2016,10 +2227,10 @@
                 <defaultValue/>
                 <description/>
                 <required>1</required>
-               <type>entry</type>
+                <type>entry</type>
             </formalParameter>
             <formalParameter>
-               <formalParameterName>tenant_id</formalParameterName>
+                <formalParameterName>tenant_id</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>
@@ -2029,28 +2240,28 @@
                 <formalParameterName>display_name</formalParameterName>
                 <defaultValue/>
                 <description/>
-               <required>1</required>
+                <required>1</required>
                 <type>entry</type>
             </formalParameter>
             <formalParameter>
-               <formalParameterName>size</formalParameterName>
+                <formalParameterName>size</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>
-               <type>entry</type>
+                <type>entry</type>
             </formalParameter>
             <formalParameter>
                 <formalParameterName>volume_type</formalParameterName>
-               <defaultValue/>
+                <defaultValue/>
                 <description/>
                 <required>1</required>
                 <type>entry</type>
-           </formalParameter>
+            </formalParameter>
             <formalParameter>
                 <formalParameterName>availability_zone</formalParameterName>
                 <defaultValue/>
                 <description/>
-               <required>1</required>
+                <required>1</required>
                 <type>entry</type>
             </formalParameter>
             <formalParameter>
@@ -2078,56 +2289,63 @@
                 <exclusiveMode>none</exclusiveMode>
                 <logFileName/>
                 <parallel>0</parallel>
-                <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
+                <postProcessor>postp --loadProperty /myProject/postp_matchers
+                </postProcessor>
                 <releaseMode>none</releaseMode>
-                <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
+                <resourceName>
+                    $[/myProject/openstack_cfgs/$[connection_config]/resource]
+                </resourceName>
                 <shell>ec-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
-               <workingDirectory/>
+                <workingDirectory/>
                 <workspaceName/>
                 <propertySheet>
                     <property>
                         <propertyName>ec_customEditorData</propertyName>
                         <propertySheet>
-                           <property>
+                            <property>
                                 <propertyName>formType</propertyName>
                                 <expandable>1</expandable>
-                               <value>command</value>
+                                <value>command</value>
                             </property>
                         </propertySheet>
                     </property>
                 </propertySheet>
             </step>
-        </procedure>        
+        </procedure>
         <procedure>
             <procedureName>AttachVolume</procedureName>
             <description>Attaches a volume.</description>
-            <jobNameTemplate>EC-OpenStack-AttachVolume-$[jobId]</jobNameTemplate>
+            <jobNameTemplate>EC-OpenStack-AttachVolume-$[jobId]
+            </jobNameTemplate>
             <resourceName/>
             <workspaceName/>
             <propertySheet>
                 <property>
-                   <propertyName>ec_customEditorData</propertyName>
+                    <propertyName>ec_customEditorData</propertyName>
                     <propertySheet>
                         <property>
                             <propertyName>parameters</propertyName>
-                           <propertySheet>
+                            <propertySheet>
                                 <property>
-                                    <propertyName>connection_config</propertyName>
+                                    <propertyName>connection_config
+                                    </propertyName>
                                     <propertySheet>
-                                       <property>
-                                            <propertyName>formType</propertyName>
+                                        <property>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
                                     </propertySheet>
-                               </property>
+                                </property>
                                 <property>
                                     <propertyName>tenant_id</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -2137,7 +2355,8 @@
                                     <propertyName>server_id</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -2147,7 +2366,8 @@
                                     <propertyName>volume_id</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -2157,7 +2377,8 @@
                                     <propertyName>device</propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -2199,10 +2420,10 @@
                 <defaultValue/>
                 <description/>
                 <required>1</required>
-               <type>entry</type>
+                <type>entry</type>
             </formalParameter>
             <formalParameter>
-               <formalParameterName>tenant_id</formalParameterName>
+                <formalParameterName>tenant_id</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>
@@ -2212,19 +2433,19 @@
                 <formalParameterName>server_id</formalParameterName>
                 <defaultValue/>
                 <description/>
-               <required>1</required>
+                <required>1</required>
                 <type>entry</type>
             </formalParameter>
             <formalParameter>
-               <formalParameterName>volume_id</formalParameterName>
+                <formalParameterName>volume_id</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>
-               <type>entry</type>
+                <type>entry</type>
             </formalParameter>
             <formalParameter>
                 <formalParameterName>device</formalParameterName>
-               <defaultValue/>
+                <defaultValue/>
                 <description/>
                 <required>1</required>
                 <type>entry</type>
@@ -2254,22 +2475,25 @@
                 <exclusiveMode>none</exclusiveMode>
                 <logFileName/>
                 <parallel>0</parallel>
-                <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
+                <postProcessor>postp --loadProperty /myProject/postp_matchers
+                </postProcessor>
                 <releaseMode>none</releaseMode>
-                <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
+                <resourceName>
+                    $[/myProject/openstack_cfgs/$[connection_config]/resource]
+                </resourceName>
                 <shell>ec-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
-               <workingDirectory/>
+                <workingDirectory/>
                 <workspaceName/>
                 <propertySheet>
                     <property>
                         <propertyName>ec_customEditorData</propertyName>
                         <propertySheet>
-                           <property>
+                            <property>
                                 <propertyName>formType</propertyName>
                                 <expandable>1</expandable>
-                               <value>command</value>
+                                <value>command</value>
                             </property>
                         </propertySheet>
                     </property>
@@ -3864,7 +4088,8 @@
         <procedure>
             <procedureName>CloudManagerSync</procedureName>
             <description>Hook for CloudManager to sync servers</description>
-            <jobNameTemplate>EC-OpenStack-CloudManagerSync-$[jobId]</jobNameTemplate>
+            <jobNameTemplate>EC-OpenStack-CloudManagerSync-$[jobId]
+            </jobNameTemplate>
             <resourceName/>
             <workspaceName/>
             <acl>
@@ -3890,17 +4115,20 @@
                                             <inheriting>1</inheriting>
                                         </acl>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
                                     </propertySheet>
                                 </property>
                                 <property>
-                                    <propertyName>connection_config</propertyName>
+                                    <propertyName>connection_config
+                                    </propertyName>
                                     <propertySheet>
                                         <property>
-                                            <propertyName>formType</propertyName>
+                                            <propertyName>formType
+                                            </propertyName>
                                             <expandable>1</expandable>
                                             <value>standard</value>
                                         </property>
@@ -3927,7 +4155,9 @@
             <formalParameter>
                 <formalParameterName>connection_config</formalParameterName>
                 <defaultValue/>
-                <description>The name of the config which holds all the connection information for OpenStack.</description>
+                <description>The name of the config which holds all the
+                    connection information for OpenStack.
+                </description>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>

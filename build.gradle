@@ -1,39 +1,47 @@
-// build.gradle                                                 -*- Groovy -*-
+// -*- Groovy -*-
+// build.gradle
 //
 // Gradle build script for EC-OpenStack plugin.
 //
-// Copyright (c) 2014 Electric Cloud, Inc.
+// Copyright (c) 2015 Electric Cloud, Inc.
 // All rights reserved
+
+import javax.xml.parsers.DocumentBuilderFactory
+import javax.xml.xpath.XPathFactory
+import javax.xml.xpath.XPathConstants
+import javax.xml.transform.dom.DOMSource
+import javax.xml.transform.stream.StreamResult
+import javax.xml.transform.TransformerFactory
+
 
 group = "com.electriccloud"
 description = "Plugins : EC-OpenStack"
-version = "1.1.2"
+
+// Set the build number if it exists
+def buildNumber = System.env.BUILD_NUMBER ? System.env.BUILD_NUMBER : "0"
+
+version = "1.1.2.$buildNumber"
 
 project.ext {
-	pluginName = "$name-$version".toString()
+	pluginName = "$name-$version"
 	commanderHome = System.env.COMMANDER_HOME
+
 	commanderServer = System.env.COMMANDER_SERVER ? System.env.COMMANDER_SERVER : "localhost"
 }
 
-apply plugin: "java"
-apply plugin: "eclipse"
+apply plugin: 'java'
+apply plugin: 'eclipse'
 apply plugin: 'gwt-compiler'
 
+sourceCompatibility = JavaVersion.VERSION_1_6
+targetCompatibility = JavaVersion.VERSION_1_6
 
-sourceCompatibility = 1.5
-
-defaultTasks "assemblePluginJar"
-
-if(commanderHome) {
-	println "Using commander home:   $commanderHome"
-}
-
-println "Using commander server: $commanderServer"
+defaultTasks 'assemblePluginJar'
 
 buildscript {
 	repositories {
         maven { url "https://github.com/steffenschaefer/gwt-gradle-plugin/raw/maven-repo/" }
-		mavenCentral()
+        mavenCentral()
 	}
 
 	dependencies { classpath "de.richsource.gradle.plugins:gwt-gradle-plugin:0.4" }
@@ -45,6 +53,10 @@ repositories {
        dirs 'libs'
     }
 
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+	
 }
 
 dependencies {
@@ -56,78 +68,141 @@ dependencies {
 	compile group: "com.google.gwt", name: "gwt-servlet", version: "2.5.0"
 	compile group: "com.google.gwt", name: "gwt-user", version: "2.5.0"
 	compile "com.intellij:annotations:132.839-PATCH1"
-    compile "com.google.guava:guava-gwt:16.+"
-    compile "com.google.gwt.inject:gin:1.5.0"
-    compile "com.gwtplatform:gwtp-all:0.8-PATCH5"
+	compile "com.google.guava:guava-gwt:16.+"
+	compile "com.google.gwt.inject:gin:1.5.0"
+	compile "com.gwtplatform:gwtp-all:0.8-PATCH5"
+    testCompile 'junit:junit:[4,)'
+    testCompile 'org.pacesys:openstack4j:2.0.2-SNAPSHOT'
+
+
+}
+
+test {
+    Properties props = new Properties()
+
+    def propFileName = "ecplugin.properties"
+
+    def propertyFile = new File( propFileName )
+
+    if( propertyFile.exists() ) {
+        props.load(new FileInputStream(propFileName))
+    }
+
+    systemProperties['COMMANDER_SERVER'] = "$commanderServer"
+    systemProperties['COMMANDER_USER'] = props.getProperty("COMMANDER_USER")
+    systemProperties['COMMANDER_PASSWORD'] = props.getProperty("COMMANDER_PASSWORD")
+    systemProperties['OPENSTACK_USER'] = props.getProperty("OPENSTACK_USER")
+    systemProperties['OPENSTACK_PASSWORD'] = props.getProperty("OPENSTACK_PASSWORD")
+    systemProperties['OPENSTACK_TENANTID'] = props.getProperty("OPENSTACK_TENANTID")
+    systemProperties['OPENSTACK_IDENTITY_URL'] = props.getProperty("OPENSTACK_IDENTITY_URL")
+    systemProperties['PLUGIN_VERSION'] = version
+
+
+ testLogging {
+     // Show that tests are run in the command-line output
+     events 'started', 'passed'
+     exceptionFormat = 'full'
+ }
 }
 
 processResources {
 	// Clear readonly flag, set by perforce
 	setFileMode(0644)
-
-	filter(org.apache.tools.ant.filters.ReplaceTokens,
-	tokens: [PLUGIN_NAME: project.pluginName, PLUGIN_KEY: project.name, PLUGIN_VERSION: project.version])
+	
+	from(projectDir, {
+		include 'agent/**'
+		include 'htdocs/**'
+		include 'cgi-bin/**'
+		include 'pages/**'
+	})
+	
+	/* Apply macros substitution only on subset of files.
+	 * This is to ensure, that no binary resources is corrupted by filter
+	 */
+	["**/*.xml", "**/*.css", "**/*.pm", "**/*.pl", "**/*.cgi"].each {
+		filesMatching(it, {
+			filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+			PLUGIN_NAME: project.pluginName.toString(),
+			PLUGIN_KEY: project.name.toString(),
+			PLUGIN_VERSION: project.version.toString()])
+		})
+	}
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.0'
+    gradleVersion = '2.2'
 }
 
-task processProjectXml(type:Exec, dependsOn: processResources) {
+task printEnvironment {
+	println project.description
+	
+	if(commanderHome) {
+		println "Using commander home:   $commanderHome"
+	}
+	
+	println "Using commander server: $commanderServer"
+}
+
+task processProjectXml(dependsOn: processResources) << {
 	def resourcesPath = "$buildDir/resources/main"
-	def ecperl = project.commanderHome ? "$commanderHome/bin/ec-perl" : "ec-perl"
-	commandLine ecperl, "../build/buildProject-mvn.pl", "$resourcesPath/project", "$resourcesPath/META-INF"
+	def projectPath = "$resourcesPath/project"
+	
+	def xml = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+	def xmlp = XPathFactory.newInstance().newXPath()
+	
+	def project = xml.parse("$projectPath/project.xml")
+	def replacements = xml.parse("$projectPath/manifest.xml")
+	
+	/* For each file entry in manifest, replace content of node
+	 * located by xpath expression with file content
+	 */
+	xmlp.evaluate("//file", replacements.documentElement, XPathConstants.NODESET).each {
+		def file = "$projectPath/${xmlp.evaluate('path', it)}"
+		def xpath = xmlp.evaluate('xpath', it)
+		def nodes = xmlp.evaluate(xpath, project.documentElement, XPathConstants.NODESET)
+		
+		nodes.each { it.setTextContent(new File(file).text) }
+	}
+	
+	def source = new DOMSource(project)
+	def result = new StreamResult(new File("$resourcesPath/META-INF/project.xml"))
+	def transformer = TransformerFactory.newInstance().newTransformer()
+	
+	transformer.transform(source, result)
 }
 
-task rearrange {
+task assemblePluginJar(type: Jar, dependsOn: [processProjectXml, compileGwt]) {
+	doFirst {
+		println "Building plugin jar: $archiveName"
 
-    // disable caching
-    outputs.upToDateWhen { false }
+	}
+	
+	manifest {
+		attributes (
+			'Implementation-Vendor': 'Electric Cloud, Inc.',
+			'Implementation-Title': project.name,
+			'Implementation-Version': project.version,
+			'Implementation-Vendor-Id': project.group
+		)
+	}
 
-    // insert the pages directory into staging
-    copy {
-        from "pages"
-        into "${buildDir}/resources/main/pages"
-        filter(org.apache.tools.ant.filters.ReplaceTokens,
-                tokens: [PLUGIN_NAME: project.pluginName, PLUGIN_KEY: project.name, PLUGIN_VERSION: project.version])
-    }
-
-    // insert the cgi-bin directory into staging
-    copy {
-        from "cgi-bin"
-        into "${buildDir}/resources/main/cgi-bin"
-        filter(org.apache.tools.ant.filters.ReplaceTokens,
-                tokens: [PLUGIN_NAME: project.pluginName, PLUGIN_KEY: project.name, PLUGIN_VERSION: project.version])
-    }
-
-    copy {
-        from "htdocs"
-        into "${buildDir}/resources/main/htdocs"
-    }
-
-    copy {
-        from "${buildDir}/gwt/out"
-        into "${buildDir}/resources/main/htdocs/war"
-    }
-
-    delete '${buildDir}/gwt/out/WEB-INF'
-    delete '${buildDir}/project'
-    delete '${buildDir}/ecplugins'
-
-}
-
-task assemblePluginJar(type: Jar, dependsOn: [processProjectXml,compileGwt,rearrange]) {
+	outputs.upToDateWhen { false }
 	appendix = "plugin"
 	destinationDir = buildDir
 	includeEmptyDirs = false
 	excludes = [
-		"project/project.xml",
+		"WEB-INF/**",
+		"ecplugins/**",
+		"project/**",
 		"**/*.pl",
 		"**/*.pm",
-		"project/forms"
+        "htdocs/war/WEB-INF/deploy"
 	]
 
 	from sourceSets.main.output
+	from (tasks.compileGwt.outputs, {
+		into('htdocs/war')
+	})
 }
 
 task deployPluginJar(dependsOn: assemblePluginJar) << {
@@ -143,12 +218,14 @@ task deployPluginJar(dependsOn: assemblePluginJar) << {
 	}
 
 	exec {
-		commandLine ectool, serverOpt, "promotePlugin", project.name
+		commandLine ectool, serverOpt, "promotePlugin", project.pluginName
 	}
 }
 
 gwt {
-    gwtVersion '2.5.0'
-    modules 'ecplugins.openstack.ConfigurationManagement'
-}
+	minHeapSize "512M"
+	maxHeapSize "1024M"
+	gwtVersion '2.7.0'
 
+	modules 'ecplugins.openstack.ConfigurationManagement'
+}
