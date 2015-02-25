@@ -901,18 +901,24 @@ sub attach_volume {
     return;
 }
 
+=over
 
-############################################################################
-# extend_volume - Extends the volume to given size.The volume must be
-#                 in available state to resize.
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=item B<extend_volume>
+
+Extends the volume to given size.The volume must be in available state to resize.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub extend_volume {
     my ($self) = @_;
 
@@ -930,6 +936,8 @@ sub extend_volume {
     my $data; #
     my $status = $EMPTY;#
     my $blockstorage_service_url = $self->opts->{blockstorage_service_url};
+    my $blockstorage_api_version;
+    my $url;
 
     #Consturct Block storage URL
     if ($self->opts->{blockstorage_api_version} eq "1") {
@@ -943,7 +951,7 @@ sub extend_volume {
 
     $url = $blockstorage_service_url . $blockstorage_api_version . $self->opts->{tenant_id} . q{/volumes/} . $self->opts->{volume_id} . q{/action};
 
-    $data->{os-extend}->{new_size} = $self->opts->{new_size};
+    $data->{'os-extend'}->{new_size} = $self->opts->{new_size};
 
     $body = to_json($data);
 
@@ -974,9 +982,9 @@ sub extend_volume {
 
     #store properties
     $self->setProp(q{/ExtendedVolume/ID}, $self->opts->{volume_id});
-    $self->setProp(q{/ExtendedVolume/Size}, $json_result->{volume}->{size};);
+    $self->setProp(q{/ExtendedVolume/Size}, $json_result->{volume}->{size});
     $self->setProp(q{/ExtendedVolume/Result}, "success");
-    $self->debug_msg($DEBUG_LEVEL_1, "Volume $volume_id extended to size $json_result->{volume}->{size}\n");
+    $self->debug_msg($DEBUG_LEVEL_1, "Volume extended to size $json_result->{volume}->{size}.");
 
     return;
 }

@@ -2365,7 +2365,7 @@
                                     </propertySheet>
                                 </property>
                                 <property>
-                                    <propertyName>size</propertyName>
+                                    <propertyName>new_size</propertyName>
                                     <propertySheet>
                                         <property>
                                             <propertyName>formType
@@ -2430,7 +2430,7 @@
                 <type>entry</type>
             </formalParameter>
             <formalParameter>
-                <formalParameterName>size</formalParameterName>
+                <formalParameterName>new_size</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>
@@ -2464,9 +2464,7 @@
                 <postProcessor>postp --loadProperty /myProject/postp_matchers
                 </postProcessor>
                 <releaseMode>none</releaseMode>
-                <resourceName>
-                    $[/myProject/openstack_cfgs/$[connection_config]/resource]
-                </resourceName>
+                <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
                 <shell>ec-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>

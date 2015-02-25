@@ -69,5 +69,17 @@ push (@::gMatchers,
                                 $desc .= "Volume \'$1\' attached.";
                                 setProperty("summary", $desc . "\n");
                              },
-  }    
+  },
+  {
+        id =>          "extendstack",
+        pattern =>     q{^Volume extended to size\s(.+).},
+        action =>           q{
+
+                                my $desc = ((defined $::gProperties{"summary"}) ? $::gProperties{"summary"} : '');
+
+                                $desc .= "Volume extended to size of \'$1\' GB(s).";
+
+                                setProperty("summary", $desc . "\n");
+                             },
+  }
 );
