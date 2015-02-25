@@ -15,16 +15,23 @@ $opts->{connection_config} = q{$[connection_config]};
 # Tenant: Id of the tenant.
 $opts->{tenant_id} = q{$[tenant_id]};
 
-# Name: Name for the new kewypair.
+# Display name: Display name for the new volume.
 $opts->{display_name} = q{$[display_name]};
 
-# Results location: property path to store information.
+# Size: Size in GB for the new volume.
 $opts->{size} = q{$[size]};
 
-# Results tag: tag to identify this job in the resource location
+# Volume type: Type of the volume for the new volume.
 $opts->{volume_type} = q{$[volume_type]};
 
+# Availability zone: Availability zone for the new volume.
 $opts->{availability_zone} = q{$[availability_zone]};
+
+# Results location: property path to store server information.
+$opts->{location} = q{$[location]};
+
+# Deploy tag: tag to identify this deployment in the resource location
+$opts->{tag} = q{$[tag]};
 
 $[/myProject/procedure_helpers/preamble]
 
