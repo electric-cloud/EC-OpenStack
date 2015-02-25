@@ -12,124 +12,6 @@ OpenStack.pm - A Perl library for Openstack
 
 A perl library that encapsulates the logic to manipulate Servers from OpenStack
 
-=head2 Methods
-
-=over 12
-
-=item C<new>
-
-Object constructor for OpenStack.
-
-=item C<myCmd>
-
-Get ElectricCommander instance
-
-=item C<opts>
-
-Get opts hash
-
-=item C<ecode>
-
-Get exit code
-
-=item C<initialize>
-
-Set initial values
-
-=item C<initializePropPrefix>
-
-Initialize PropPrefix value and check valid location
-
-=item C<checkValidLocation>
-
-Check if location specified in PropPrefix is valid
-
-=item C<myProp>
-
-Get PropDB
-
-=item C<setProp>
-
-Use stored property prefix and PropDB to set a property
-
-=item C<getProp>
-
-Use stored property prefix and PropDB to get a property
-
-=item C<deleteProp>
-
-Use stored property prefix and PropDB to delete a property
-
-=item C<deploy>
-
-Call deploy_vm to create new server(s)
-
-=item C<cleanup>
-
-delete one or more servers and resources
-
-=item C<reboot>
-
-Reboots an given instance of server
-
-=item C<create_key_pair>
-
-Create a new OpenStack Key Pair
-
-=item C<delete_key_pair>
-
-Delete a new OpenStack Key Pair
-
-=item C<allocate_ip>
-
-Allocate a Floating IP
-
-=item C<release_ip>
-
-Release a Floating IP
-
-=item C<create_volume>
-
-Create a new volume
-
-=item C<attach_volume>
-
-Attach a volume to given server
-
-=item C<detach_volume>
-
-Detach a volume from server
-
-=item C<delete_volume>
-
-Delete already existing volume
-
-=item C<create_image>
-
-Creates a new image
-
-=item C<take_volume_snapshot>
-
-Creates a new snapshot of given volume using nova api
-
-=item C<take_instance_snapshot>
-
-Creates a new snapshot of given instance
-
-=item C<create_stack>
-
-Creates a new heat stack from a template.
-
-=item C<update_stack>
-
-Updates a specified stack.
-
-=item C<delete_stack>
-
-Deletes a specified stack.
-
-=back
-
 =head1 LICENSE
 
 Copyright (c) 2014 Electric Cloud, Inc.
@@ -139,19 +21,9 @@ All rights reserved.
 
     ---
 
-=cut
+=head2 METHODS
 
-# -------------------------------------------------------------------------
-# Package
-#    OpenStack.pm
-#
-# Purpose
-#    A perl library that encapsulates the logic to manipulate Servers from OpenStack
-#
-#
-# Copyright (c) 2014 Electric Cloud, Inc.
-# All rights reserved
-# -------------------------------------------------------------------------
+=cut
 
 package OpenStack;
 
@@ -256,16 +128,23 @@ $json->relaxed;
 my $resource_list = $EMPTY;
 my $vms_list      = $EMPTY;
 
-############################################################################
-# new - Object constructor for OpenStack
-#
-# Arguments:
-#   opts hash
-#
-# Returns:
-#   -
-#
-############################################################################
+
+=over
+
+=item B<new>
+
+Object constructor for OpenStack.
+
+B<Params:>
+
+B<opts>
+
+Options
+
+=back
+
+=cut
+
 sub new {
     my $class = shift;
     my $self  = {
@@ -276,61 +155,93 @@ sub new {
     return $self;
 }
 
-############################################################################
-# myCmdr - Get ElectricCommander instance
-#
-# Arguments:
-#   none
-#
-# Returns:
-#   ElectricCommander instance
-#
-############################################################################
+=over
+
+=item B<myCmdr>
+
+Get ElectricCommander instance.
+
+B<Params:>
+
+none
+
+B<Returns:>
+
+ElectricCommander instance
+
+=back
+
+=cut
+
 sub myCmdr {
     my ($self) = @_;
     return $self->{_cmdr};
 }
 
-############################################################################
-# opts - Get opts hash
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   opts hash
-#
-############################################################################
+=over
+
+=item B<opts>
+
+Get opts hash.
+
+B<Params:>
+
+none
+
+B<Returns:>
+
+opts hash
+
+=back
+
+=cut
+
 sub opts {
     my ($self) = @_;
     return $self->{_opts};
 }
 
-############################################################################
-# ecode - Get exit code
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   exit code number
-#
-############################################################################
+=over
+
+=item B<ecode>
+
+Get exit code.
+
+B<Params:>
+
+none
+
+B<Returns:>
+
+exit code number
+
+=back
+
+=cut
+
 sub ecode {
     my ($self) = @_;
     return $self->opts()->{exitcode};
 }
 
-############################################################################
-# initialize - Set initial values
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<initialize>
+
+Set initial values.
+
+B<Params:>
+
+none
+
+B<Returns:>
+
+none
+
+=back
+
+=cut
+
 sub initialize {
     my ($self) = @_;
 
@@ -355,16 +266,24 @@ sub initialize {
     return;
 }
 
-############################################################################
-# initializePropPrefix - Initialize PropPrefix value and check valid location
-#
-# Arguments:
-#   none
-#
-# Returns:
-#   none
-#
-############################################################################
+=over
+
+=item B<initializePropPrefix>
+
+Initialize PropPrefix value and check valid location.
+
+B<Params:>
+
+none
+
+B<Returns:>
+
+none
+
+=back
+
+=cut
+
 sub initializePropPrefix {
     my ($self) = @_;
 
@@ -400,17 +319,26 @@ sub initializePropPrefix {
     }
 }
 
-############################################################################
-# checkValidLocation - Check if location specified in PropPrefix is valid
-#
-# Arguments:
-#   none
-#
-# Returns:
-#   0 - Success
-#   1 - Error
-#
-############################################################################
+=over
+
+=item B<checkValidLocation>
+
+Check if location specified in PropPrefix is valid.
+
+B<Params:>
+
+none
+
+B<Returns:>
+
+0 - Success
+
+1 - Error
+
+=back
+
+=cut
+
 sub checkValidLocation {
     my ($self) = @_;
     my $location = q{/test-} . $self->opts->{JobStepId};
@@ -436,32 +364,49 @@ sub checkValidLocation {
     return $SUCCESS;
 }
 
-############################################################################
-# myProp - Get PropDB
-#
-# Arguments:
-#   none
-#
-# Returns:
-#   PropDB
-#
-############################################################################
+=over
+
+=item B<myProp>
+
+Get PropDB.
+
+B<Params:>
+
+none
+
+B<Returns:>
+
+PropDB
+
+=back
+
+=cut
+
 sub myProp {
     my ($self) = @_;
     return $self->{_props};
 }
 
-############################################################################
-# setProp - Use stored property prefix and PropDB to set a property
-#
-# Arguments:
-#   location - relative location to set the property
-#   value    - value of the property
-#
-# Returns:
-#   set_result - result returned by PropDB->setProp
-#
-############################################################################
+=over
+
+=item B<setProp>
+
+Use stored property prefix and PropDB to set a property.
+
+B<Params:>
+
+location - relative location to set the property
+
+value    - value of the property
+
+B<Returns:>
+
+set_result - result returned by PropDB->setProp
+
+=back
+
+=cut
+
 sub setProp {
     my ( $self, $location, $value ) = @_;
     my $set_result =
@@ -469,16 +414,24 @@ sub setProp {
     return $set_result;
 }
 
-############################################################################
-# getProp - Use stored property prefix and PropDB to get a property
-#
-# Arguments:
-#   location - relative location to get the property
-#
-# Returns:
-#   get_result - property value
-#
-############################################################################
+=over
+
+=item B<getProp>
+
+Use stored property prefix and PropDB to get a property.
+
+B<Params:>
+
+location - relative location to get the property
+
+B<Returns:>
+
+get_result - property value
+
+=back
+
+=cut
+
 sub getProp {
     my ( $self, $location ) = @_;
     my $get_result =
@@ -486,16 +439,24 @@ sub getProp {
     return $get_result;
 }
 
-############################################################################
-# deleteProp - Use stored property prefix and PropDB to delete a property
-#
-# Arguments:
-#   location - relative location of the property to delete
-#
-# Returns:
-#   del_result - result returned by PropDB->deleteProp
-#
-############################################################################
+=over
+
+=item B<deleteProp>
+
+Use stored property prefix and PropDB to delete a property.
+
+B<Params:>
+
+location - relative location of the property to delete
+
+B<Returns:>
+
+del_result - result returned by PropDB->deleteProp
+
+=back
+
+=cut
+
 sub deleteProp {
     my ( $self, $location ) = @_;
     my $del_result =
@@ -503,16 +464,24 @@ sub deleteProp {
     return $del_result;
 }
 
-############################################################################
-# deploy - Call deploy_vm to create new server(s)
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<deploy>
+
+Call deploy_vm to create new server(s).
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub deploy {
     my ($self) = @_;
 
@@ -591,16 +560,24 @@ sub associate_floating_ip {
     return;
 }
 
-############################################################################
-# deploy_vm - Deploy a new server
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<deploy>
+
+Call deploy_vm to create new server(s).
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub deploy_vm {
     my ($self) = @_;
 
@@ -772,16 +749,24 @@ sub deploy_vm {
 
 }
 
-############################################################################
-# cleanup - delete one or more servers and resources
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<cleanup>
+
+delete one or more servers and resources.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub cleanup {
     my ($self) = @_;
 
@@ -841,16 +826,24 @@ sub cleanup {
 
 }
 
-############################################################################
-# reboot - Reboots an given instance of server
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<reboot>
+
+Reboots an given instance of server.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub reboot {
     my ($self) = @_;
 
@@ -930,16 +923,24 @@ sub reboot {
     return;
 }
 
-############################################################################
-# create_key_pair - Create a new OpenStack Key Pair
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<create_key_pair>
+
+Create a new OpenStack Key Pair.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub create_key_pair {
     my ($self) = @_;
 
@@ -983,16 +984,24 @@ sub create_key_pair {
     return;
 }
 
-############################################################################
-# delete_key_pair - Delete a new OpenStack Key Pair
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<delete_key_pair>
+
+Delete a new OpenStack Key Pair.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub delete_key_pair {
     my ($self) = @_;
 
@@ -1036,16 +1045,24 @@ sub delete_key_pair {
     return;
 }
 
-############################################################################
-# allocate_ip - Allocate a Floating IP
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<allocate_ip>
+
+Allocate a Floating IP.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub allocate_ip {
     my ($self) = @_;
 
@@ -1094,16 +1111,24 @@ sub allocate_ip {
     return;
 }
 
-############################################################################
-# release_ip - Release a Floating IP
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<release_ip>
+
+Release a Floating IP.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub release_ip {
     my ($self) = @_;
 
@@ -1146,16 +1171,24 @@ sub release_ip {
     return;
 }
 
-############################################################################
-# create_volume - Create a new volume
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<create_volume>
+
+Create a new volume.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub create_volume {
     my ($self) = @_;
 
@@ -1255,16 +1288,24 @@ sub create_volume {
     return;
 }
 
-############################################################################
-# attach_volume - Attach a volume to given server
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<attach_volume>
+
+Attach a volume to given server.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub attach_volume {
     my ($self) = @_;
 
@@ -1368,16 +1409,24 @@ sub attach_volume {
     return;
 }
 
-############################################################################
-# detach_volume - Detach a volume from server
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<detach_volume>
+
+Detach a volume from server.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub detach_volume {
     my ($self) = @_;
 
@@ -1465,16 +1514,24 @@ sub detach_volume {
     return;
 }
 
-############################################################################
-# delete_volume - Delete already existing volume
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<delete_volume>
+
+Delete already existing volume.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub delete_volume {
     my ($self) = @_;
     my $result;
@@ -1534,16 +1591,24 @@ sub delete_volume {
     return;
 }
 
-############################################################################
-# create_image - Creates a new image
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<create_image>
+
+Creates a new image.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub create_image {
     my ($self) = @_;
 
@@ -1568,16 +1633,6 @@ sub create_image {
 
 }
 
-############################################################################
-# create_image_v1 - Creates a new image with GLANCE API v1
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
 sub create_image_v1 {
 
     my ($self) = @_;
@@ -1708,16 +1763,6 @@ sub create_image_v1 {
     return;
 }
 
-############################################################################
-# create_image_v2 - Creates a new image with GLANCE API v2
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
 sub create_image_v2 {
 
     my ($self) = @_;
@@ -1846,16 +1891,24 @@ sub create_image_v2 {
     return;
 }
 
-############################################################################
-# take_volume_snapshot - Creates a new snapshot of given volume using nova api
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<take_volume_snapshot>
+
+Creates a new snapshot of given volume using nova api.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub take_volume_snapshot {
     my ($self) = @_;
 
@@ -1932,16 +1985,24 @@ sub take_volume_snapshot {
     return;
 }
 
-############################################################################
-# take_instance_snapshot - Creates a new snapshot of given instance
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<take_instance_snapshot>
+
+Creates a new snapshot of given instance.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub take_instance_snapshot {
     my ($self) = @_;
 
@@ -2093,16 +2154,24 @@ sub take_instance_snapshot {
     return;
 }
 
-############################################################################
-# create_stack - Creates a new heat stack from a template.
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<create_stack>
+
+Creates a new heat stack from a template.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub create_stack {
     my ($self) = @_;
 
@@ -2221,16 +2290,24 @@ sub create_stack {
     return;
 }
 
-############################################################################
-# update_stack - Updates a specified stack.
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<update_stack>
+
+Updates the heat orchestration stack.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub update_stack {
     my ($self) = @_;
 
@@ -2293,16 +2370,24 @@ sub update_stack {
     return;
 }
 
-############################################################################
-# delete_stack - Deletes a specified stack.
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<delete_stack>
+
+Deletes entire heat orchestration stack.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub delete_stack {
     my ($self) = @_;
 
@@ -2358,16 +2443,25 @@ sub delete_stack {
 # Helper functions
 # -------------------------------------------------------------------------
 
-############################################################################
-# get_authentication - Login to OpenStack and get X-Auth-Token
-#
-# Arguments:
-#   none
-#
-# Returns:
-#   auth-token - string
-#
-############################################################################
+
+=over
+
+=item B<get_authentication>
+
+Login to OpenStack and get X-Auth-Token.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+auth-token - string.
+
+=back
+
+=cut
+
 sub get_authentication {
     my ($self) = @_;
 
@@ -2509,17 +2603,26 @@ sub get_authentication {
     return $auth_token;
 }
 
-############################################################################
-# debug_msg - Print a debug message
-#
-# Arguments:
-#   errorlevel - number compared to $self->opts->{Debug}
-#   msg        - string message
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<debug_msg>
+
+Print a debug message.
+
+B<Params:>
+
+errorlevel - number compared to $self->opts->{Debug}.
+
+msg        - string message
+
+B<Returns:>
+
+auth-token - string.
+
+=back
+
+=cut
+
 sub debug_msg {
     my ( $self, $errlev, $msg ) = @_;
 
@@ -2529,16 +2632,24 @@ sub debug_msg {
     return;
 }
 
-############################################################################
-# get_error_by_code - Print a detailed error message
-#
-# Arguments:
-#   error      - response error code
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<get_error_by_code>
+
+Print a detailed error message.
+
+B<Params:>
+
+error      - response error code
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub get_error_by_code {
     my ( $self, $error_code ) = @_;
 
@@ -2556,15 +2667,24 @@ sub get_error_by_code {
     return;
 }
 
-############################################################################
-# rest_request - issue the HTTP request, do special processing, and return result
-#
-# Arguments:
-#   req      - the HTTP req
-#
-# Returns:
-#   response - the HTTP response
-############################################################################
+=over
+
+=item B<rest_request>
+
+issue the HTTP request, do special processing, and return result.
+
+B<Params:>
+
+req      - the HTTP req
+
+B<Returns:>
+
+response - the HTTP response.
+
+=back
+
+=cut
+
 sub rest_request {
     my ( $self, $post_type, $url_text, $content_type, $content, $headers ) = @_;
 
@@ -2651,15 +2771,24 @@ sub rest_request {
     return $xml;
 }
 
-############################################################################
-# rest_request_with_header - issue the HTTP HEAD request, do special processing, and return requested response header
-#
-# Arguments:
-#   req      - the HTTP req
-#
-# Returns:
-#   response - the HTTP response
-############################################################################
+=over
+
+=item B<rest_request_with_header>
+
+issue the HTTP HEAD request, do special processing, and return requested response header.
+
+B<Params:>
+
+req      - the HTTP req
+
+B<Returns:>
+
+response - the HTTP response.
+
+=back
+
+=cut
+
 sub rest_request_with_header {
     my (
         $self,         $post_type, $url_text,
@@ -2735,15 +2864,26 @@ sub rest_request_with_header {
     return $response;
 }
 
-############################################################################
-# extract_keyfile
-#
-# extract keyfile for commands that retun key contents to STDOUT
-#
-# args:
-#      filename - the name of the file to put the key text in
-#      pem      - contents of key file
-############################################################################
+=over
+
+=item B<extract_keyfile>
+
+extract keyfile for commands that retun key contents to STDOUT
+
+B<Params:>
+
+filename - the name of the file to put the key text in
+
+pem      - contents of key file
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub extract_keyfile {
     my ( $self, $filename, $pem ) = @_;
 
@@ -2761,16 +2901,24 @@ sub extract_keyfile {
     return;
 }
 
-############################################################################
-# make_new_resource - Create a new ElectricCommander resource
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<make_new_resource>
+
+Create a new ElectricCommander resource
+
+B<Params:>
+
+None
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub make_new_resource {
     my ( $self, $res_name, $server, $host ) = @_;
 
@@ -2828,16 +2976,24 @@ sub make_new_resource {
 
 }
 
-############################################################################
-# delete_resource - Delete an ElectricCommander resource
-#
-# Arguments:
-#   -
-#
-# Returns:
-#   -
-#
-############################################################################
+=over
+
+=item B<delete_resource>
+
+Delete an ElectricCommander resource.
+
+B<Params:>
+
+None
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub delete_resource {
     my ( $self, $resource ) = @_;
 
@@ -2865,15 +3021,25 @@ sub delete_resource {
     return;
 }
 
-############################################################################
-# constructSecurityGroupArray - Constructs security group array
-# Arguments:
-#   security_groups - new line delimited list of security groups
-#
-# Returns:
-#   Array of hash
-# [{"name" : "group1"}, {"name":"group2"}]
-############################################################################
+=over
+
+=item B<constructSecurityGroupArray>
+
+Constructs security group array.
+
+B<Params:>
+
+security_groups - new line delimited list of security groups
+
+B<Returns:>
+
+Array of hash
+C<[{"name" : "group1"}, {"name":"group2"}]>
+
+=back
+
+=cut
+
 sub constructSecurityGroupArray {
     my ( $self, $security_groups ) = @_;
 
@@ -2887,16 +3053,26 @@ sub constructSecurityGroupArray {
     return @result;
 }
 
-############################################################################
-# constructMetadataHash - Constructs key:value pair of metadata hash
-# Arguments:
-#   metadata - comma separated list of keys and values in the
-#              form of key1,value1,key2,value2
-#
-# Returns:
-#    hash
-# [{"key1" => "value1"}, {"key2" => "value2"}]
-############################################################################
+=over
+
+=item B<constructMetadataHash>
+
+Constructs key:value pair of metadata hash.
+
+B<Params:>
+
+metadata - comma separated list of keys and values in the
+             form of key1,value1,key2,value2
+
+B<Returns:>
+
+hash
+C<[{"key1" => "value1"}, {"key2" => "value2"}]>
+
+=back
+
+=cut
+
 sub constructMetadataHash {
     my ( $self, $metadata ) = @_;
 
@@ -2911,14 +3087,24 @@ sub constructMetadataHash {
     return %metadata;
 }
 
-############################################################################
-# get_allocated_ips
-# Arguments:
-#	$compute_api_url_with_tenant_id
-#
-# Returns:
-#	Arrayref of hashrefs with allocated ips
-############################################################################
+=over
+
+=item B<get_allocated_ips>
+
+Returns all the allocated IPs.
+
+B<Params:>
+
+compute_api_url_with_tenant_id - Compute service URL appended with tenent ID.
+
+B<Returns:>
+
+Arrayref of hashrefs with allocated ips.
+
+=back
+
+=cut
+
 sub get_allocated_ips {
     my ( $self, $tenant_url ) = @_;
 
@@ -2947,14 +3133,24 @@ sub get_allocated_ips {
     return $retval;
 }
 
-############################################################################
-# get_free_ips_by_allocated_ips
-# Arguments:
-#   $value_from_get_allocated_ips
-#
-# Returns:
-#   Array of free (unassociated ips) ips ('127.0.0.1', '127.0.0.2', 127.0.0.3), for example
-############################################################################
+=over
+
+=item B<get_free_ips_by_allocated_ips>
+
+Returns all the free IPs from allocated IPs.
+
+B<Params:>
+
+value_from_get_allocated_ips.
+
+B<Returns:>
+
+Array of free (unassociated ips) ips ('127.0.0.1', '127.0.0.2', 127.0.0.3), for example.
+
+=back
+
+=cut
+
 sub get_free_ips_by_allocated_ips {
     my ( $self, $allocated_ips_ref ) = @_;
 
@@ -2972,14 +3168,28 @@ sub get_free_ips_by_allocated_ips {
     return @free_ips;
 }
 
-############################################################################
-# associate_ip_to_instance
-# Arguments:
-#   $instance_url, $free_allocated_ip
-#
-# Returns:
-#   1 on success || 0 on error
-############################################################################
+=over
+
+=item B<associate_ip_to_instance>
+
+Returns all the free IPs from allocated IPs.
+
+B<Params:>
+
+instance_url - URL of instance to which associate the IP.
+
+free_allocated_ip - List of free IPs.
+
+B<Returns:>
+
+1 - Success.
+
+0 - Error.
+
+=back
+
+=cut
+
 sub associate_ip_to_instance {
     my ( $self, $instance_url, $ip ) = @_;
 
