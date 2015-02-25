@@ -34,9 +34,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @SuppressWarnings("HardCodedStringLiteral")
 public class OpenStackProvisionTest {
@@ -161,9 +159,8 @@ public class OpenStackProvisionTest {
         while( !serverStatus.toString().equalsIgnoreCase("ACTIVE")) {
 
             if(timeTaken >= TIMEOUT_PERIOD_SEC) {
-                System.out.println("Could not create instance [TestServer] within time.Check the openstack services and re-run the test.");
                 // Ensure that the test must fail
-                assertTrue(false);
+                fail("Could not create instance [TestServer] within time.Check the openstack services and re-run the test.");
                 return;
             }
             try {
@@ -240,13 +237,12 @@ public class OpenStackProvisionTest {
             snapshotId = instanceSnapshot.getId();
 
             // Grab the instanceSnapshot attributes and verify them
-            assertEquals("Instance snapshot name is set correctly", snapshotNameToCreate, instanceSnapshot.getName());
-            assertEquals("Instance snapshot status is set correctly", "ACTIVE", instanceSnapshot.getStatus().toString());
+            assertEquals("Instance snapshot name is not set correctly", snapshotNameToCreate, instanceSnapshot.getName());
+            assertEquals("Instance snapshot status is not set correctly", "ACTIVE", instanceSnapshot.getStatus().toString());
 
             Map<String, String> metadata = m_osClient.images().get(snapshotId).getProperties();
 
-            assertTrue(metadata.containsKey("desc"));
-            assertTrue(metadata.containsValue("testSnapshot"));
+            assertEquals("Description not set correctly", "testSnapshot", metadata.get("desc"));
 
         }
 
@@ -343,9 +339,9 @@ public class OpenStackProvisionTest {
             }
 
             // Grab the instanceFromOpenstack attributes and verify them
-            assertEquals("Instance  name is set correctly", instanceNameToCreate, instanceFromOpenstack.getName());
-            assertEquals("Instance  status is set correctly", "ACTIVE", instanceFromOpenstack.getStatus().toString());
-            assertEquals("Instance  availability zone is set correctly", prop.getProperty(AVAILABILITY_ZONE), instanceFromOpenstack.getAvailabilityZone().toString());
+            assertEquals("Instance  name is not set correctly", instanceNameToCreate, instanceFromOpenstack.getName());
+            assertEquals("Instance  status is not set correctly", "ACTIVE", instanceFromOpenstack.getStatus().toString());
+            assertEquals("Instance  availability zone is not set correctly", prop.getProperty(AVAILABILITY_ZONE), instanceFromOpenstack.getAvailabilityZone().toString());
 
             // Verify that directory created in customization script exists.
             String command = "#! /bin/bash\n" +
