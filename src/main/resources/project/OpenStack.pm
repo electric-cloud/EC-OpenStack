@@ -1633,6 +1633,24 @@ sub create_image {
 
 }
 
+=over
+
+=item B<create_image_v1>
+
+Creates a new image using GLANCE API v1.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
 sub create_image_v1 {
 
     my ($self) = @_;
@@ -1762,6 +1780,24 @@ sub create_image_v1 {
         q{Image  } . $self->opts->{name} . q{ created.} );
     return;
 }
+
+=over
+
+=item B<create_image_v2>
+
+Creates a new image with GLANCE API v2.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
 
 sub create_image_v2 {
 
