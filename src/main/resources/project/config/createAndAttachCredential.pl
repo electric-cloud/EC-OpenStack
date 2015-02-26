@@ -15,6 +15,7 @@ $ec->abortOnError(0);
 my $credName = "$[/myJob/config]";
 my $xpath    = $ec->getFullCredential("credential");
 my $userName = $xpath->findvalue("//userName");
+
 my $password = $xpath->findvalue("//password");
 
 # Create credential
@@ -160,8 +161,119 @@ $xpath = $ec->attachCredential(
                                $projName,
                                $credName,
                                {
+                                  procedureName => "CreateVolume",
+                                  stepName      => "CreateVolume"
+                               }
+                              );
+$errors .= $ec->checkAllErrors($xpath);
+
+$xpath = $ec->attachCredential(
+                               $projName,
+                               $credName,
+                               {
                                   procedureName => "ExtendVolume",
                                   stepName      => "ExtendVolume"
+                               }
+                              );
+$errors .= $ec->checkAllErrors($xpath);
+
+$xpath = $ec->attachCredential(
+                               $projName,
+                               $credName,
+                               {
+                                  procedureName => "AttachVolume",
+                                  stepName      => "AttachVolume"
+                               }
+                              );
+$errors .= $ec->checkAllErrors($xpath);
+
+$xpath = $ec->attachCredential(
+                               $projName,
+                               $credName,
+                               {
+                                  procedureName => "DetachVolume",
+                                  stepName      => "DetachVolume"
+                               }
+                              );
+$errors .= $ec->checkAllErrors($xpath);
+
+$xpath = $ec->attachCredential(
+                               $projName,
+                               $credName,
+                               {
+                                  procedureName => "DeleteVolume",
+                                  stepName      => "DeleteVolume"
+                               }
+                              );
+$errors .= $ec->checkAllErrors($xpath);
+
+$xpath = $ec->attachCredential(
+                               $projName,
+                               $credName,
+                               {
+                                  procedureName => "RebootInstance",
+                                  stepName      => "RebootInstance"
+                               }
+                              );
+$errors .= $ec->checkAllErrors($xpath);
+
+$xpath = $ec->attachCredential(
+                               $projName,
+                               $credName,
+                               {
+                                  procedureName => "CreateVolumeSnapshot",
+                                  stepName      => "CreateVolumeSnapshot"
+                               }
+                              );
+$errors .= $ec->checkAllErrors($xpath);
+
+$xpath = $ec->attachCredential(
+                               $projName,
+                               $credName,
+                               {
+                                  procedureName => "CreateImage",
+                                  stepName      => "CreateImage"
+                               }
+                              );
+$errors .= $ec->checkAllErrors($xpath);
+
+$xpath = $ec->attachCredential(
+                               $projName,
+                               $credName,
+                               {
+                                  procedureName => "CreateInstanceSnapshot",
+                                  stepName      => "CreateInstanceSnapshot"
+                               }
+                              );
+$errors .= $ec->checkAllErrors($xpath);
+
+
+$xpath = $ec->attachCredential(
+                               $projName,
+                               $credName,
+                               {
+                                  procedureName => "CreateStack",
+                                  stepName      => "CreateStack"
+                               }
+                              );
+$errors .= $ec->checkAllErrors($xpath);
+
+$xpath = $ec->attachCredential(
+                               $projName,
+                               $credName,
+                               {
+                                  procedureName => "UpdateStack",
+                                  stepName      => "UpdateStack"
+                               }
+                              );
+$errors .= $ec->checkAllErrors($xpath);
+
+$xpath = $ec->attachCredential(
+                               $projName,
+                               $credName,
+                               {
+                                  procedureName => "DeleteStack",
+                                  stepName      => "DeleteStack"
                                }
                               );
 $errors .= $ec->checkAllErrors($xpath);

@@ -51,6 +51,12 @@ $opts->{keyPairName} = q{$[keyPairName]};
 # The security group(s)
 $opts->{security_groups} = q{$[security_groups]};
 
+# The availability zone : The availability zone in which to launch the server.
+$opts->{availability_zone} = q{$[availability_zone]};
+
+# Customization Script : Configuration information or scripts to execute upon launch of the server.
+$opts->{customization_script} = q{$[customization_script]};
+
 $[/myProject/procedure_helpers/preamble]
 
 $openstack->deploy();
