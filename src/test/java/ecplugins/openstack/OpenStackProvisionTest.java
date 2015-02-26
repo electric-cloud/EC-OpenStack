@@ -52,8 +52,8 @@ public class OpenStackProvisionTest {
     private final static String ORCHESTRATION_SERVICE_URL = "orchestration_service_url";
     private final static String COMPUTE_SERVICE_VERSION = "compute_api_version";
     private final static String KEYSTONE_API_VERSION = "keystone_api_version";
-    private final static long WAIT_TIME = 100;
-    private final static long TIMEOUT_PERIOD_SEC = 300;    // Timeout period of 5 mins.
+    private final static long WAIT_TIME = 60000;
+    private final static long TIMEOUT_PERIOD_SEC = 180000;    // Timeout period of 5 mins.
 
     @BeforeClass
     public static void setup() throws JSONException{
