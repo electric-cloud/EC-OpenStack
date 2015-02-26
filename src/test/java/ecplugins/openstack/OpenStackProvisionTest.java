@@ -27,9 +27,7 @@ import java.lang.String;
 import java.lang.System;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 @SuppressWarnings("HardCodedStringLiteral")
 public class OpenStackProvisionTest {
@@ -147,7 +145,7 @@ public class OpenStackProvisionTest {
                              Thread.sleep(WAIT_TIME);
                              timeTaken += WAIT_TIME;
                              if(timeTaken >= TIMEOUT_PERIOD_SEC) {
-                                 System.out.println("Could not to delete the stack [" + stackNameToCreate + "] within time." +
+                                 fail("Could not to delete the stack [" + stackNameToCreate + "] within time." +
                                          "Delete the stack and re-run the test.");
                                  return;
                              }
@@ -499,18 +497,17 @@ public class OpenStackProvisionTest {
         JSONObject param1 = new JSONObject();
         JSONObject jo = new JSONObject();
 
+        jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
+        jo.put("procedureName", "DeleteConfiguration");
 
-            jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
-            jo.put("procedureName", "DeleteConfiguration");
+        JSONArray actualParameterArray = new JSONArray();
+        actualParameterArray.put(new JSONObject()
+                .put("value", "hp")
+                .put("actualParameterName", "config"));
 
-            JSONArray actualParameterArray = new JSONArray();
-            actualParameterArray.put(new JSONObject()
-                    .put("value", "hp")
-                    .put("actualParameterName", "config"));
+        jo.put("actualParameter", actualParameterArray);
 
-            jo.put("actualParameter", actualParameterArray);
-
-            jobId = callRunProcedure(jo);
+        jobId = callRunProcedure(jo);
 
         // Block on job completion
         waitForJob(jobId);
@@ -588,8 +585,6 @@ public class OpenStackProvisionTest {
         actualParameterArray.put(new JSONObject()
                 .put("actualParameterName", "orchestration_service_url")
                 .put("value", prop.getProperty(ORCHESTRATION_SERVICE_URL)));
-
-
 
 
         parentJSONObject.put("actualParameter", actualParameterArray);
