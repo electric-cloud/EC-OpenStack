@@ -62,11 +62,11 @@ the plugin omit?
     <li>Create and delete keypairs.</li>
     <li>Create and delete floating IPs.</li>
     <li>Create Electric Commander resources.</li>
-      <li>Create ,attach ,detach and delete volumes.</li>
-      <li>Create new images.</li>
-      <li>Create snapshot of a server.</li>
-      <li>Hard and soft reboot of a server.</li>
-      <li>Deploy ,update and delete HEAT orchestration templates.</li>
+    <li>Create, attach, detach, extend and delete volumes.</li>
+    <li>Create new images.</li>
+    <li>Create snapshot of a server.</li>
+    <li>Hard and soft reboot of a server.</li>
+    <li>Deploy, update and delete HEAT orchestration templates.</li>
   </ul>
 
   <p>This plugin provides two primary actions: Deploy and
@@ -637,6 +637,70 @@ parameter (like a machine name) for its meaning?
           </table><img alt="" src=
                   "../../plugins/@PLUGIN_KEY@/images/parameters/create_volume.png" /></div>
 
+
+      <div id="ExtendVolume"><a name="ExtendVolume" id="ExtendVolume"></a>
+
+          <h3>ExtendVolume</h3>
+
+          <p>This procedure extends the size of specified volume.
+              The volume must be in "available state" before extending the size.
+              <b>Note :<b> Please ensure that the "Extend Volume" operation is supported
+              by underlying Openstack services before using this step.
+              <br />
+              The plugin will store properties on the Electric Commander server at the
+              location provided in "Results Location"/"Results tag"; the
+              default location in the job
+              (/myJob/Openstack/deployed/"Provision tag") is used if
+              "Results location" is blank.</p>
+
+          <table class="grid">
+              <thead>
+                  <tr>
+                      <th>Parameter</th>
+
+                      <th>Description</th>
+                  </tr>
+              </thead>
+
+              <tbody>
+                  <tr>
+                      <td class="required">Configuration</td>
+
+                      <td>The name of the config which holds all the connection information. This must reference a valid existing configuration. (Required)</td>
+                  </tr>
+
+                  <tr>
+                      <td class="required">Tenant ID</td>
+
+                      <td>ID of the tenant to use. (Required)</td>
+                  </tr>
+
+                  <tr>
+                      <td class="required">Volume ID</td>
+
+                      <td>ID of the volume to be extended. (Required)</td>
+                  </tr>
+
+                  <tr>
+                      <td class="required">New size</td>
+
+                      <td>New size to which the volume to extend to. (Required)</td>
+                  </tr>
+
+                  <tr>
+                      <td>Results Location</td>
+
+                      <td>The ElectricCommander location to store properties (default is /myJob/OpenStack/deployed).</td>
+                  </tr>
+
+                  <tr>
+                      <td class="required">Results tag</td>
+
+                      <td>The unique tag for this provision to keep it separate from other deployments stored in the same location (default is $[jobStepId]). (Required)</td>
+                  </tr>
+              </tbody>
+          </table><img alt="" src=
+                  "../../plugins/@PLUGIN_KEY@/images/parameters/extend_volume.png" /></div>
 
       <div id="AttachVolume"><a name="AttachVolume" id="AttachVolume"></a>
 
