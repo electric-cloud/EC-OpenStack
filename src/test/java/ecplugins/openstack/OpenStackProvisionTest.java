@@ -19,21 +19,21 @@ import org.openstack4j.model.compute.Keypair;
 import org.openstack4j.model.image.Image;
 import org.openstack4j.openstack.OSFactory;
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+@SuppressWarnings("HardCodedStringLiteral")
 public class OpenStackProvisionTest {
 
     private static OSClient m_osClient;
-    private final static String COMMANDER_SERVER = System.getProperty("COMMANDER_SERVER");
-    private final static String COMMANDER_USER = System.getProperty("COMMANDER_USER");
-    private final static String COMMANDER_PASSWORD = System.getProperty("COMMANDER_PASSWORD");
-    private final static String IDENTITY_URL = System.getProperty("OPENSTACK_IDENTITY_URL");
-    private final static String USER = System.getProperty("OPENSTACK_USER");
-    private final static String PASSWORD = System.getProperty("OPENSTACK_PASSWORD");
-    private final static String TENANTID = System.getProperty("OPENSTACK_TENANTID");
-    private final static String PLUGIN_VERSION = System.getProperty("PLUGIN_VERSION");
+    private static final String COMMANDER_SERVER = System.getProperty("COMMANDER_SERVER");
+    private static final String COMMANDER_USER = System.getProperty("COMMANDER_USER");
+    private static final String COMMANDER_PASSWORD = System.getProperty("COMMANDER_PASSWORD");
+    private static final String IDENTITY_URL = System.getProperty("OPENSTACK_IDENTITY_URL");
+    private static final String USER = System.getProperty("OPENSTACK_USER");
+    private static final String PASSWORD = System.getProperty("OPENSTACK_PASSWORD");
+    private static final String TENANTID = System.getProperty("OPENSTACK_TENANTID");
+    private static final String PLUGIN_VERSION = System.getProperty("PLUGIN_VERSION");
 
     @BeforeClass
     public static void setup() {
@@ -56,10 +56,6 @@ public class OpenStackProvisionTest {
         // Clean the environment / clean result from previous runs
         m_osClient.compute().keypairs().delete(keyNameToCreate);
 
-        JSONObject param1 = new JSONObject();
-        JSONObject param2 = new JSONObject();
-        JSONObject param3 = new JSONObject();
-        JSONObject param4 = new JSONObject();
 
         JSONObject jo = new JSONObject();
 
@@ -67,23 +63,22 @@ public class OpenStackProvisionTest {
             jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
             jo.put("procedureName", "CreateKeyPair");
 
-            param1.put("value", "hp");
-            param1.put("actualParameterName", "connection_config");
-
-            param2.put("actualParameterName", "keyname");
-            param2.put("value", keyNameToCreate);
-
-            param3.put("actualParameterName", "tenant_id");
-            param3.put("value", TENANTID);
-
-            param4.put("actualParameterName", "tag");
-            param4.put("value", "1");
 
             JSONArray actualParameterArray = new JSONArray();
-            actualParameterArray.put(param1);
-            actualParameterArray.put(param2);
-            actualParameterArray.put(param3);
-            actualParameterArray.put(param4);
+            actualParameterArray.put(new JSONObject()
+                    .put("value", "hp")
+                    .put("actualParameterName", "connection_config"));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "keyname")
+                    .put("value", keyNameToCreate));
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "tenant_id")
+                    .put("value", TENANTID));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "tag")
+                    .put("value", "1"));
 
             jo.put("actualParameter", actualParameterArray);
 
@@ -98,7 +93,7 @@ public class OpenStackProvisionTest {
         // Check job status
         assertEquals("Job completed without errors", "success", response);
 
-        // Get the keypair from OpenStack
+        // Get the key pair from OpenStack
         Keypair keypair = m_osClient.compute().keypairs().get(keyNameToCreate);
 
         // Assert keypair is not null
@@ -271,6 +266,42 @@ public class OpenStackProvisionTest {
 
         return "";
 
+    }
+
+    /**
+     * getProperty
+     *
+     * @path a property path
+     * @return the value of the property
+     */
+    public static String getProperty(String path) {
+
+        HttpClient httpClient = new DefaultHttpClient();
+        JSONObject result = null;
+        try {
+            HttpGet httpPostRequest = new HttpGet("http://" + COMMANDER_USER
+                    + ":" + COMMANDER_PASSWORD + "@" + COMMANDER_SERVER
+                    + ":8000/rest/v1.0/properties/" + path);
+
+
+            HttpResponse httpResponse = httpClient.execute(httpPostRequest);
+
+            result = new JSONObject(EntityUtils.toString(httpResponse.getEntity()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+
+        if (result != null) {
+            try {
+                return result.getJSONObject("property").getString("value");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return "";
 
     }
 
@@ -331,27 +362,25 @@ public class OpenStackProvisionTest {
      * Delete the openstack configuration used for this test suite (clear previous runs)
      */
     private static void deleteConfiguration() {
-        JSONObject param1 = new JSONObject();
-        JSONObject jo = new JSONObject();
 
+        String jobId = "";
         try {
-            jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
-            jo.put("procedureName", "DeleteConfiguration");
-
-            param1.put("value", "hp");
-            param1.put("actualParameterName", "config");
+            JSONObject jo = new JSONObject()
+                    .put("projectName", "EC-OpenStack-" + PLUGIN_VERSION)
+                    .put("procedureName", "DeleteConfiguration");
 
             JSONArray actualParameterArray = new JSONArray();
-            actualParameterArray.put(param1);
+            actualParameterArray.put(new JSONObject()
+                    .put("value", "hp")
+                    .put("actualParameterName", "config"));
 
             jo.put("actualParameter", actualParameterArray);
+
+            jobId = callRunProcedure(jo);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
-        String jobId = callRunProcedure(jo);
 
         // Block on job completion
         waitForJob(jobId);
@@ -365,88 +394,63 @@ public class OpenStackProvisionTest {
      * Create the openstack configuration used for this test suite
      */
     private static void createConfiguration() {
-        JSONObject param1 = new JSONObject();
-        JSONObject param2 = new JSONObject();
-        JSONObject param3 = new JSONObject();
-        JSONObject param4 = new JSONObject();
-        JSONObject param5 = new JSONObject();
-        JSONObject param6 = new JSONObject();
-        JSONObject param7 = new JSONObject();
-        JSONObject param8 = new JSONObject();
-        JSONObject param9 = new JSONObject();
 
-
-        JSONObject jo = new JSONObject();
-
+        String response = "";
         try {
-            jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
-            jo.put("procedureName", "CreateConfiguration");
-
-            param1.put("value", "hp");
-            param1.put("actualParameterName", "config");
-
-            param2.put("actualParameterName", "identity_service_url");
-            param2.put("value", "https://region-a.geo-1.identity.hpcloudsvc.com:35357/");
-
-            param3.put("actualParameterName", "compute_service_url");
-            param3.put("value", "https://region-b.geo-1.compute.hpcloudsvc.com/");
-
-            param4.put("actualParameterName", "api_version");
-            param4.put("value", "2");
-
-            param5.put("actualParameterName", "keystone_api_version");
-            param5.put("value", "2.0");
-
-            param6.put("actualParameterName", "debug_level");
-            param6.put("value", "1");
-
-            param7.put("actualParameterName", "credential");
-            param7.put("value", "hp");
-
-            param8.put("actualParameterName", "resource");
-            param8.put("value", "local");
-
-            param9.put("actualParameterName", "workspace");
-            param9.put("value", "default");
+            JSONObject parentJSONObject = new JSONObject()
+                    .put("projectName", "EC-OpenStack-" + PLUGIN_VERSION)
+                    .put("procedureName", "CreateConfiguration");
 
             JSONArray actualParameterArray = new JSONArray();
-            actualParameterArray.put(param1);
-            actualParameterArray.put(param2);
-            actualParameterArray.put(param3);
-            actualParameterArray.put(param4);
-            actualParameterArray.put(param5);
-            actualParameterArray.put(param6);
-            actualParameterArray.put(param7);
-            actualParameterArray.put(param8);
-            actualParameterArray.put(param9);
+
+            actualParameterArray.put(new JSONObject()
+                    .put("value", "hp")
+                    .put("actualParameterName", "config"));
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "identity_service_url")
+                    .put("value", "https://region-a.geo-1.identity.hpcloudsvc.com:35357/"));
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "compute_service_url")
+                    .put("value", "https://region-b.geo-1.compute.hpcloudsvc.com/"));
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "api_version")
+                    .put("value", "2"));
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "keystone_api_version")
+                    .put("value", "2.0"));
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "debug_level")
+                    .put("value", "1"));
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "credential")
+                    .put("value", "hp"));
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "resource")
+                    .put("value", "local"));
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "workspace")
+                    .put("value", "default"));
 
 
-            jo.put("actualParameter", actualParameterArray);
+            parentJSONObject.put("actualParameter", actualParameterArray);
 
             JSONArray credentialArray = new JSONArray();
 
-            JSONObject credentialName = new JSONObject();
-            credentialName.put("credentialName", "hp");
+            credentialArray.put(new JSONObject()
+                    .put("credentialName", "hp")
+                    .put("userName", USER)
+                    .put("password", PASSWORD));
 
+            parentJSONObject.put("credential", credentialArray);
 
-            credentialName.put("userName", USER);
+            String jobId = callRunProcedure(parentJSONObject);
 
-
-            credentialName.put("password", PASSWORD);
-
-            credentialArray.put(credentialName);
-
-
-            jo.put("credential", credentialArray);
+            response = waitForJob(jobId);
 
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        String jobId = callRunProcedure(jo);
-
-        String response = waitForJob(jobId);
 
         // Check job status
         assertEquals("Job completed without errors", "success", response);
