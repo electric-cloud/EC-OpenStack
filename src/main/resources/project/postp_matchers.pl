@@ -75,6 +75,20 @@ push (@::gMatchers,
                              },
   },
   {
+
+        id =>          "extendvolume",
+        pattern =>     q{^Volume extended to size\s(.+).},
+        action =>           q{
+
+                                my $desc = ((defined $::gProperties{"summary"}) ? $::gProperties{"summary"} : '');
+
+                                $desc .= "Volume extended to size of \'$1\' GB(s).";
+
+                                setProperty("summary", $desc . "\n");
+                             },
+  },
+  {
+
           id =>          "detachvolume",
           pattern =>     q{^Volume\sdetached\sfrom\sserver\s(.+)\ssuccessfully.},
           action =>           q{
@@ -206,6 +220,4 @@ push (@::gMatchers,
                                        setProperty("summary", $desc . "\n");
                                        },
     }
-
-
 );

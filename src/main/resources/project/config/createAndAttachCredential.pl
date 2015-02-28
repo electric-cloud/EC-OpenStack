@@ -171,6 +171,16 @@ $xpath = $ec->attachCredential(
                                $projName,
                                $credName,
                                {
+                                  procedureName => "ExtendVolume",
+                                  stepName      => "ExtendVolume"
+                               }
+                              );
+$errors .= $ec->checkAllErrors($xpath);
+
+$xpath = $ec->attachCredential(
+                               $projName,
+                               $credName,
+                               {
                                   procedureName => "AttachVolume",
                                   stepName      => "AttachVolume"
                                }
@@ -267,7 +277,6 @@ $xpath = $ec->attachCredential(
                                }
                               );
 $errors .= $ec->checkAllErrors($xpath);
-
 
 if ("$errors" ne "") {
 

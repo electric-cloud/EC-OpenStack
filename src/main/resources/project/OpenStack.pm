@@ -1290,6 +1290,94 @@ sub create_volume {
 
 =over
 
+=item B<extend_volume>
+
+Extends the volume to given size.The volume must be in available state to resize.
+
+B<Params:>
+
+None.
+
+B<Returns:>
+
+None.
+
+=back
+
+=cut
+
+sub extend_volume {
+    my ($self) = @_;
+
+    $self->debug_msg($DEBUG_LEVEL_1, '---------------------------------------------------------------------');
+    $self->debug_msg($DEBUG_LEVEL_1, '-- Extending a volume -------');
+    $self->initialize();
+    $self->initializePropPrefix();
+    if ($self->opts->{exitcode}) { return; }
+
+    my $message;
+    my $result;#
+    my $json_result;
+    my $xml;
+    my $body; #
+    my $data; #
+    my $status = $EMPTY;#
+    my $blockstorage_service_url = $self->opts->{blockstorage_service_url};
+    my $blockstorage_api_version;
+    my $url;
+
+    #Consturct Block storage URL
+    if ($self->opts->{blockstorage_api_version} eq "1") {
+        $blockstorage_api_version = q{/v1/};
+    } elsif ($self->opts->{blockstorage_api_version} eq "2") {
+        $blockstorage_api_version = q{/v2/};
+    } else {
+        $self->debug_msg($DEBUG_LEVEL_1,q{Unsupported block storage API version.Exiting...});
+        return;
+    }
+
+    $url = $blockstorage_service_url . $blockstorage_api_version . $self->opts->{tenant_id} . q{/volumes/} . $self->opts->{volume_id} . q{/action};
+
+    $data->{'os-extend'}->{new_size} = $self->opts->{new_size};
+
+    $body = to_json($data);
+
+    ## Make POST request
+    $result = $self->rest_request('POST', $url, 'application/json', $body);
+    if ($self->opts->{exitcode}) { return; }
+
+    $self->debug_msg($DEBUG_LEVEL_1, q{Waiting for volume to become available...});
+
+    $url = $blockstorage_service_url . $blockstorage_api_version . $self->opts->{tenant_id} . q{/volumes/} . $self->opts->{volume_id};
+
+    while ( $status ne 'available') {
+
+          ## Make GET request
+          $result = $self->rest_request('GET', $url, $EMPTY, $EMPTY);
+          if ($self->opts->{exitcode} ) { return; }
+
+          $json_result = $json->decode($result);
+          $status      = $json_result->{volume}->{status};
+          if ($status eq 'Error_Extending') {
+               $self->debug_msg($DEBUG_LEVEL_1, q{Error : Error occured while extending volume.});
+               $self->opts->{exitcode} = $ERROR;
+               return;
+          }
+
+          sleep $WAIT_SLEEP_TIME;
+    }
+
+    #store properties
+    $self->setProp(q{/ExtendedVolume/ID}, $self->opts->{volume_id});
+    $self->setProp(q{/ExtendedVolume/Size}, $json_result->{volume}->{size});
+    $self->setProp(q{/ExtendedVolume/Result}, "success");
+    $self->debug_msg($DEBUG_LEVEL_1, "Volume extended to size $json_result->{volume}->{size}.");
+
+    return;
+}
+
+=over
+
 =item B<attach_volume>
 
 Attach a volume to given server.
@@ -2425,6 +2513,7 @@ None.
 =cut
 
 sub delete_stack {
+
     my ($self) = @_;
 
     $self->debug_msg( $DEBUG_LEVEL_1,
