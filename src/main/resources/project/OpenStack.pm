@@ -627,7 +627,7 @@ sub deploy_vm {
 
     # Assign customization script, if specified.
     if ( $self->opts->{customization_script} ) {
-        $data->{server}->{customization_script} =
+        $data->{server}->{user_data} =
           MIME::Base64::encode( $self->opts->{customization_script} );
     }
 
