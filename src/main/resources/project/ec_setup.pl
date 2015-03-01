@@ -59,6 +59,13 @@ my %attachvolume = (
                  category    => "Resource Management"
                 );
 
+my %extendvolume = (
+                 label       => "OpenStack - ExtendVolume",
+                 procedure   => "ExtendVolume",
+                 description => "Extend the size of existing volume.",
+                 category    => "Resource Management"
+                );
+
 my %detachvolume = (
                  label       => "OpenStack - DetachVolume",
                  procedure   => "DetachVolume",
@@ -132,6 +139,7 @@ $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - ReleaseI
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - AssociateFloatingIP");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - CreateVolume");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - AttachVolume");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - ExtendVolume");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - DetachVolume");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - DeleteVolume");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - RebootInstance");
@@ -142,7 +150,7 @@ $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - CreateHe
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - UpdateHeatStack");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - DeleteHeatStack");
 
-@::createStepPickerSteps = (\%deploy, \%cleanup, \%createkey, \%deletekey, \%allocate, \%release, \%associate, \%createvolume, \%attachvolume, \%detachvolume, \%deletevolume, \%reboot, \%createvolumesnapshot, \%createimage, \%createinstancesnapshot, \%createstack, \%updatestack, \%deletestack);
+@::createStepPickerSteps = (\%deploy, \%cleanup, \%createkey, \%deletekey, \%allocate, \%release, \%associate, \%createvolume, \%attachvolume, \%extendvolume, \%detachvolume, \%deletevolume, \%reboot, \%createvolumesnapshot, \%createimage, \%createinstancesnapshot, \%createstack, \%updatestack, \%deletestack);
 
 my $pluginName = "@PLUGIN_NAME@";
 my $pluginKey  = "@PLUGIN_KEY@";
@@ -348,6 +356,15 @@ if ($upgradeAction eq "upgrade") {
                                      "\$[/plugins/$pluginName/project]",
                                      $cred,
                                      {
+                                        procedureName => 'ExtendVolume',
+                                        stepName      => 'ExtendVolume'
+                                     }
+                                    );
+
+            $batch->attachCredential(
+                                     "\$[/plugins/$pluginName/project]",
+                                      $cred,
+                                      {
                                         procedureName => 'DetachVolume',
                                         stepName      => 'DetachVolume'
                                      }

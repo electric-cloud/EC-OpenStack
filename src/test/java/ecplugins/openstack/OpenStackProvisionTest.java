@@ -11,14 +11,16 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openstack4j.api.OSClient;
 import org.openstack4j.model.compute.Keypair;
 
+import static org.junit.Assert.*;
 import org.openstack4j.model.heat.Stack;
+import org.openstack4j.model.image.Image;
 import org.openstack4j.openstack.OSFactory;
-
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,7 +29,9 @@ import java.lang.String;
 import java.lang.System;
 import java.util.Properties;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 
 @SuppressWarnings("HardCodedStringLiteral")
 public class OpenStackProvisionTest {
@@ -52,8 +56,14 @@ public class OpenStackProvisionTest {
     private final static String ORCHESTRATION_SERVICE_URL = "orchestration_service_url";
     private final static String COMPUTE_SERVICE_VERSION = "compute_api_version";
     private final static String KEYSTONE_API_VERSION = "keystone_api_version";
+    private final static String DISK_FORMAT = "disk_format";
+    private final static String CONTAINER_FORMAT = "container_format";
+    private final static String LOCAL_IMAGE_PATH = "local_image_path";
     private final static long WAIT_TIME = 60000;
-    private final static long TIMEOUT_PERIOD_SEC = 180000;    // Timeout period of 5 mins.
+    private final static long TIMEOUT_PERIOD_SEC = 180000; // Timeout period of 5 mins.
+    private static String imageId = null;
+    private static String stackId = null;
+    private static String stackNameToCreate = null;
 
     @BeforeClass
     public static void setup() throws JSONException{
@@ -125,9 +135,9 @@ public class OpenStackProvisionTest {
     @Test
     public void testOrchestrationServices() throws JSONException {
 
-        String stackNameToCreate = "automatedTest-testStackCreation";
+        stackNameToCreate = "automatedTest-testStackCreation";
         Stack stackFromOpenstack = null;
-        String stackId = "";
+
 
         // Clean the environment / clean result from previous runs
         System.out.println("Cleaning up the environment.");
@@ -161,11 +171,8 @@ public class OpenStackProvisionTest {
         System.out.println("Cleaned up the environment.");
 
         {
-            // limit the variable scope so that same variable names like param1, param2 ...
-            // can be used in the same Junit test.
             // Scope : Create Stack
 
-            // Make image_id and key name configurable.
             String template = "{\"heat_template_version\": \"2013-05-23\",\"description\": \"Simple template to test heat commands\", \"parameters\": { \"flavor\": { \"default\": \"" + prop.get(FLAVOR_ID) + "\",\"type\": \"string\"}},\"resources\": {\"StackInstance\": {\"type\":\"OS::Nova::Server\",\"properties\": { \"key_name\": \"" + prop.get(KEY_NAME) + "\",\"flavor\": {\"get_param\": \"flavor\"},\"image\": \"" + prop.get(IMAGE_ID) + "\",\"user_data\": \"#!/bin/bash -xv\\necho \\\"hello world\\\" &gt; /root/hello-world.txt\\n\"}}}}";
 
             JSONObject jo = new JSONObject();
@@ -238,7 +245,6 @@ public class OpenStackProvisionTest {
         {
             // Scope : Update Stack
 
-            // Make image_id and key name configurable.
             String updatedTemplate = "{\"heat_template_version\": \"2013-05-23\",\"description\": \"Simple template to test heat commands\", \"parameters\": { \"flavor\": { \"default\": \"" + prop.get(FLAVOR_ID) + "\",\"type\": \"string\"}},\"resources\": {\"hello_world6\": {\"type\":\"OS::Nova::Server\",\"properties\": { \"key_name\": \"" + prop.get(KEY_NAME)+ "\",\"flavor\": {\"get_param\": \"flavor\"},\"image\": \"" + prop.get(IMAGE_ID) + "\",\"user_data\": \"#!/bin/bash -xv\\necho \\\"hello world\\\" &gt; /root/hello-world.txt\\n\"}},\"hello_world7\": {\"type\":\"OS::Nova::Server\",\"properties\": { \"key_name\": \"" + prop.get(KEY_NAME) + "\",\"flavor\": {\"get_param\": \"flavor\"},\"image\": \"" + prop.get(IMAGE_ID) + "\",\"user_data\": \"#!/bin/bash -xv\\necho \\\"hello world\\\" &gt; /root/hello-world.txt\\n\"}}}}";
 
             // Assert that before update of stack, updated time is null
@@ -358,6 +364,131 @@ public class OpenStackProvisionTest {
     }
 
 
+
+    /**
+     * To run this test, one must have valid image file available
+     * on the machine on which this test is executing and its path
+     * must be provided in "local_image_path" property in property file.
+     */
+    @Test
+    public void testImageServices() throws JSONException{
+
+        String imageNameToCreate = "automatedTest-testImageCreation";
+
+        // Clean the environment / clean result from previous runs if exists.
+        for (Image image : m_osClient.images().list()) {
+            if (image.getName().equalsIgnoreCase(imageNameToCreate)) {
+                m_osClient.images().delete(image.getId());
+            }
+        }
+
+
+        JSONObject jo = new JSONObject();
+
+        jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
+        jo.put("procedureName", "CreateImage");
+
+        JSONArray actualParameterArray = new JSONArray();
+        actualParameterArray.put(new JSONObject()
+                .put("value", "hp")
+                .put("actualParameterName", "connection_config"));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "tenant_id")
+                .put("value", TENANTID));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "name")
+                .put("value", imageNameToCreate));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "disk_format")
+                .put("value", prop.getProperty(DISK_FORMAT)));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "container_format")
+                .put("value", prop.getProperty(CONTAINER_FORMAT)));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "is_local")
+                .put("value", "1"));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "image_path")
+                .put("value", prop.get(LOCAL_IMAGE_PATH)));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "size")
+                .put("value", ""));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "checksum")
+                .put("value", ""));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "min_ram")
+                .put("value", "1"));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "min_disk")
+                .put("value", "1"));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "owner_name")
+                .put("value", TENANTID));
+
+        actualParameterArray.put(new JSONObject()
+                .put("actualParameterName", "tag")
+                .put("value", "1"));
+
+        jo.put("actualParameter", actualParameterArray);
+
+        System.out.println("Creating image [" + imageNameToCreate + "].");
+        String jobId = callRunProcedure(jo);
+
+        String response = waitForJob(jobId);
+
+        // Check job status
+        assertEquals("Job completed without errors", "success", response);
+
+        // Get the keypair from OpenStack
+        Image imageFromOpenstack = null;
+
+        for (Image image : m_osClient.images().list()) {
+            if (image.getName().equalsIgnoreCase(imageNameToCreate)) {
+                imageFromOpenstack = image;
+            }
+        }
+
+        // Assert Image with name "automatedTest-testImageCreation" is created
+        assertNotNull("Image did not get created on glance.",imageFromOpenstack);
+
+        imageId = imageFromOpenstack.getId();
+
+        // Grab the image attributes and verify it.
+        assertEquals("Image name is not set correctly", imageNameToCreate, imageFromOpenstack.getName());
+        assertEquals("Disk format is not set correctly", prop.getProperty(DISK_FORMAT), imageFromOpenstack.getDiskFormat().value().toString());
+        assertEquals("Container format is not set correctly", prop.getProperty(CONTAINER_FORMAT), imageFromOpenstack.getContainerFormat().value().toString());
+        assertEquals("Min-disk is not set correctly", "1", Long.toString(imageFromOpenstack.getMinDisk()));
+        assertEquals("Min-ram is not set correctly", "1", Long.toString(imageFromOpenstack.getMinRam()));
+        assertEquals("Owner is not set correctly", TENANTID, imageFromOpenstack.getOwner().toString());
+
+    }
+
+    @AfterClass
+    public static void cleanup() throws JSONException {
+
+        System.out.println("Cleaning up Openstack resources.");
+
+        if (imageId != null) {
+           m_osClient.images().delete(imageId);
+        }
+        if (stackId != null) {
+            m_osClient.heat().stacks().delete(stackNameToCreate, stackId);
+        }
+
+        System.out.println("Cleaned up the resources.");
+    }
 
     /**
      * callRunProcedure
@@ -491,12 +622,10 @@ public class OpenStackProvisionTest {
     /**
      * Delete the openstack configuration used for this test suite (clear previous runs)
      */
-
-    private static void deleteConfiguration() throws  JSONException{
+    private static void deleteConfiguration() throws JSONException{
         String jobId = "";
         JSONObject param1 = new JSONObject();
         JSONObject jo = new JSONObject();
-
         jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
         jo.put("procedureName", "DeleteConfiguration");
 
@@ -511,21 +640,18 @@ public class OpenStackProvisionTest {
 
         // Block on job completion
         waitForJob(jobId);
-
         // Do not check job status. Delete will error if it does not exist
         // which is OK since that is the expected state.
-
     }
 
     /**
      * Create the openstack configuration used for this test suite
      */
-    private static void createConfiguration() throws  JSONException {
+    private static void createConfiguration() throws JSONException {
 
         String response = "";
         JSONObject parentJSONObject = new JSONObject();
         JSONArray actualParameterArray = new JSONArray();
-
 
         parentJSONObject.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
         parentJSONObject.put("procedureName", "CreateConfiguration");
@@ -586,7 +712,6 @@ public class OpenStackProvisionTest {
                 .put("actualParameterName", "orchestration_service_url")
                 .put("value", prop.getProperty(ORCHESTRATION_SERVICE_URL)));
 
-
         parentJSONObject.put("actualParameter", actualParameterArray);
 
         JSONArray credentialArray = new JSONArray();
@@ -604,23 +729,17 @@ public class OpenStackProvisionTest {
 
         // Check job status
         assertEquals("Job completed without errors", "success", response);
-
     }
     /**
      * Load the properties file
      */
     private static Properties loadProperties() {
-
         Properties prop = new Properties();
         InputStream input = null;
-
         try {
-
             input = new FileInputStream("ecplugin_test.properties");
             // load a properties file
             prop.load(input);
-
-
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
