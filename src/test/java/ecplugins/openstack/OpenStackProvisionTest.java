@@ -14,9 +14,13 @@ import org.json.JSONObject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openstack4j.api.Builders;
 import org.openstack4j.api.OSClient;
 import org.openstack4j.model.compute.Keypair;
 
+import org.openstack4j.model.compute.Server;
+import org.openstack4j.model.compute.ServerCreate;
+import org.openstack4j.model.storage.block.Volume;
 import static org.junit.Assert.*;
 import org.openstack4j.model.heat.Stack;
 import org.openstack4j.model.image.Image;
@@ -29,8 +33,13 @@ import java.lang.String;
 import java.lang.System;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Properties;
+
+import static org.junit.Assert.*;
 
 
 @SuppressWarnings("HardCodedStringLiteral")
@@ -59,11 +68,15 @@ public class OpenStackProvisionTest {
     private final static String DISK_FORMAT = "disk_format";
     private final static String CONTAINER_FORMAT = "container_format";
     private final static String LOCAL_IMAGE_PATH = "local_image_path";
+    private final static String AVAILABILITY_ZONE = "availability_zone";
+    private final static String VOLUME_TYPE = "volume_type";
     private final static long WAIT_TIME = 60000;
     private final static long TIMEOUT_PERIOD_SEC = 180000; // Timeout period of 5 mins.
     private static String imageId = null;
     private static String stackId = null;
     private static String stackNameToCreate = null;
+    private static String serverId = null;
+    private static String volumeId = null;
 
     @BeforeClass
     public static void setup() throws JSONException{
@@ -130,6 +143,305 @@ public class OpenStackProvisionTest {
         // Grab the keypair name and check its name
         assertEquals("Keypair name is set correctly", keyNameToCreate, keypair.getName());
 
+    }
+
+    @Test
+    public void testBlockStorageServices() throws JSONException {
+
+        String volumeNameToCreate = "automatedTest-testVolumeCreation";
+        String attachmentID;
+        Volume volumeFromOpenstack = null;
+
+        List<? extends Volume> listOfVolumes = m_osClient.blockStorage().volumes().list();
+
+        for (Volume volume : listOfVolumes) {
+            if (volume.getName().equalsIgnoreCase(volumeNameToCreate)) {
+                m_osClient.blockStorage().volumes().delete(volume.getId());
+            }
+        }
+
+        {
+            // Scope : Create Volume
+
+            JSONObject jo = new JSONObject();
+
+            jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
+            jo.put("procedureName", "CreateVolume");
+
+            JSONArray actualParameterArray = new JSONArray();
+            actualParameterArray.put(new JSONObject()
+                    .put("value", "hp")
+                    .put("actualParameterName", "connection_config"));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "tenant_id")
+                    .put("value", TENANTID));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "display_name")
+                    .put("value", volumeNameToCreate));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "size")
+                    .put("value", "1"));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "volume_type")
+                    .put("value", prop.getProperty(VOLUME_TYPE)));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "availability_zone")
+                    .put("value", prop.getProperty(AVAILABILITY_ZONE)));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "tag")
+                    .put("value", "1"));
+
+            jo.put("actualParameter", actualParameterArray);
+
+            System.out.println("Creating volume [" + volumeNameToCreate + "].");
+
+            String jobId = callRunProcedure(jo);
+
+            String response = waitForJob(jobId);
+
+            assertEquals("Job completed with errors", "success", response);
+
+            // Get the Volume from OpenStack
+            listOfVolumes = m_osClient.blockStorage().volumes().list();
+
+            for (Volume volume : listOfVolumes) {
+
+                if (volume.getName().equalsIgnoreCase(volumeNameToCreate)) {
+                    // Found the volume with expected name.
+                    volumeFromOpenstack = volume;
+                }
+            }
+
+            // Assert volumeFromOpenstack is not null
+            assertNotNull(volumeFromOpenstack);
+
+            // Grab the Volume attributes and verify them
+            assertEquals("Volume name is not set correctly", volumeNameToCreate, volumeFromOpenstack.getName());
+            assertEquals("Volume size is not set correctly", 1, volumeFromOpenstack.getSize());
+            assertEquals("Volume type is not set correctly", prop.getProperty(VOLUME_TYPE), volumeFromOpenstack.getVolumeType());
+            assertEquals("Volume availability zone is not set correctly", prop.getProperty(AVAILABILITY_ZONE), volumeFromOpenstack.getZone());
+
+            volumeId = volumeFromOpenstack.getId();
+
+        } // end Scope : Create Volume
+
+        {
+            // Scope : Extend Volume
+
+            JSONObject jo = new JSONObject();
+
+            jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
+            jo.put("procedureName", "ExtendVolume");
+
+            JSONArray actualParameterArray = new JSONArray();
+            actualParameterArray.put(new JSONObject()
+                    .put("value", "hp")
+                    .put("actualParameterName", "connection_config"));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "tenant_id")
+                    .put("value", TENANTID));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "volume_id")
+                    .put("value", volumeId));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "new_size")
+                    .put("value", "2"));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "tag")
+                    .put("value", "1"));
+
+            jo.put("actualParameter", actualParameterArray);
+
+            System.out.println("Extending volume [" + volumeNameToCreate + "] to 2 GB size.");
+
+            String jobId = callRunProcedure(jo);
+
+            String response = waitForJob(jobId);
+
+            assertEquals("Job completed with errors", "success", response);
+            assertEquals("Volume size not extended.", "2", Integer.toString(m_osClient.blockStorage().volumes().get(volumeId).getSize()));
+
+        } // end Scope : Extend Volume
+
+        // Create a instance to which the created volume can be attached.
+
+        System.out.println("Creating server [TestServer] to attach a volume to it.");
+        ServerCreate testServer = Builders.server().name("TestServer").image(prop.getProperty(IMAGE_ID)).flavor(prop.getProperty(FLAVOR_ID)).availabilityZone(prop.getProperty(AVAILABILITY_ZONE)).build();
+        Server server = m_osClient.compute().servers().boot(testServer);
+        serverId = server.getId();
+        Server.Status serverStatus = m_osClient.compute().servers().get(serverId).getStatus();
+        System.out.println("Waiting for server [TestServer] to become active ...");
+        long timeTaken = 0;
+        while (!serverStatus.toString().equalsIgnoreCase("ACTIVE")) {
+            if (timeTaken >= TIMEOUT_PERIOD_SEC) {
+                // Ensure that the test must fail
+                fail("Could not create instance [TestServer] within time.Check the openstack services and re-run the test.");
+                return;
+            }
+            try {
+                Thread.sleep(WAIT_TIME);
+                timeTaken += WAIT_TIME;
+                serverStatus = m_osClient.compute().servers().get(serverId).getStatus();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("Server [TestServer] became " + serverStatus);
+
+
+        {
+            //Scope : Attach Volume
+
+            JSONObject jo = new JSONObject();
+
+            jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
+            jo.put("procedureName", "AttachVolume");
+
+            JSONArray actualParameterArray = new JSONArray();
+            actualParameterArray.put(new JSONObject()
+                    .put("value", "hp")
+                    .put("actualParameterName", "connection_config"));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "tenant_id")
+                    .put("value", TENANTID));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "server_id")
+                    .put("value", serverId));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "volume_id")
+                    .put("value", volumeId));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "device")
+                    .put("value", "/dev/sdc"));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "tag")
+                    .put("value", "test"));
+
+            jo.put("actualParameter", actualParameterArray);
+
+            System.out.println("Attaching volume [" + volumeNameToCreate + "] to server [TestServer]");
+
+            String jobId = callRunProcedure(jo);
+
+            String response = waitForJob(jobId);
+
+            assertEquals("Job completed with errors", "success", response);
+
+            // Assert volumeFromOpenstack is not null
+            assertNotNull(volumeFromOpenstack);
+
+            // Verify that the volume is in-use indicating it is successfully attached.
+            assertEquals("Volume status is not set correctly", "in-use", m_osClient.blockStorage().volumes().get(volumeId).getStatus().toString());
+
+            // Get volume attachment ID from commander.
+            String propertyPath = "/jobs/" + jobId + "/OpenStack/deployed/test/VolumeAttachment/ID";
+            attachmentID = getProperty(propertyPath);
+
+
+        } // end Scope : Attach Volume
+
+
+        {
+            //Scope : Detach Volume
+
+
+            JSONObject jo = new JSONObject();
+
+            jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
+            jo.put("procedureName", "DetachVolume");
+
+            JSONArray actualParameterArray = new JSONArray();
+            actualParameterArray.put(new JSONObject()
+                    .put("value", "hp")
+                    .put("actualParameterName", "connection_config"));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "tenant_id")
+                    .put("value", TENANTID));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "server_id")
+                    .put("value", serverId));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "volume_id")
+                    .put("value", volumeId));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "attachment_id")
+                    .put("value", attachmentID));
+
+            jo.put("actualParameter", actualParameterArray);
+
+            System.out.println("Detaching [" + volumeNameToCreate + "] from server [TestServer].");
+            String jobId = callRunProcedure(jo);
+
+            String response = waitForJob(jobId);
+
+            // Check job status
+            assertEquals("Job completed with errors", "success", response);
+
+            // Verify that the volume is available indicating it is successfully detached.
+            assertEquals("Volume status is not set correctly", "available", m_osClient.blockStorage().volumes().get(volumeId).getStatus().toString());
+
+        }
+
+
+        {
+            //Scope : Delete Volume
+
+            JSONObject jo = new JSONObject();
+
+            jo.put("projectName", "EC-OpenStack-" + PLUGIN_VERSION);
+            jo.put("procedureName", "DeleteVolume");
+
+            JSONArray actualParameterArray = new JSONArray();
+            actualParameterArray.put(new JSONObject()
+                    .put("value", "hp")
+                    .put("actualParameterName", "connection_config"));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "tenant_id")
+                    .put("value", TENANTID));
+
+            actualParameterArray.put(new JSONObject()
+                    .put("actualParameterName", "volume_id")
+                    .put("value", volumeId));
+
+            jo.put("actualParameter", actualParameterArray);
+
+            System.out.println("Deleting volume [" + volumeNameToCreate + "].");
+            String jobId = callRunProcedure(jo);
+
+            String response = waitForJob(jobId);
+
+            // Check job status
+            assertEquals("Job completed with errors", "success", response);
+
+            volumeFromOpenstack = null;
+            // Check for existance of volume
+            volumeFromOpenstack = m_osClient.blockStorage().volumes().get(volumeId);
+
+
+            // Assert volumeFromOpenstack is null
+            assertNotEquals("Volume did not get deleted successfully.", "available", volumeFromOpenstack.getStatus().toString());
+
+        }
     }
 
     @Test
@@ -213,6 +525,7 @@ public class OpenStackProvisionTest {
             }
 
             System.out.println("Creating stack [" + stackNameToCreate + "] with template : ." + template);
+
             String jobId = callRunProcedure(jo);
 
             String response = waitForJob(jobId);
@@ -476,10 +789,17 @@ public class OpenStackProvisionTest {
     }
 
     @AfterClass
-    public static void cleanup() throws JSONException {
+    public static void cleanup() throws JSONException{
 
         System.out.println("Cleaning up Openstack resources.");
 
+
+        if (volumeId != null) {
+            m_osClient.blockStorage().volumes().delete(volumeId);
+        }
+        if (serverId != null) {
+            m_osClient.compute().servers().delete(serverId);
+        }
         if (imageId != null) {
            m_osClient.images().delete(imageId);
         }
@@ -528,6 +848,7 @@ public class OpenStackProvisionTest {
         return "";
 
     }
+
 
     /**
      * getProperty
