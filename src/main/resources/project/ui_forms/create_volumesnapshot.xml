@@ -1,0 +1,69 @@
+<editor>
+    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#CreateVolumeSnapshot</help>
+    <formElement>
+        <label>Configuration:</label>
+        <property>connection_config</property>
+        <value/>
+        <documentation>The name of the config which holds all the connection information. This must reference a valid existing configuration.</documentation>
+        <required>1</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
+        <label>Tenant ID:</label>
+        <property>tenant_id</property>
+        <value/>
+        <documentation>ID of the tenant to use.</documentation>
+        <required>1</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
+        <label>Name of volume snapshot:</label>
+        <property>display_name</property>
+        <value/>
+        <documentation>The display name for the new volume snapshot.</documentation>
+        <required>1</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
+        <label>Description:</label>
+        <property>display_desc</property>
+        <value/>
+        <documentation>Description of new snapshot.</documentation>
+        <required>0</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
+        <label>Create a snapshot forcefully ? :</label>
+        <property>force</property>
+        <value/>
+        <documentation>Create snapshot forcefully or not (True / False). Default : False</documentation>
+        <required>0</required>
+        <type>checkbox</type>
+        <checkedValue>1</checkedValue>
+        <uncheckedValue>0</uncheckedValue>
+    </formElement>
+    <formElement>
+        <label>Volume ID:</label>
+        <property>volume_id</property>
+        <value/>
+        <documentation>The ID of the volume from which to create a snapshot.</documentation>
+        <required>1</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
+        <label>Results Location:</label>
+        <property>location</property>
+        <value/>
+        <documentation>The ElectricCommander location to store properties (default is /myJob/OpenStack/deployed).</documentation>
+        <required>0</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
+        <label>Results tag:</label>
+        <property>tag</property>
+        <value>&#36;[jobStepId]</value>
+        <documentation>The unique tag for this provision to keep it separate from other deployments stored in the same location (default is $[jobStepId]).</documentation>
+        <required>1</required>
+        <type>entry</type>
+    </formElement>
+</editor>

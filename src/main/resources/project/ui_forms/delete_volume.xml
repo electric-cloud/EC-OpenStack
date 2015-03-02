@@ -1,0 +1,27 @@
+<editor>
+    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#DeleteVolume</help>
+    <formElement>
+        <label>Configuration:</label>
+        <property>connection_config</property>
+        <value/>
+        <documentation>The name of the config which holds all the connection information. This must reference a valid existing configuration.</documentation>
+        <required>1</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
+        <label>Tenant ID:</label>
+        <property>tenant_id</property>
+        <value/>
+        <documentation>ID of the tenant to use.</documentation>
+        <required>1</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
+        <label>Volume ID:</label>
+        <property>volume_id</property>
+        <value/>
+        <documentation>The unique identifier of an existing volume to be deleted.</documentation>
+        <required>1</required>
+        <type>entry</type>
+    </formElement>
+</editor>

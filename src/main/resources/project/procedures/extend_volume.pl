@@ -1,5 +1,5 @@
 ##########################
-# attach.volume.pl
+# extend_volume.pl
 ##########################
 use warnings;
 use strict;
@@ -15,16 +15,19 @@ $opts->{connection_config} = q{$[connection_config]};
 # Tenant: Id of the tenant.
 $opts->{tenant_id} = q{$[tenant_id]};
 
-# Name: Name for the new kewypair.
-$opts->{server_id} = q{$[server_id]};
-
-# Results location: property path to store information.
+# Volume ID : ID of the volume that is to extend.
 $opts->{volume_id} = q{$[volume_id]};
 
-# Results tag: tag to identify this job in the resource location
-$opts->{device} = q{$[device]};
+# New Size : Size to which the volume to extend.
+$opts->{new_size} = q{$[new_size]};
+
+# Results location: property path to store server information.
+$opts->{location} = q{$[location]};
+
+# Deploy tag: tag to identify this deployment in the resource location
+$opts->{tag} = q{$[tag]};
 
 $[/myProject/procedure_helpers/preamble]
 
-$openstack->attach_volume();
+$openstack->extend_volume();
 exit($opts->{exitcode});

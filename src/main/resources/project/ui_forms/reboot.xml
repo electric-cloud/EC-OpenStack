@@ -1,5 +1,5 @@
 <editor>
-    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#CreateVolume</help>
+    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#Reboot</help>
     <formElement>
         <label>Configuration:</label>
         <property>connection_config</property>
@@ -17,27 +17,19 @@
         <type>entry</type>
     </formElement>
     <formElement>
-        <label>Volume Id</label>
-        <property>volume_id</property>
-        <value/>
-        <documentation>Name of the volume to attach</documentation>
-        <required>1</required>
-        <type>entry</type>
-    </formElement>
-    <formElement>
-        <label>Server Id</label>
+        <label>Server ID:</label>
         <property>server_id</property>
         <value/>
-        <documentation>UUID of the server</documentation>
+        <documentation>ID of the Server to reboot.</documentation>
         <required>1</required>
         <type>entry</type>
     </formElement>
     <formElement>
-        <label>Device</label>
-        <property>device</property>
-        <value>auto</value>
-        <documentation>Name of the device</documentation>
+        <label>Reboot Type:</label>
+        <property>reboot_type</property>
+        <value/>
+        <documentation>Reboot type (Hard/Soft).</documentation>
         <required>1</required>
         <type>entry</type>
-    </formElement>
+    </formElement>         
 </editor>

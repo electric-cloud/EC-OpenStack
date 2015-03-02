@@ -65,6 +65,22 @@
         <type>textarea</type>
     </formElement>
     <formElement>
+        <label>Availability Zone:</label>
+        <property>availability_zone</property>
+        <value/>
+        <documentation>The availability zone in which to launch the server.</documentation>
+        <required>0</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
+        <label>Customization script:</label>
+        <property>customization_script</property>
+        <value/>
+        <documentation>Configuration information or scripts to execute upon launch of the server.</documentation>
+        <required>0</required>
+        <type>textarea</type>
+    </formElement>
+    <formElement>
         <label>Results Location:</label>
         <property>location</property>
         <value/>

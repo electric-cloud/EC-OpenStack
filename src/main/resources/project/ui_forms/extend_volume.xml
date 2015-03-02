@@ -1,5 +1,5 @@
 <editor>
-    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#CreateVolume</help>
+    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#ExtendVolume</help>
     <formElement>
         <label>Configuration:</label>
         <property>connection_config</property>
@@ -17,34 +17,34 @@
         <type>entry</type>
     </formElement>
     <formElement>
-        <label>Display Name</label>
-        <property>display_name</property>
+        <label>Volume ID:</label>
+        <property>volume_id</property>
         <value/>
-        <documentation>Name of the volume to display</documentation>
+        <documentation>ID of the volume that is to extend.Volume must be in available state before resizing.</documentation>
         <required>1</required>
         <type>entry</type>
     </formElement>
     <formElement>
-        <label>Size</label>
-        <property>size</property>
+        <label>New size:</label>
+        <property>new_size</property>
         <value/>
-        <documentation>Size of the volume</documentation>
+        <documentation>Size to which the volume to extend.</documentation>
         <required>1</required>
         <type>entry</type>
     </formElement>
     <formElement>
-        <label>Volume Type</label>
-        <property>volume_type</property>
+        <label>Results Location:</label>
+        <property>location</property>
         <value/>
-        <documentation>Type of the volume to create</documentation>
-        <required>1</required>
+        <documentation>The ElectricCommander location to store properties (default is /myJob/OpenStack/deployed).</documentation>
+        <required>0</required>
         <type>entry</type>
     </formElement>
     <formElement>
-        <label>Availability Zone</label>
-        <property>availability_zone</property>
-        <value/>
-        <documentation>Availability Zone of the volume</documentation>
+        <label>Results tag:</label>
+        <property>tag</property>
+        <value>&#36;[jobStepId]</value>
+        <documentation>The unique tag for this provision to keep it separate from other deployments stored in the same location (default is $[jobStepId]).</documentation>
         <required>1</required>
         <type>entry</type>
     </formElement>
