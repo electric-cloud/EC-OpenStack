@@ -13,7 +13,6 @@
         <documentation>Provide the host name or IP address of the Identity Service for OpenStack</documentation>
         <required>1</required>
     </formElement>
-
     <formElement>
         <type>entry</type>
         <label>Keystone API version</label>
@@ -22,7 +21,6 @@
         <documentation>Keystone API version</documentation>
         <required>1</required>
     </formElement>
-
     <formElement>
         <type>entry</type>
         <label>Compute Service URL:</label>
@@ -30,6 +28,54 @@
         <value></value>
         <documentation>Provide the host name or IP address of the Compute Service for OpenStack</documentation>
         <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>API version:</label>
+        <property>api_version</property>
+        <value>2.0</value>
+        <documentation>	The API version</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Block Storage URL:</label>
+        <property>blockstorage_service_url</property>
+        <value></value>
+        <documentation>Provide the host name or IP address of the Block Storage Service for OpenStack</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Blockstorage API version</label>
+        <property>blockstorage_api_version</property>
+        <value></value>
+        <documentation>The OpenStack block storage API version</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Image service URL:</label>
+        <property>image_service_url</property>
+        <value></value>
+        <documentation>Provide the host name or IP address of the Image Service for OpenStack</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Image API version:</label>
+        <property>image_api_version</property>
+        <value></value>
+        <documentation>The OpenStack Image service API version</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Orchestration service URL:</label>
+        <property>orchestration_service_url</property>
+        <value></value>
+        <documentation>Provide the host name or IP address of the Orchestration Service for OpenStack</documentation>
+        <required>0</required>
     </formElement>
     <formElement>
         <type>credential</type>
