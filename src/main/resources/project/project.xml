@@ -3,7 +3,7 @@
     <exportPath>/projects/@PLUGIN_KEY@-@PLUGIN_VERSION@</exportPath>
     <project>
         <projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
-        <description>A project to hold integrations with Openstack cloud</description>
+        <description>A project that has integrations with OpenStack cloud</description>
         <workspaceName/>
         <propertySheet>
             <property>
@@ -92,7 +92,7 @@
             </property>
             <property>
                 <propertyName>ui_forms</propertyName>
-                <description>Property sheet to hold xml specification for forms for configurations</description>
+                <description>Property sheet to hold XML specification for forms for configurations</description>
                 <propertySheet>
                     <property>
                         <propertyName>CreateConfigForm</propertyName>
@@ -316,7 +316,7 @@
             <formalParameter>
                 <formalParameterName>config</formalParameterName>
                 <defaultValue/>
-                <description>Provide a unique name for the connection, keeping in mind that you may need to create additional connections over time.</description>
+                <description>A unique name for the connection. You may have to create additional connections in the future.</description>
                 <expansionDeferred>0</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
@@ -324,21 +324,21 @@
             <formalParameter>
                 <formalParameterName>credential</formalParameterName>
                 <defaultValue/>
-                <description>OpenStack/Openstack account username/password. This account must have enough privileges to perform API functions.</description>
+                <description>User name and password for the OpenStack account. It must have enough privileges to run API functions.</description>
                 <required>1</required>
                 <type>credential</type>
             </formalParameter>
             <formalParameter>
                 <formalParameterName>debug_level</formalParameterName>
                 <defaultValue>1</defaultValue>
-                <description>Level for output: 0=errors only, 1=normal headers and responses, 2+=debugging information included.</description>
+                <description>Level for the output: 0 = only errors, 1 = normal headers and responses, 2 = including debugging information</description>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
             <formalParameter>
                 <formalParameterName>description</formalParameterName>
                 <defaultValue/>
-                <description>Provide a brief description of this configuration.</description>
+                <description>A brief description of this configuration.</description>
                 <required>0</required>
                 <type>textarea</type>
             </formalParameter>
@@ -372,7 +372,7 @@
             <formalParameter>
                 <formalParameterName>identity_service_url</formalParameterName>
                 <defaultValue/>
-                <description>Provide the host name or IP address of the Identity Service for OpenStack</description>
+                <description>The host name or IP address of the Identity Service for OpenStack</description>
                 <expansionDeferred>0</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
@@ -380,7 +380,7 @@
             <formalParameter>
                 <formalParameterName>compute_service_url</formalParameterName>
                 <defaultValue/>
-                <description>Provide the host name or IP address of the Compute Service for OpenStack</description>
+                <description>The host name or IP address of the Compute Service for OpenStack</description>
                 <expansionDeferred>0</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
@@ -388,7 +388,7 @@
             <formalParameter>
                 <formalParameterName>blockstorage_service_url</formalParameterName>
                 <defaultValue/>
-                <description>Provide the host name or IP address of the block storage Service for OpenStack</description>
+                <description>The host name or IP address of the Block Storage for OpenStack</description>
                 <expansionDeferred>0</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
@@ -405,7 +405,7 @@
             <formalParameter>
                 <formalParameterName>image_service_url</formalParameterName>
                 <defaultValue/>
-                <description>Provide the host name or IP address of the Image Service for OpenStack</description>
+                <description>The host name or IP address of the Image Service for OpenStack</description>
                 <expansionDeferred>0</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
@@ -414,7 +414,7 @@
             <formalParameter>
                 <formalParameterName>orchestration_service_url</formalParameterName>
                 <defaultValue/>
-                <description>Provide the host name or IP address of the Orchestration Service for OpenStack</description>
+                <description>The host name or IP address of the Orchestration Service for OpenStack</description>
                 <expansionDeferred>0</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
@@ -432,7 +432,7 @@
             <formalParameter>
                 <formalParameterName>workspace</formalParameterName>
                 <defaultValue>default</defaultValue>
-                <description>The workspace to use for resources dynamically created by this configuration (default is 'default').</description>
+                <description>The workspace used by resources that are dynamically created by this configuration. The default is "default."</description>
                 <expansionDeferred>0</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
@@ -557,7 +557,7 @@
                 <broadcast>0</broadcast>
                 <command/>
                 <condition/>
-                <description>Delete a OpenStack/Openstack configuration</description>
+                <description>Delete an OpenStack configuration</description>
                 <errorHandling>failProcedure</errorHandling>
                 <exclusiveMode>none</exclusiveMode>
                 <logFileName/>
@@ -1719,7 +1719,7 @@
             <formalParameter>
                 <formalParameterName>connection_config</formalParameterName>
                 <defaultValue></defaultValue>
-                <description>The name of the config which holds all the connection information for OpenStack.</description>
+                <description>The name of the configuration that has all the connection information for OpenStack.</description>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
@@ -3928,7 +3928,7 @@
         </procedure>
         <procedure>
             <procedureName>CloudManagerSync</procedureName>
-            <description>Hook for CloudManager to sync servers</description>
+            <description>Hook used by CloudManager to synchronize servers</description>
             <jobNameTemplate>EC-OpenStack-CloudManagerSync-$[jobId]</jobNameTemplate>
             <resourceName/>
             <workspaceName/>
@@ -3992,7 +3992,7 @@
             <formalParameter>
                 <formalParameterName>connection_config</formalParameterName>
                 <defaultValue/>
-                <description>The name of the config which holds all the connection information for OpenStack.</description>
+                <description>The name of the configuration that has all the connection information for OpenStack.</description>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
