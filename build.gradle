@@ -190,7 +190,6 @@ task assemblePluginJar(type: Jar, dependsOn: [processProjectXml, compileGwt]) {
 	}
 
 	outputs.upToDateWhen { false }
-	appendix = "plugin"
 	destinationDir = buildDir
 	includeEmptyDirs = false
 	excludes = [
