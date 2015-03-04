@@ -689,11 +689,15 @@ sub deploy_vm {
     if ( $addresses->{private}[0]->{addr} ) {
         $private_ip = $addresses->{private}[0]->{addr};
     }
-    if ( $json_result->{server}->{availability_zone} ) {
-        $availability_zone = $json_result->{server}->{availability_zone};
+    if ( $json_result->{server}->{'OS-EXT-AZ:availability_zone'} ) {
+        $availability_zone =$json_result->{server}->{'OS-EXT-AZ:availability_zone'};
+        $self->setProp( "/Server-$id/AvailabilityZone", "$availability_zone" );
+
     }
-    if ( $json_result->{server}->{customization_script} ) {
-        $customization_script = $json_result->{server}->{customization_script};
+    if ( $self->opts->{customization_script} ) {
+        $customization_script = $self->opts->{customization_script};
+        $self->setProp( "/Server-$id/CustomizationScript",
+                        "$customization_script" );
     }
 
     if ( "$vms_list" ne $EMPTY ) { $vms_list .= q{;}; }
@@ -740,9 +744,7 @@ sub deploy_vm {
     $self->setProp( "/Server-$id/AMI",              "$image_id" );
     $self->setProp( "/Server-$id/Address",          "$public_ip" );
     $self->setProp( "/Server-$id/Private",          "$private_ip" );
-    $self->setProp( "/Server-$id/AvailabilityZone", "$availability_zone" );
-    $self->setProp( "/Server-$id/CustomizationScript",
-        "$customization_script" );
+
 
     $self->debug_msg( $DEBUG_LEVEL_1, q{Server } . $name . q{ deployed.} );
     return;
@@ -881,7 +883,7 @@ sub reboot {
     }
     else {
         $self->debug_msg( $DEBUG_LEVEL_1,
-            q{Unrecognized reboot type.Terminating ...} );
+            q{Error : Unrecognized reboot type.Terminating ...} );
         return;
     }
     $body = to_json($data);
@@ -1245,7 +1247,7 @@ sub create_volume {
     $json_result = $json->decode($result);
 
     my $volume_id   = $json_result->{volume}->{id};
-    my $volume_name = $json_result->{volume}->{name};
+    my $volume_name = $json_result->{volume}->{display_name};
 
     if ( $json_result->{volume}->{availability_zone} ) {
         $availability_zone = $json_result->{volume}->{availability_zone};
