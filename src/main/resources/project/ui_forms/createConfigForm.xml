@@ -64,10 +64,10 @@
     </formElement>
     <formElement>
         <type>entry</type>
-        <label>API version:</label>
+        <label>Compute API version:</label>
         <property>api_version</property>
         <value>2.0</value>
-        <documentation>	The API version</documentation>
+        <documentation>	The Compute service API version</documentation>
         <required>1</required>
     </formElement>
     <formElement>
