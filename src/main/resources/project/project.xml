@@ -15,36 +15,170 @@
                         <description></description>
                         <propertySheet>
                             <property>
-                                <propertyName>provisionOperation</propertyName>
+                                <propertyName>provision</propertyName>
                                 <description></description>
-                                <expandable>1</expandable>
-                                <value>Deploy</value>
+
+                                <propertySheet>
+                                    <property>
+                                        <propertyName>procedureName</propertyName>
+                                        <description></description>
+                                        <expandable>1</expandable>
+                                        <value>Deploy</value>
+                                    </property>
+                                    <property>
+                                        <propertyName>ui_formRefs</propertyName>
+                                        <description></description>
+                                        <propertySheet>
+                                            <property>
+                                                <propertyName>parameterForm</propertyName>
+                                                <description></description>
+                                                <expandable>1</expandable>
+                                                <value>ec_customParameterForm</value>
+                                            </property>
+                                        </propertySheet>
+                                    </property>
+                                    <property>
+                                        <propertyName>parameterRefs</propertyName>
+                                        <description></description>
+                                        <propertySheet>
+                                            <property>
+                                                <propertyName>configuration</propertyName>
+                                                <description></description>
+                                                <expandable>1</expandable>
+                                                <value>connection_config</value>
+                                            </property>
+                                            <property>
+                                                <propertyName>resourcePool</propertyName>
+                                                <description></description>
+                                                <expandable>1</expandable>
+                                                <value>resource_pool</value>
+                                            </property>
+                                            <property>
+                                                <propertyName>count</propertyName>
+                                                <description></description>
+                                                <expandable>1</expandable>
+                                                <value>quantity</value>
+                                            </property>
+                                        </propertySheet>
+                                    </property>
+                                </propertySheet>
+                            </property>
+                            <property>
+                                <propertyName>retireResource</propertyName>
+                                <description></description>
+                                <propertySheet>
+                                    <property>
+                                        <propertyName>procedureName</propertyName>
+                                        <description></description>
+                                        <expandable>1</expandable>
+                                        <value>RetireResource</value>
+                                    </property>
+                                    <property>
+                                        <propertyName>ui_formRefs</propertyName>
+                                        <description></description>
+                                        <propertySheet>
+                                            <!--Place-holder-->
+                                        </propertySheet>
+                                    </property>
+                                    <property>
+                                        <propertyName>parameterRefs</propertyName>
+                                        <description></description>
+                                        <propertySheet>
+                                            <!--Place-holder-->
+                                        </propertySheet>
+                                    </property>
+                                </propertySheet>
+                            </property>
+                            <property>
+                                <propertyName>retireResourcePool</propertyName>
+                                <description></description>
+                                <propertySheet>
+                                    <property>
+                                        <propertyName>procedureName</propertyName>
+                                        <description></description>
+                                        <expandable>1</expandable>
+                                        <value>RetireResourcePool</value>
+                                    </property>
+                                    <property>
+                                        <propertyName>ui_formRefs</propertyName>
+                                        <description></description>
+                                        <propertySheet>
+                                            <!--Place-holder-->
+                                        </propertySheet>
+                                    </property>
+                                    <property>
+                                        <propertyName>parameterRefs</propertyName>
+                                        <description></description>
+                                        <propertySheet>
+                                            <!--Place-holder-->
+                                        </propertySheet>
+                                    </property>
+                                </propertySheet>
                             </property>
                             <property>
                                 <propertyName>createConfiguration</propertyName>
                                 <description></description>
-                                <expandable>1</expandable>
-                                <value>CreateConfiguration</value>
+                                <propertySheet>
+                                    <property>
+                                        <propertyName>procedureName</propertyName>
+                                        <description></description>
+                                        <expandable>1</expandable>
+                                        <value>CreateConfiguration</value>
+                                    </property>
+                                    <property>
+                                        <propertyName>ui_formRefs</propertyName>
+                                        <description></description>
+                                        <propertySheet>
+                                            <property>
+                                                <propertyName>parameterForm</propertyName>
+                                                <description></description>
+                                                <expandable>1</expandable>
+                                                <value>ui_forms/CreateConfigForm</value>
+                                            </property>
+                                        </propertySheet>
+                                    </property>
+                                    <property>
+                                        <propertyName>parameterRefs</propertyName>
+                                        <description></description>
+                                        <propertySheet>
+                                            <!--Place-holder-->
+                                        </propertySheet>
+                                    </property>
+                                </propertySheet>
                             </property>
                             <property>
                                 <propertyName>deleteConfiguration</propertyName>
                                 <description></description>
-                                <expandable>1</expandable>
-                                <value>DeleteConfiguration</value>
+                                <propertySheet>
+                                    <property>
+                                        <propertyName>procedureName</propertyName>
+                                        <description></description>
+                                        <expandable>1</expandable>
+                                        <value>DeleteConfiguration</value>
+                                    </property>
+                                    <property>
+                                        <propertyName>ui_formRefs</propertyName>
+                                        <description></description>
+                                        <propertySheet>
+                                            <!--Place-holder-->
+                                        </propertySheet>
+                                    </property>
+                                    <property>
+                                        <propertyName>parameterRefs</propertyName>
+                                        <description></description>
+                                        <propertySheet>
+                                            <!--Place-holder-->
+                                        </propertySheet>
+                                    </property>
+                                </propertySheet>
                             </property>
                         </propertySheet>
                     </property>
                     <property>
-                        <propertyName>instanceParameterFormXMLref</propertyName>
+                        <propertyName>hasConfiguration</propertyName>
                         <description></description>
                         <expandable>1</expandable>
-                        <value>ec_parameterForm</value>
-                    </property>
-                    <property>
-                        <propertyName>configurationFormXMLref</propertyName>
-                        <description></description>
-                        <expandable>1</expandable>
-                        <value>ui_forms/CreateConfigForm</value>
+                        <value>1</value>
                     </property>
                     <property>
                         <propertyName>configurationLocation</propertyName>
@@ -57,12 +191,6 @@
                         <description></description>
                         <expandable>1</expandable>
                         <value>OpenStack</value>
-                    </property>
-                    <property>
-                        <propertyName>pluginKey</propertyName>
-                        <description></description>
-                        <expandable>1</expandable>
-                        <value>EC-OpenStack</value>
                     </property>
                 </propertySheet>
             </property>
@@ -798,6 +926,12 @@
                     <propertyName>ec_parameterForm</propertyName>
                     <description/>
                     <expandable>0</expandable>
+                    <value/>
+                </property>
+                <property>
+                    <propertyName>ec_customParameterForm</propertyName>
+                    <description/>
+                    <expandable>1</expandable>
                     <value/>
                 </property>
             </propertySheet>
