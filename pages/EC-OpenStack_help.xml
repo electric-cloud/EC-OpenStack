@@ -1593,6 +1593,10 @@ outline used above where possible.
 
 
     <h1>Release Notes</h1>
+    <h2>@PLUGIN_KEY@ 1.1.2</h2>
+    <ul>
+      <li>Added properties in 'ec_cloudprovisioning_plugin' property sheet for use in ElectricFlow Deploy</li>
+    </ul>
   <h2>@PLUGIN_KEY@ 1.1.1</h2>
   <ul>
     <li>Added keystone v3 authorization</li>

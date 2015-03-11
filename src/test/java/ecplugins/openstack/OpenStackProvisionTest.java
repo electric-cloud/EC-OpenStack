@@ -32,10 +32,8 @@ import static org.junit.Assert.*;
 import org.openstack4j.model.heat.Stack;
 import org.openstack4j.model.image.Image;
 import org.openstack4j.openstack.OSFactory;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+
+import java.io.*;
 import java.security.Security;
 import java.util.Map;
 import java.util.Properties;
@@ -88,7 +86,7 @@ public class OpenStackProvisionTest {
     private static Properties prop;
 
     @BeforeClass
-    public static void setup() throws JSONException{
+    public static void setup() throws JSONException, IOException {
 
         m_osClient = OSFactory.builder()
                 .endpoint(IDENTITY_URL)
@@ -102,7 +100,50 @@ public class OpenStackProvisionTest {
     }
 
     @Test
-    public void testkeyPairCreation() throws JSONException {
+    public void testCloudProvisioningProps() throws JSONException, IOException {
+        String pluginRoot = "/plugins/EC-OpenStack-" + PLUGIN_VERSION + "/project";
+        String cloudPropRoot = pluginRoot + "/ec_cloudprovisioning_plugin";
+
+        //Checking top-level properties for ec_cloudprovisioning_plugin
+        validatePropertySheetExists(cloudPropRoot);
+        validateProperty(cloudPropRoot + "/configurationLocation", "openstack_cfgs");
+        validateProperty(cloudPropRoot + "/hasConfiguration", "1");
+        validateProperty(cloudPropRoot + "/displayName", "OpenStack");
+
+        String operationsPropRoot = cloudPropRoot + "/operations";
+        validatePropertySheetExists(operationsPropRoot);
+
+        //Checking createConfiguration operation properties
+        String createConfigPropRoot = operationsPropRoot + "/createConfiguration";
+        validatePropertySheetExists(createConfigPropRoot);
+        validateProperty(createConfigPropRoot + "/procedureName", "CreateConfiguration");
+        validateProperty(createConfigPropRoot + "/ui_formRefs/parameterForm", "ui_forms/CreateConfigForm");
+
+        //Checking deleteConfiguration operation properties
+        String deleteConfigPropRoot = operationsPropRoot + "/deleteConfiguration";
+        validatePropertySheetExists(deleteConfigPropRoot);
+        validateProperty(deleteConfigPropRoot + "/procedureName", "DeleteConfiguration");
+
+        //Checking provision operation properties
+        String provisionPropRoot = operationsPropRoot + "/provision";
+        validatePropertySheetExists(provisionPropRoot);
+        validateProperty(provisionPropRoot + "/procedureName", "Deploy");
+        validateProperty(provisionPropRoot + "/ui_formRefs/parameterForm", "ec_customParameterForm");
+
+        //Checking retireResourcePool operation properties
+        String retireRsrcPoolPropRoot = operationsPropRoot + "/retireResourcePool";
+        validatePropertySheetExists(retireRsrcPoolPropRoot);
+        validateProperty(retireRsrcPoolPropRoot + "/procedureName", "RetireResourcePool");
+
+        //Checking retireResource operation properties
+        String retireRsrcPropRoot = operationsPropRoot + "/retireResource";
+        validatePropertySheetExists(retireRsrcPropRoot);
+        validateProperty(retireRsrcPropRoot + "/procedureName", "RetireResource");
+
+    }
+
+    @Test
+    public void testkeyPairCreation() throws JSONException, IOException {
 
         String keyNameToCreate = "automatedTest-testkeyPairCreation";
 
@@ -156,7 +197,7 @@ public class OpenStackProvisionTest {
 
 
     @Test
-    public void testBlockStorageServices() throws JSONException {
+    public void testBlockStorageServices() throws JSONException, IOException {
 
         String volumeNameToCreate = "automatedTest-testVolumeCreation";
         String attachmentID;
@@ -455,7 +496,7 @@ public class OpenStackProvisionTest {
     }
 
     @Test
-    public void testOrchestrationServices() throws JSONException {
+    public void testOrchestrationServices() throws JSONException, IOException {
 
         stackNameToCreate = "automatedTest-testStackCreation";
         Stack stackFromOpenstack = null;
@@ -694,7 +735,7 @@ public class OpenStackProvisionTest {
      * must be provided in "local_image_path" property in property file.
      */
     @Test
-    public void testImageServices() throws JSONException{
+    public void testImageServices() throws JSONException, IOException {
 
         String imageNameToCreate = "automatedTest-testImageCreation";
 
@@ -1142,42 +1183,53 @@ public class OpenStackProvisionTest {
 
     }
 
+    private void validatePropertySheetExists(String propertyPath) throws IOException, JSONException {
+        validatePropertyExists(propertyPath, /*expectPropertySheet*/ true);
+    }
+
+    private void validatePropertyExists(String propertyPath) throws IOException, JSONException {
+        validatePropertyExists(propertyPath, /*expectPropertySheet*/ false);
+    }
+
+    private void validatePropertyExists(String propertyPath, boolean expectPropertySheet) throws IOException, JSONException {
+
+        String url = "http://" + COMMANDER_USER + ":" + COMMANDER_PASSWORD +
+                "@" + COMMANDER_SERVER + ":8000/rest/v1.0/properties/" + propertyPath;
+        JSONObject result = performHTTPGet(url);
+        assertTrue("Expect the property " + propertyPath + " to be defined", result.has("property"));
+
+        if (expectPropertySheet) {
+            assertTrue("Expect the property " + propertyPath + " to be defined as a property sheet",
+                    result.getJSONObject("property").has("propertySheetId"));
+        } else {
+            assertFalse("Expect the property " + propertyPath + " to be defined as a simple property and *not* a property sheet",
+                    result.getJSONObject("property").has("propertySheetId"));
+        }
+    }
+
+    private void validateProperty(String propertyPath, String expectedValue) throws IOException, JSONException {
+
+        String value = getProperty(propertyPath);
+        assertEquals("Incorrect value found for property: " + propertyPath, expectedValue, value);
+    }
 
     /**
-     * getProperty
+     * Retrieves the property value from the commander server. The lookup
+     * will fail if the property does not exist or if the property is a
+     * property sheet and not a simple property.
      *
-     * @return the value of the property
+     * @return the value of the property. Returns null if the property does not
+     * have any value specified.
      * @path a property path
      */
-    public static String getProperty(String path) {
+    public static String getProperty(String path) throws IOException, JSONException {
 
-        HttpClient httpClient = new DefaultHttpClient();
-        JSONObject result = null;
-        try {
-            HttpGet httpPostRequest = new HttpGet("http://" + COMMANDER_USER
-                    + ":" + COMMANDER_PASSWORD + "@" + COMMANDER_SERVER
-                    + ":8000/rest/v1.0/properties/" + path);
-
-
-            HttpResponse httpResponse = httpClient.execute(httpPostRequest);
-
-            result = new JSONObject(EntityUtils.toString(httpResponse.getEntity()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            httpClient.getConnectionManager().shutdown();
-        }
-
-        if (result != null) {
-            try {
-                return result.getJSONObject("property").getString("value");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return "";
-
+        String url = "http://" + COMMANDER_USER + ":" + COMMANDER_PASSWORD +
+                "@" + COMMANDER_SERVER + ":8000/rest/v1.0/properties/" + path;
+        JSONObject result = performHTTPGet(url);
+        assertTrue("Expect the property " + path + " to be defined", result.has("property"));
+        return result.getJSONObject("property").has("value") ?
+                result.getJSONObject("property").getString("value") : null;
     }
 
     /**
@@ -1186,7 +1238,7 @@ public class OpenStackProvisionTest {
      * @param jobId
      * @return outcome of job
      */
-    public static String waitForJob(String jobId) {
+    public static String waitForJob(String jobId) throws IOException, JSONException {
 
         String url = "http://" + COMMANDER_USER + ":" + COMMANDER_PASSWORD +
                 "@" + COMMANDER_SERVER + ":8000/rest/v1.0/jobs/" +
@@ -1213,30 +1265,30 @@ public class OpenStackProvisionTest {
      * @param url
      * @return JSONObject
      */
-    private static JSONObject performHTTPGet(String url) {
+    private static JSONObject performHTTPGet(String url) throws IOException, JSONException {
 
         HttpClient httpClient = new DefaultHttpClient();
-        HttpResponse httpResponse = null;
-
         try {
             HttpGet httpGetRequest = new HttpGet(url);
 
-            httpResponse = httpClient.execute(httpGetRequest);
+            HttpResponse httpResponse = httpClient.execute(httpGetRequest);
+            if (httpResponse.getStatusLine().getStatusCode() >= 400) {
+                throw new RuntimeException("HTTP GET failed with " +
+                        httpResponse.getStatusLine().getStatusCode() + "-" +
+                        httpResponse.getStatusLine().getReasonPhrase());
+            }
             return new JSONObject(EntityUtils.toString(httpResponse.getEntity()));
 
-        } catch (Exception e) {
-            e.printStackTrace();
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
 
-        return null;
     }
 
     /**
      * Delete the openstack configuration used for this test suite (clear previous runs)
      */
-    private static void deleteConfiguration() throws JSONException{
+    private static void deleteConfiguration() throws JSONException, IOException {
         String jobId = "";
         JSONObject param1 = new JSONObject();
         JSONObject jo = new JSONObject();
@@ -1261,7 +1313,7 @@ public class OpenStackProvisionTest {
     /**
      * Create the openstack configuration used for this test suite
      */
-    private static void createConfiguration() throws JSONException {
+    private static void createConfiguration() throws JSONException, IOException {
 
         String response = "";
         JSONObject parentJSONObject = new JSONObject();
@@ -1347,15 +1399,13 @@ public class OpenStackProvisionTest {
     /**
      * Load the properties file
      */
-    private static Properties loadProperties() {
-        Properties prop = new Properties();
+    private static Properties loadProperties() throws IOException {
         InputStream input = null;
         try {
             input = new FileInputStream("ecplugin_test.properties");
-            // load a properties file
+            Properties prop = new Properties();
             prop.load(input);
-        } catch (IOException ex) {
-            ex.printStackTrace();
+            return prop;
         } finally {
             if (input != null) {
                 try {
@@ -1365,7 +1415,6 @@ public class OpenStackProvisionTest {
                 }
             }
         }
-        return prop;
     }
 
     private static String executeOnRemoteMachine(String hostIp, String command) {
