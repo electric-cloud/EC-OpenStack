@@ -354,7 +354,7 @@
             <formalParameter>
                 <formalParameterName>api_version</formalParameterName>
                 <defaultValue/>
-                <description>API Version</description>
+                <description>The Compute service API version</description>
                 <expansionDeferred>0</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
