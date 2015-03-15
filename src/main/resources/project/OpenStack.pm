@@ -34,6 +34,7 @@ use warnings;
 use ElectricCommander::PropDB;
 use strict;
 use LWP::UserAgent;
+use XML::Simple;
 use MIME::Base64;
 use Encode;
 use Carp;
@@ -759,6 +760,12 @@ sub deploy_vm {
 
 }
 
+sub teardown {
+    my ($self) = @_;
+
+    $self->debug_msg(1, "Teardown ok\n");
+    $self->opts->{exitcode} = 0;
+}
 =over
 
 =item B<cleanup>
@@ -3366,5 +3373,71 @@ sub associate_ip_to_instance {
     return 1;
 
 }
+
+
+
+
+
+sub getInstancesForTermination {
+    my ($ec, $prop) = @_;
+
+    my $retval = [];
+
+
+    my $instance_data = getResourceDetails($ec, $prop);
+
+    if (%$instance_data) {
+	push @$retval, $instance_data;
+	return $retval;
+    }
+    my $data = undef;
+    eval {
+	my $res = $ec->getResourcePool($prop);
+	if ($res) {
+	    my $xml = XMLin($res->{_xml});
+	    $data = $xml->{response}->{resourcePool}->{resourceNames}->{resourceName};
+	}
+    };
+    if (!$data) {
+	return $retval;
+    }
+
+    if (ref $data eq 'ARRAY') {
+	for my $instance (@$data) {
+	    push @$retval, getResourceDetails($ec, $instance);
+	}
+    }
+    else {
+	push @$retval, getResourceDetails($ec, $data);
+    }
+    return $retval;
+}
+
+
+sub getResourceDetails {
+    my ($ec, $prop) = @_;
+    my $instance_data = {};
+    eval {
+	my $res = $ec->getResource($prop);
+	my $p_path = "/resources/$prop/ec_cloud_instance_details";
+	$instance_data = {
+	    instance_id => $ec->getProperty("$p_path/instance_id")->findvalue('//value')->string_value(),
+	    resource_name => $prop,
+	    tenant_id => $ec->getProperty("$p_path/tenant_id")->findvalue('//value')->string_value(),
+	    createdBy => $ec->getProperty("$p_path/createdBy")->findvalue('//value')->string_value(),
+	};
+	eval {
+	    $instance_data->{config} = $ec->getProperty("$p_path/config")->findvalue('//value')->string_value();
+	    1;
+	} or do {
+	    print "Inner eval failed with error: $@\n";
+	};
+	1;
+    } or do {
+	print "outer eval failed with error: $@\n";
+    };
+    return $instance_data;
+}
+
 
 1;

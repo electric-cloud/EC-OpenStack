@@ -10,6 +10,9 @@
     
     ['//procedure[procedureName="Cleanup"]/propertySheet/property[propertyName="ec_parameterForm"]/value',            'ui_forms/cleanup.xml'],
     ['//step[stepName="Cleanup"]/command',                                                                            'procedures/cleanup.pl'],
+
+    ['//procedure[procedureName="Teardown"]/propertySheet/property[propertyName="ec_parameterForm"]/value',            'ui_forms/teardown.xml'],
+    ['//step[stepName="Teardown"]/command',                                                                            'procedures/teardown.pl'],
     
     ['//procedure[procedureName="CreateKeyPair"]/propertySheet/property[propertyName="ec_parameterForm"]/value',            'ui_forms/create.key.xml'],
     ['//step[stepName="CreateKeyPair"]/command',                                                                            'procedures/create.key.pl'],
@@ -40,8 +43,8 @@
     ['//step[stepName="shrink"]/command',                                                                             'procedures/step.shrink.pl'],
 
     ['//procedure[procedureName="CloudManagerSync"]/propertySheet/property[propertyName="ec_parameterForm"]/value', 'ui_forms/sync.xml'],
-    ['//step[stepName="sync"]/command',                                                                             'procedures/step.sync.pl'],    
-    
+    ['//step[stepName="sync"]/command',                                                                             'procedures/step.sync.pl'],
+
     ['//property[propertyName="preamble"]/value',                                                                     'preamble.pl'],
     ['//property[propertyName="OpenStack"]/value',                                                                    'OpenStack.pm'],
     ['//procedure[procedureName="CreateConfiguration"]/step[stepName="CreateConfiguration"]/command',                 'config/createcfg.pl'],
