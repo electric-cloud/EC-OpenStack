@@ -18,15 +18,9 @@ print Dumper $opts;
 $[/myProject/procedure_helpers/preamble];
 
 $ec ||= ElectricCommander->new();
-if (!$openstack) {
-    print "No openstack was initialized";
-}
 
-print "Got parameters: ", $opts->{resource_name}, "\n";
 my $data = OpenStack::getInstancesForTermination($ec, $opts->{resource_name});
 @$data = grep {$_->{createdBy} eq 'EC-OpenStack'}@$data;
-print "Got resources for termintation: ", Dumper $data, "\n";
-my $openstack;
 for my $d (@$data) {
     $opts->{tenant_id} = $d->{tenant_id};
     $opts->{server_id} = $d->{instance_id};
@@ -35,8 +29,7 @@ for my $d (@$data) {
 
     $openstack ||= $ec->__get_openstack_instance_by_options($opts);
     $openstack->get_authentication();
+
     $openstack->cleanup();
 }
-# $openstack->teardown();
-# exit($opts->{exitcode});
 exit 0;

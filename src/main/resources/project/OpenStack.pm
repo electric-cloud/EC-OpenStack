@@ -3397,6 +3397,9 @@ sub getInstancesForTermination {
 	    my $xml = XMLin($res->{_xml});
 	    $data = $xml->{response}->{resourcePool}->{resourceNames}->{resourceName};
 	}
+	1;
+    } or do {
+	print "Error occured: $@\n";
     };
     if (!$data) {
 	return $retval;
@@ -3436,6 +3439,7 @@ sub getResourceDetails {
     } or do {
 	print "outer eval failed with error: $@\n";
     };
+    return {} if !$instance_data->{instance_id};
     return $instance_data;
 }
 
