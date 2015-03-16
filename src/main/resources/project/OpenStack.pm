@@ -34,10 +34,11 @@ use warnings;
 use ElectricCommander::PropDB;
 use strict;
 use LWP::UserAgent;
+use XML::Simple;
 use MIME::Base64;
 use Encode;
 use Carp;
-
+use Data::Dumper;
 use utf8;
 use open IO => ':encoding(utf8)';
 
@@ -642,6 +643,14 @@ sub deploy_vm {
     my $status      = $json_result->{server}->{status} || '';
     my $server_id   = $json_result->{server}->{id};
 
+    # opts for avanced resource creation
+    my $resource_additional_opts = {
+	server_id => $server_id,
+	config_name => $self->opts->{connection_config},
+	image => $self->opts->{image},
+	tenant_id => $self->opts->{tenant_id},
+    };
+
     $self->debug_msg( $DEBUG_LEVEL_1, q{Waiting for action to complete...} );
 
     # Describe
@@ -732,7 +741,7 @@ sub deploy_vm {
         $resource =
           $self->make_new_resource(
             $name . q{-} . $self->opts->{JobId} . q{-} . $self->opts->{tag},
-            $name, $public_ip );
+            $name, $public_ip, $resource_additional_opts);
         $self->setProp( "/Server-$id/Resource", "$resource" );
 
     }
@@ -751,6 +760,12 @@ sub deploy_vm {
 
 }
 
+sub teardown {
+    my ($self) = @_;
+
+    $self->debug_msg(1, "Teardown ok\n");
+    $self->opts->{exitcode} = 0;
+}
 =over
 
 =item B<cleanup>
@@ -3047,7 +3062,7 @@ None.
 =cut
 
 sub make_new_resource {
-    my ( $self, $res_name, $server, $host ) = @_;
+    my ( $self, $res_name, $server, $host, $additional_opts) = @_;
 
     # host must be present
     if ( "$host" eq $EMPTY ) {
@@ -3078,7 +3093,23 @@ sub make_new_resource {
             pools         => "$pool"
         }
     );
+    if ($cmdrresult) {
+	my $ec = $self->myCmdr();
+	my $p_path = "/resources/$res_name/ec_cloud_instance_details";
+	$self->debug_msg(1, Dumper $self);
+	$ec->createProperty($p_path, {propertyType => 'sheet'});
+	$ec->createProperty("$p_path/etc/", {propertyType => 'sheet'});
+	my $pdb = ElectricCommander::PropDB->new($ec, '');
+	$pdb->setProp("$p_path/createdBy", 'EC-OpenStack');
+	$pdb->setProp("$p_path/instance_id", $additional_opts->{server_id});
+	$pdb->setProp("$p_path/config", $additional_opts->{config_name});
+	$pdb->setProp("$p_path/tenant_id", $additional_opts->{tenant_id});
 
+	# let's set other properties for ETC folder
+	$p_path .= '/etc/';
+	$pdb->setProp("$p_path/public_ip", $host);
+	$pdb->setProp("$p_path/image", $additional_opts->{image});
+    }
     #-----------------------------
     # Check for error return
     #-----------------------------
@@ -3343,4 +3374,96 @@ sub associate_ip_to_instance {
 
 }
 
+
+=over
+
+=item static B<getInstancesForTermination>
+
+Returns list of instances for termination. If no instances was found, it will return [].
+
+    my $data = getInstancesForTermination(ElectricCommander->new(), 'resourceOrPoolName');
+
+=back
+
+=cut
+
+sub getInstancesForTermination {
+    my ($ec, $prop) = @_;
+
+    my $retval = [];
+
+
+    my $instance_data = getResourceDetails($ec, $prop);
+
+    if (%$instance_data) {
+	push @$retval, $instance_data;
+	return $retval;
+    }
+    my $data = undef;
+    eval {
+	my $res = $ec->getResourcePool($prop);
+	if ($res) {
+	    my $xml = XMLin($res->{_xml});
+	    $data = $xml->{response}->{resourcePool}->{resourceNames}->{resourceName};
+	}
+	1;
+    } or do {
+	print "Error occured: $@\n";
+    };
+    if (!$data) {
+	return $retval;
+    }
+
+    if (ref $data eq 'ARRAY') {
+	for my $instance (@$data) {
+	    push @$retval, getResourceDetails($ec, $instance);
+	}
+    }
+    else {
+	push @$retval, getResourceDetails($ec, $data);
+    }
+    return $retval;
+}
+
+
+=over
+
+=item static B<getResourceDetails>
+
+Returns hashref with resource data.
+
+    my $resource = getResourceDetails(ElectricCommander->new(), 'resourceName');
+
+=back
+
+=cut
+
+sub getResourceDetails {
+    my ($ec, $prop) = @_;
+    my $instance_data = {};
+    eval {
+	my $res = $ec->getResource($prop);
+	my $p_path = "/resources/$prop/ec_cloud_instance_details";
+	$instance_data = {
+	    instance_id => $ec->getProperty("$p_path/instance_id")->findvalue('//value')->string_value(),
+	    resource_name => $prop,
+	    tenant_id => $ec->getProperty("$p_path/tenant_id")->findvalue('//value')->string_value(),
+	    createdBy => $ec->getProperty("$p_path/createdBy")->findvalue('//value')->string_value(),
+	};
+	eval {
+	    $instance_data->{config} = $ec->getProperty("$p_path/config")->findvalue('//value')->string_value();
+	    1;
+	} or do {
+	    print "Inner eval failed with error: $@\n";
+	};
+	1;
+    } or do {
+	print "outer eval failed with error: $@\n";
+    };
+    return {} if !$instance_data->{instance_id};
+    return $instance_data;
+}
+
+
 1;
+

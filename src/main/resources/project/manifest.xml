@@ -36,6 +36,16 @@
         <path>procedures/cleanup.pl</path>
         <xpath>//step[stepName=&quot;Cleanup&quot;]/command</xpath>
     </file>
+
+    <file>
+        <path>ui_forms/teardown.xml</path>
+        <xpath>//procedure[procedureName=&quot;Teardown&quot;]/propertySheet/property[propertyName=&quot;ec_parameterForm&quot;]/value</xpath>
+    </file>
+    <file>
+        <path>procedures/teardown.pl</path>
+        <xpath>//step[stepName=&quot;Teardown&quot;]/command</xpath>
+    </file>
+    
     <file>
         <path>ui_forms/create.key.xml</path>
         <xpath>//procedure[procedureName=&quot;CreateKeyPair&quot;]/propertySheet/property[propertyName=&quot;ec_parameterForm&quot;]/value</xpath>

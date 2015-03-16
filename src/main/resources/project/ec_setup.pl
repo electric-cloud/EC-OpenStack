@@ -1,134 +1,142 @@
 # The plugin is being promoted, create a property reference in the server's property sheet
 # Data that drives the create step picker registration for this plugin.
 my %deploy = (
-              label       => "OpenStack - Deploy",
-              procedure   => "Deploy",
-              description => "Deploy a new Openstack server.",
-              category    => "Resource Management"
-             );
+    label       => "OpenStack - Deploy",
+    procedure   => "Deploy",
+    description => "Deploy a new Openstack server.",
+    category    => "Resource Management"
+);
+
 my %cleanup = (
-               label       => "OpenStack - Cleanup",
-               procedure   => "Cleanup",
-               description => "Delete an existing server.",
-               category    => "Resource Management"
-              );
+    label       => "OpenStack - Cleanup",
+    procedure   => "Cleanup",
+    description => "Delete an existing server.",
+    category    => "Resource Management"
+);
+my %teardown = (
+    label       => "OpenStack - Teardown",
+    procedure   => "Teardown",
+    description => "Teardown Resource or resource pool.",
+    category    => "Resource Management"
+);
 
 my %createkey = (
-                 label       => "OpenStack - CreateKeyPair",
-                 procedure   => "CreateKeyPair",
-                 description => "Create a new key pair.",
-                 category    => "Resource Management"
-                );
+    label       => "OpenStack - CreateKeyPair",
+    procedure   => "CreateKeyPair",
+    description => "Create a new key pair.",
+    category    => "Resource Management"
+);
 my %deletekey = (
-                 label       => "OpenStack - DeleteKeyPair",
-                 procedure   => "DeleteKeyPair",
-                 description => "Delete an existing key pair.",
-                 category    => "Resource Management"
-                );
+    label       => "OpenStack - DeleteKeyPair",
+    procedure   => "DeleteKeyPair",
+    description => "Delete an existing key pair.",
+    category    => "Resource Management"
+);
 my %allocate = (
-                label       => "OpenStack - AllocateIP",
-                procedure   => "AllocateIP",
-                description => "Allocate a new Floating IP.",
-                category    => "Resource Management"
-               );
+    label       => "OpenStack - AllocateIP",
+    procedure   => "AllocateIP",
+    description => "Allocate a new Floating IP.",
+    category    => "Resource Management"
+);
+
 my %release = (
-               label       => "OpenStack - ReleaseIP",
-               procedure   => "ReleaseIP",
-               description => "Delete an existing Floating IP.",
-               category    => "Resource Management"
-              );
+    label       => "OpenStack - ReleaseIP",
+    procedure   => "ReleaseIP",
+    description => "Delete an existing Floating IP.",
+    category    => "Resource Management"
+);
 
 my %associate = (
-  label       => "OpenStack - AssociateFloatingIP",
-  procedure   => "AssociateFloatingIP",
-  description => "Associate a floating IP to an existing instance.",
-  category    => "Resource Management"
+    label       => "OpenStack - AssociateFloatingIP",
+    procedure   => "AssociateFloatingIP",
+    description => "Associate a floating IP to an existing instance.",
+    category    => "Resource Management"
 );
 
 my %createvolume = (
-                 label       => "OpenStack - CreateVolume",
-                 procedure   => "CreateVolume",
-                 description => "Create a new volume.",
-                 category    => "Resource Management"
-                );
+    label       => "OpenStack - CreateVolume",
+    procedure   => "CreateVolume",
+    description => "Create a new volume.",
+    category    => "Resource Management"
+);
 
 my %attachvolume = (
-                 label       => "OpenStack - AttachVolume",
-                 procedure   => "AttachVolume",
-                 description => "Attach a volume to a server.",
-                 category    => "Resource Management"
-                );
+    label       => "OpenStack - AttachVolume",
+    procedure   => "AttachVolume",
+    description => "Attach a volume to a server.",
+    category    => "Resource Management"
+);
 
 my %extendvolume = (
-                 label       => "OpenStack - ExtendVolume",
-                 procedure   => "ExtendVolume",
-                 description => "Extend the size of existing volume.",
-                 category    => "Resource Management"
-                );
+    label       => "OpenStack - ExtendVolume",
+    procedure   => "ExtendVolume",
+    description => "Extend the size of existing volume.",
+    category    => "Resource Management"
+);
 
 my %detachvolume = (
-                 label       => "OpenStack - DetachVolume",
-                 procedure   => "DetachVolume",
-                 description => "Detach a volume from a server.",
-                 category    => "Resource Management"
-                );
+    label       => "OpenStack - DetachVolume",
+    procedure   => "DetachVolume",
+    description => "Detach a volume from a server.",
+    category    => "Resource Management"
+);
 
 my %deletevolume = (
-                 label       => "OpenStack - DeleteVolume",
-                 procedure   => "DeleteVolume",
-                 description => "Delete a volume.",
-                 category    => "Resource Management"
-                );
+    label       => "OpenStack - DeleteVolume",
+    procedure   => "DeleteVolume",
+    description => "Delete a volume.",
+    category    => "Resource Management"
+);
 
 my %reboot = (
-                 label       => "OpenStack - RebootInstance",
-                 procedure   => "RebootInstance",
-                 description => "Reboots an instance.",
-                 category    => "Resource Management"
-                );
+    label       => "OpenStack - RebootInstance",
+    procedure   => "RebootInstance",
+    description => "Reboots an instance.",
+    category    => "Resource Management"
+);
 
 my %createvolumesnapshot = (
-                 label       => "OpenStack - CreateVolumeSnapshot",
-                 procedure   => "CreateVolumeSnapshot",
-                 description => "Creates a new snapshot of a volume.",
-                 category    => "Resource Management"
-                );
+    label       => "OpenStack - CreateVolumeSnapshot",
+    procedure   => "CreateVolumeSnapshot",
+    description => "Creates a new snapshot of a volume.",
+    category    => "Resource Management"
+);
 
 my %createimage = (
-                 label       => "OpenStack - CreateImage",
-                 procedure   => "CreateImage",
-                 description => "Creates a new image.",
-                 category    => "Resource Management"
-                );
+    label       => "OpenStack - CreateImage",
+    procedure   => "CreateImage",
+    description => "Creates a new image.",
+    category    => "Resource Management"
+);
 
 
 my %createinstancesnapshot = (
-                 label       => "OpenStack - CreateInstanceSnapshot",
-                 procedure   => "CreateInstanceSnapshot",
-                 description => "Creates a new snapshot of an instance.",
-                 category    => "Resource Management"
-                );
+    label       => "OpenStack - CreateInstanceSnapshot",
+    procedure   => "CreateInstanceSnapshot",
+    description => "Creates a new snapshot of an instance.",
+    category    => "Resource Management"
+);
 
 my %createstack = (
-                 label       => "OpenStack - CreateHeatStack",
-                 procedure   => "CreateStack",
-                 description => "Creates a new heat stack from a template.",
-                 category    => "Resource Management"
-                );
+    label       => "OpenStack - CreateHeatStack",
+    procedure   => "CreateStack",
+    description => "Creates a new heat stack from a template.",
+    category    => "Resource Management"
+);
 
 my %updatestack = (
-                 label       => "OpenStack - UpdateHeatStack",
-                 procedure   => "UpdateStack",
-                 description => "Updates existing stack to specified template.",
-                 category    => "Resource Management"
-                );
+    label       => "OpenStack - UpdateHeatStack",
+    procedure   => "UpdateStack",
+    description => "Updates existing stack to specified template.",
+    category    => "Resource Management"
+);
 
 my %deletestack = (
-                 label       => "OpenStack - DeleteHeatStack",
-                 procedure   => "DeleteStack",
-                 description => "Deletes existing stack.",
-                 category    => "Resource Management"
-                );
+    label       => "OpenStack - DeleteHeatStack",
+    procedure   => "DeleteStack",
+    description => "Deletes existing stack.",
+    category    => "Resource Management"
+);
 
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - Deploy");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - Cleanup");
@@ -149,8 +157,9 @@ $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - CreateIn
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - CreateHeatStack");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - UpdateHeatStack");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - DeleteHeatStack");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/OpenStack - Teardown");
 
-@::createStepPickerSteps = (\%deploy, \%cleanup, \%createkey, \%deletekey, \%allocate, \%release, \%associate, \%createvolume, \%attachvolume, \%extendvolume, \%detachvolume, \%deletevolume, \%reboot, \%createvolumesnapshot, \%createimage, \%createinstancesnapshot, \%createstack, \%updatestack, \%deletestack);
+@::createStepPickerSteps = (\%deploy, \%cleanup, \%createkey, \%deletekey, \%allocate, \%release, \%associate, \%createvolume, \%attachvolume, \%extendvolume, \%detachvolume, \%deletevolume, \%reboot, \%createvolumesnapshot, \%createimage, \%createinstancesnapshot, \%createstack, \%updatestack, \%deletestack, \%teardown);
 
 my $pluginName = "@PLUGIN_NAME@";
 my $pluginKey  = "@PLUGIN_KEY@";
@@ -264,13 +273,23 @@ if ($upgradeAction eq "upgrade") {
                                      }
                                     );
             $batch->attachCredential(
-                                     "\$[/plugins/$pluginName/project]",
-                                     $cred,
-                                     {
-                                        procedureName => 'Cleanup',
-                                        stepName      => 'Cleanup'
-                                     }
-                                    );
+		"\$[/plugins/$pluginName/project]",
+		$cred,
+		{
+		    procedureName => 'Cleanup',
+		    stepName      => 'Cleanup'
+		}
+	    );
+
+	    $batch->attachCredential(
+		"\$[/plugins/$pluginName/project]",
+		$cred,
+		{
+		    procedureName => 'Teardown',
+		    stepName      => 'Teardown'
+		}
+	    );
+
             $batch->attachCredential(
                                      "\$[/plugins/$pluginName/project]",
                                      $cred,
