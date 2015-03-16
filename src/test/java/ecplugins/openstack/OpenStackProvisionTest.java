@@ -128,17 +128,17 @@ public class OpenStackProvisionTest {
         String provisionPropRoot = operationsPropRoot + "/provision";
         validatePropertySheetExists(provisionPropRoot);
         validateProperty(provisionPropRoot + "/procedureName", "Deploy");
-        validateProperty(provisionPropRoot + "/ui_formRefs/parameterForm", "ec_customParameterForm");
+        validateProperty(provisionPropRoot + "/ui_formRefs/parameterForm", "ec_parameterForm");
 
         //Checking retireResourcePool operation properties
         String retireRsrcPoolPropRoot = operationsPropRoot + "/retireResourcePool";
         validatePropertySheetExists(retireRsrcPoolPropRoot);
-        validateProperty(retireRsrcPoolPropRoot + "/procedureName", "RetireResourcePool");
+        validateProperty(retireRsrcPoolPropRoot + "/procedureName", "Teardown");
 
         //Checking retireResource operation properties
         String retireRsrcPropRoot = operationsPropRoot + "/retireResource";
         validatePropertySheetExists(retireRsrcPropRoot);
-        validateProperty(retireRsrcPropRoot + "/procedureName", "RetireResource");
+        validateProperty(retireRsrcPropRoot + "/procedureName", "Teardown");
 
     }
 
