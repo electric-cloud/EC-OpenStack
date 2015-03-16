@@ -1238,17 +1238,7 @@
                                     </propertySheet>
                                 </property>
                                 <property>
-                                    <propertyName>server_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
-                                <property>
-                                    <propertyName>resource_name</propertyName>
+                                    <propertyName>resName</propertyName>
                                     <propertySheet>
                                         <property>
                                             <propertyName>formType</propertyName>
