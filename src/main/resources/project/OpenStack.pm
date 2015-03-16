@@ -3375,8 +3375,17 @@ sub associate_ip_to_instance {
 }
 
 
+=over
 
+=item static B<getInstancesForTermination>
 
+Returns list of instances for termination. If no instances was found, it will return [].
+
+    my $data = getInstancesForTermination(ElectricCommander->new(), 'resourceOrPoolName');
+
+=back
+
+=cut
 
 sub getInstancesForTermination {
     my ($ec, $prop) = @_;
@@ -3417,6 +3426,18 @@ sub getInstancesForTermination {
 }
 
 
+=over
+
+=item static B<getResourceDetails>
+
+Returns hashref with resource data.
+
+    my $resource = getResourceDetails(ElectricCommander->new(), 'resourceName');
+
+=back
+
+=cut
+
 sub getResourceDetails {
     my ($ec, $prop) = @_;
     my $instance_data = {};
@@ -3445,3 +3466,4 @@ sub getResourceDetails {
 
 
 1;
+

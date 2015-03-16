@@ -20,10 +20,7 @@ $ec->abortOnError(0);
 my $pluginKey  = 'EC-OpenStack';
 my $xpath      = $ec->getPlugin($pluginKey);
 my $pluginName = $xpath->findvalue('//pluginVersion')->value;
-# print "Using plugin $pluginKey version $pluginName\n";
 $opts->{pluginVer} = $pluginName;
-# print "Opts before\n";
-# print Dumper $opts;
 
 # loading OpenStack driver
 if (!ElectricCommander::PropMod::loadPerlCodeFromProperty( $ec, '/myProject/plugin_driver/OpenStack')) {
@@ -31,10 +28,14 @@ if (!ElectricCommander::PropMod::loadPerlCodeFromProperty( $ec, '/myProject/plug
     exit ERROR;
 }
 
-# I have no idea how to do that proper. $opts is too global
+# Adding additional subroutine to the EC on flight. This subroutine using some closures.
+# This subroutine created because config is mandatory parameter for all procedures, but for Teardown
+# config_name parameter is not required. So, this is simplest solution, which allows us to generate OpenStack
+# instance in any subroutine, on demand.
 *{ElectricCommander::__get_openstack_instance_by_options} = sub {
     my (undef, $options) = @_;
-    if (!$opts->{connection_config}) {
+
+    if (!$options->{connection_config} || !$options->{tenant_id}) {
 	return ($options, undef);
     }
 
@@ -93,10 +94,6 @@ if (!ElectricCommander::PropMod::loadPerlCodeFromProperty( $ec, '/myProject/plug
     my $openstack = new OpenStack($ec, $options);
     return ($options, $openstack);
 };
-# $opts->{JobStepId} =  "$[/myJobStep/jobStepId]";
-
-# Load the actual code into this process
-
 
 # Make an instance of the object, passing in options as a hash
 
