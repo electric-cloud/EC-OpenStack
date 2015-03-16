@@ -33,7 +33,7 @@
                                                 <propertyName>parameterForm</propertyName>
                                                 <description></description>
                                                 <expandable>1</expandable>
-                                                <value>ec_customParameterForm</value>
+                                                <value>ec_parameterForm</value>
                                             </property>
                                         </propertySheet>
                                     </property>
@@ -71,7 +71,7 @@
                                         <propertyName>procedureName</propertyName>
                                         <description></description>
                                         <expandable>1</expandable>
-                                        <value>RetireResource</value>
+                                        <value>Teardown</value>
                                     </property>
                                     <property>
                                         <propertyName>ui_formRefs</propertyName>
@@ -97,7 +97,7 @@
                                         <propertyName>procedureName</propertyName>
                                         <description></description>
                                         <expandable>1</expandable>
-                                        <value>RetireResourcePool</value>
+                                        <value>Teardown</value>
                                     </property>
                                     <property>
                                         <propertyName>ui_formRefs</propertyName>
@@ -926,12 +926,6 @@
                     <propertyName>ec_parameterForm</propertyName>
                     <description/>
                     <expandable>0</expandable>
-                    <value/>
-                </property>
-                <property>
-                    <propertyName>ec_customParameterForm</propertyName>
-                    <description/>
-                    <expandable>1</expandable>
                     <value/>
                 </property>
             </propertySheet>

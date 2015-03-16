@@ -21,10 +21,6 @@
         <xpath>//procedure[procedureName=&quot;Deploy&quot;]/propertySheet/property[propertyName=&quot;ec_parameterForm&quot;]/value</xpath>
     </file>
     <file>
-        <path>ui_forms/deploy_custom.xml</path>
-        <xpath>//procedure[procedureName=&quot;Deploy&quot;]/propertySheet/property[propertyName=&quot;ec_customParameterForm&quot;]/value</xpath>
-    </file>
-    <file>
         <path>procedures/deploy.pl</path>
         <xpath>//step[stepName=&quot;Deploy&quot;]/command</xpath>
     </file>
