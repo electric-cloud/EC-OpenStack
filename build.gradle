@@ -19,11 +19,11 @@ buildscript {
     }
 }
 
+apply plugin: 'flow-gradle-plugin'
+
 group = "com.electriccloud"
 description = "Plugins : EC-OpenStack"
 version = "1.1.2.$buildNumber"
-
-apply plugin: 'flow-gradle-plugin'
 
 dependencies {
 	testCompile 'junit:junit:[4,)'
