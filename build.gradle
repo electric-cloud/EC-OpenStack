@@ -19,6 +19,12 @@ buildscript {
     }
 }
 
+repositories {
+	maven {
+		url "https://oss.sonatype.org/content/repositories/snapshots"
+	}
+}
+
 apply plugin: 'flow-gradle-plugin'
 
 group = "com.electriccloud"
