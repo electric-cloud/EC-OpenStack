@@ -3074,8 +3074,8 @@ sub make_new_resource {
     #-----------------------------
     # Append a generated pool name to any specified
     #-----------------------------
-    my $pool =
-      $self->opts->{resource_pool} . q{ EC-} . $self->opts->{JobStepId};
+    # my $pool = $self->opts->{resource_pool} . q{ EC-} . $self->opts->{JobStepId};
+    my $pool = $self->opts->{resource_pool};
 
     # workspace and port can be blank
     $self->debug_msg( $DEBUG_LEVEL_1,
@@ -3090,7 +3090,7 @@ sub make_new_resource {
             description   => q{Provisioned resource (dynamic) for } . $server,
             workspaceName => $self->opts->{resource_workspace},
             hostName      => "$host",
-            pools         => "$pool"
+            # pools         => "$pool"
         }
     );
     if ($cmdrresult) {
@@ -3109,6 +3109,9 @@ sub make_new_resource {
 	$p_path .= '/etc/';
 	$pdb->setProp("$p_path/public_ip", $host);
 	$pdb->setProp("$p_path/image", $additional_opts->{image});
+	$self->myCmdr()->addResourcesToPool($pool, {
+	    resourceName => [$res_name]
+	});
     }
     #-----------------------------
     # Check for error return
