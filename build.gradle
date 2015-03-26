@@ -23,6 +23,7 @@ repositories {
 	maven {
 		url "https://oss.sonatype.org/content/repositories/snapshots"
 	}
+	jcenter()
 }
 
 apply plugin: 'flow-gradle-plugin'
