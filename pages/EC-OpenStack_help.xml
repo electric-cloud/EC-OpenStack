@@ -318,9 +318,9 @@ parameter (like a machine name) for its meaning?
         </tr>
 
         <tr>
-          <td>Resource Pool(s)</td>
+          <td>Resource Pool</td>
 
-          <td>The ElectricCommander resource pool names to be associated with the machines in this configuration if resources are created(Space separated list).</td>
+          <td>The ElectricCommander resource pool name to be associated with the machines in this configuration if resources are created.</td>
         </tr>
 
         <tr>

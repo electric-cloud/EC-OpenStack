@@ -263,16 +263,24 @@ if ($upgradeAction eq "upgrade") {
                                       );
             }
 
-            # Attach the credential to the appropriate steps
-            $batch->attachCredential(
-                                     "\$[/plugins/$pluginName/project]",
-                                     $cred,
-                                     {
-                                        procedureName => 'Deploy',
-                                        stepName      => 'Deploy'
-                                     }
-                                    );
-            $batch->attachCredential(
+        # Attach the credential to the appropriate steps
+        $batch->attachCredential(
+                                 "\$[/plugins/$pluginName/project]",
+                                 $cred,
+                                 {
+                                    procedureName => 'Deploy',
+                                    stepName      => 'Deploy'
+                                 }
+                                );
+        $batch->attachCredential(
+                                 "\$[/plugins/$pluginName/project]",
+                                 $cred,
+                                 {
+                                    procedureName => '_DeployDE',
+                                    stepName      => '_DeployDE'
+                                 }
+                                );
+        $batch->attachCredential(
 		"\$[/plugins/$pluginName/project]",
 		$cred,
 		{

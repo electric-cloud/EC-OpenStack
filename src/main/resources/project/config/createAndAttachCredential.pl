@@ -60,6 +60,16 @@ $xpath = $ec->attachCredential(
                                $projName,
                                $credName,
                                {
+                                  procedureName => "_DeployDE",
+                                  stepName      => "_DeployDE"
+                               }
+                              );
+$errors .= $ec->checkAllErrors($xpath);
+
+$xpath = $ec->attachCredential(
+                               $projName,
+                               $credName,
+                               {
                                   procedureName => "Cleanup",
                                   stepName      => "Cleanup"
                                }

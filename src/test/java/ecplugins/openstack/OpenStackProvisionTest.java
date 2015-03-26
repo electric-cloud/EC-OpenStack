@@ -127,7 +127,7 @@ public class OpenStackProvisionTest {
         //Checking provision operation properties
         String provisionPropRoot = operationsPropRoot + "/provision";
         validatePropertySheetExists(provisionPropRoot);
-        validateProperty(provisionPropRoot + "/procedureName", "Deploy");
+        validateProperty(provisionPropRoot + "/procedureName", "_DeployDE");
         validateProperty(provisionPropRoot + "/ui_formRefs/parameterForm", "ec_parameterForm");
 
         //Checking retireResourcePool operation properties

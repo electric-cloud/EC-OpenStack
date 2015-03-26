@@ -25,6 +25,14 @@
         <xpath>//step[stepName=&quot;Deploy&quot;]/command</xpath>
     </file>
     <file>
+        <path>ui_forms/deploy_DE.xml</path>
+        <xpath>//procedure[procedureName=&quot;_DeployDE&quot;]/propertySheet/property[propertyName=&quot;ec_parameterForm&quot;]/value</xpath>
+    </file>
+    <file>
+        <path>procedures/deploy_DE.pl</path>
+        <xpath>//step[stepName=&quot;_DeployDE&quot;]/command</xpath>
+    </file>
+    <file>
         <path>ui_forms/cleanup.xml</path>
         <xpath>//procedure[procedureName=&quot;Cleanup&quot;]/propertySheet/property[propertyName=&quot;ec_parameterForm&quot;]/value</xpath>
     </file>
