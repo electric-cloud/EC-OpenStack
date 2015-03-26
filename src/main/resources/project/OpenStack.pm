@@ -486,15 +486,24 @@ None.
 sub deploy {
     my ($self) = @_;
 
-    my $vm_prefix = "EC";
+    my $vm_prefix;
+
+    # Set the prefix to resource pool name if one has been specified
+    # For Dynamic environments, we expect a resource_pool to be provided but
+    # no server_name
     if ($self->opts->{resource_pool}) {
          $vm_prefix = $self->opts->{resource_pool};
+    } else {
+         $vm_prefix = $self->opts->{server_name};
     }
 
     my $now = time();
 
     if ( $self->opts->{quantity} eq $DEFAULT_QUANTITY ) {
-        $self->opts->{server_name} = $vm_prefix . q{_} . $now;
+        # Set the server_name if not specified
+        if(!$self->opts->{server_name}) {
+            $self->opts->{server_name} = $vm_prefix . q{_} . $now;
+        }
         $self->deploy_vm();
     }
     else {
@@ -741,10 +750,9 @@ sub deploy_vm {
     }
 
     if ( $self->opts->{resource_check} eq $TRUE ) {
-        my $res_name = $name;
         $resource =
           $self->make_new_resource(
-            $res_name,
+            $name,
             $name, $public_ip, $resource_additional_opts);
         $self->setProp( "/Server-$id/Resource", "$resource" );
 
@@ -3068,6 +3076,8 @@ None.
 sub make_new_resource {
     my ( $self, $res_name, $server, $host, $additional_opts) = @_;
 
+    my $pool = $self->opts->{resource_pool};
+
     # host must be present
     if ( "$host" eq $EMPTY ) {
         $self->debug_msg( $DEBUG_LEVEL_1,
@@ -3128,13 +3138,13 @@ sub make_new_resource {
     if ( "$resource_list" ne $EMPTY ) { $resource_list .= q{;}; }
     $resource_list .= $res_name;
 
-    if ($self->opts->{resource_pool}) {
-        #Add resource to pool through a separate call for dynamic envt.
-        #This is to work-around the issue that createResource API does
-        #not support resource pool name with spaces.
-         $self->myCmdr()->addResourcesToPool($self->opts->{resource_pool}, {
-            resourceName => [$res_name]
-         });
+    if ($pool) {
+        # Add resource to pool through a separate call
+        # This is to work-around the issue that createResource API does
+        # not support resource pool name with spaces.
+        $self->myCmdr()->addResourcesToPool($pool, {
+          resourceName => [$res_name]
+        });
     }
     return $res_name;
 
