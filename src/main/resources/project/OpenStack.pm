@@ -489,10 +489,22 @@ sub deploy {
   #-----------------------------------------------------------------------------
   # Deploy
   #-----------------------------------------------------------------------------
-    if ( $self->opts->{quantity} eq $DEFAULT_QUANTITY ) {
+
+    # Handle server name assignment for DeployDE procedure (dynamic environment feature)
+    if ($self->opts->{deploying_for_DE}) {
+       my $vm_prefix = "EC";
+       if ($self->opts->{resource_pool}) {
+            $vm_prefix = $self->opts->{resource_pool};
+       }
+       my $now = time();
+       for my $num (1 .. $self->opts->{quantity}) {
+           $self->opts->{server_name} = $vm_prefix . q{_} . $now . q{_} . $num;
+           $self->deploy_vm();
+       }
+
+    } elseif ( $self->opts->{quantity} eq $DEFAULT_QUANTITY ) {
         $self->deploy_vm();
-    }
-    else {
+    } else {
         my $vm_prefix = $self->opts->{server_name};
         my $vm_number;
         for ( 1 .. $self->opts->{quantity} ) {
@@ -738,9 +750,13 @@ sub deploy_vm {
     }
 
     if ( $self->opts->{resource_check} eq $TRUE ) {
+        my $res_name = $name;
+        if (!$self->opts->{deploying_for_DE}) {
+            $res_name = $name . q{-} . $self->opts->{JobId} . q{-} . $self->opts->{tag};
+        }
         $resource =
           $self->make_new_resource(
-            $name . q{-} . $self->opts->{JobId} . q{-} . $self->opts->{tag},
+            $res_name,
             $name, $public_ip, $resource_additional_opts);
         $self->setProp( "/Server-$id/Resource", "$resource" );
 
@@ -3071,12 +3087,14 @@ sub make_new_resource {
         return $EMPTY;
     }
 
-    #-----------------------------
-    # Append a generated pool name to any specified
-    #-----------------------------
-    my $pool =
-      $self->opts->{resource_pool} . q{ EC-} . $self->opts->{JobStepId};
+    my $pool;
 
+    if (!$self->opts->{deploying_for_DE}) {
+        #-----------------------------
+        # Append a generated pool name to any specified
+        #-----------------------------
+        $pool = $self->opts->{resource_pool} . q{ EC-} . $self->opts->{JobStepId};
+    }
     # workspace and port can be blank
     $self->debug_msg( $DEBUG_LEVEL_1,
         'Creating resource for server \'' . $server . '\'...' );
@@ -3130,6 +3148,14 @@ sub make_new_resource {
     if ( "$resource_list" ne $EMPTY ) { $resource_list .= q{;}; }
     $resource_list .= $res_name;
 
+    if ($self->opts->{deploying_for_DE}) {
+        #Add resource to pool through a separate call for dynamic envt.
+        #This is to work-around the issue that createResource API does
+        #not support resource pool name with spaces.
+         $self->myCmdr()->addResourcesToPool($self->opts->{resource_pool}, {
+            resourceName => [$res_name]
+         });
+    }
     return $res_name;
 
 }
