@@ -486,32 +486,23 @@ None.
 sub deploy {
     my ($self) = @_;
 
-  #-----------------------------------------------------------------------------
-  # Deploy
-  #-----------------------------------------------------------------------------
+    my $vm_prefix = "EC";
+    if ($self->opts->{resource_pool}) {
+         $vm_prefix = $self->opts->{resource_pool};
+    }
 
-    # Handle server name assignment for DeployDE procedure (dynamic environment feature)
-    if ($self->opts->{deploying_for_DE}) {
-       my $vm_prefix = "EC";
-       if ($self->opts->{resource_pool}) {
-            $vm_prefix = $self->opts->{resource_pool};
-       }
-       my $now = time();
+    my $now = time();
+
+    if ( $self->opts->{quantity} eq $DEFAULT_QUANTITY ) {
+        $self->opts->{server_name} = $vm_prefix . q{_} . $now;
+        $self->deploy_vm();
+    }
+    else {
+
        for my $num (1 .. $self->opts->{quantity}) {
            $self->opts->{server_name} = $vm_prefix . q{_} . $now . q{_} . $num;
            $self->deploy_vm();
        }
-
-    } elseif ( $self->opts->{quantity} eq $DEFAULT_QUANTITY ) {
-        $self->deploy_vm();
-    } else {
-        my $vm_prefix = $self->opts->{server_name};
-        my $vm_number;
-        for ( 1 .. $self->opts->{quantity} ) {
-            $vm_number = $_;
-            $self->opts->{server_name} = $vm_prefix . q{_} . $vm_number;
-            $self->deploy_vm();
-        }
     }
 
     $self->setProp( q{/resourceList}, $resource_list );
@@ -751,9 +742,6 @@ sub deploy_vm {
 
     if ( $self->opts->{resource_check} eq $TRUE ) {
         my $res_name = $name;
-        if (!$self->opts->{deploying_for_DE}) {
-            $res_name = $name . q{-} . $self->opts->{JobId} . q{-} . $self->opts->{tag};
-        }
         $resource =
           $self->make_new_resource(
             $res_name,
@@ -3087,14 +3075,6 @@ sub make_new_resource {
         return $EMPTY;
     }
 
-    my $pool;
-
-    if (!$self->opts->{deploying_for_DE}) {
-        #-----------------------------
-        # Append a generated pool name to any specified
-        #-----------------------------
-        $pool = $self->opts->{resource_pool} . q{ EC-} . $self->opts->{JobStepId};
-    }
     # workspace and port can be blank
     $self->debug_msg( $DEBUG_LEVEL_1,
         'Creating resource for server \'' . $server . '\'...' );
@@ -3108,25 +3088,25 @@ sub make_new_resource {
             description   => q{Provisioned resource (dynamic) for } . $server,
             workspaceName => $self->opts->{resource_workspace},
             hostName      => "$host",
-            pools         => "$pool"
         }
     );
     if ($cmdrresult) {
-	my $ec = $self->myCmdr();
-	my $p_path = "/resources/$res_name/ec_cloud_instance_details";
-	$self->debug_msg(1, Dumper $self);
-	$ec->createProperty($p_path, {propertyType => 'sheet'});
-	$ec->createProperty("$p_path/etc/", {propertyType => 'sheet'});
-	my $pdb = ElectricCommander::PropDB->new($ec, '');
-	$pdb->setProp("$p_path/createdBy", 'EC-OpenStack');
-	$pdb->setProp("$p_path/instance_id", $additional_opts->{server_id});
-	$pdb->setProp("$p_path/config", $additional_opts->{config_name});
-	$pdb->setProp("$p_path/tenant_id", $additional_opts->{tenant_id});
+	    my $ec = $self->myCmdr();
+	    my $p_path = "/resources/$res_name/ec_cloud_instance_details";
+	    $self->debug_msg(1, Dumper $self);
+	    $ec->createProperty($p_path, {propertyType => 'sheet'});
+	    $ec->createProperty("$p_path/etc/", {propertyType => 'sheet'});
 
-	# let's set other properties for ETC folder
-	$p_path .= '/etc/';
-	$pdb->setProp("$p_path/public_ip", $host);
-	$pdb->setProp("$p_path/image", $additional_opts->{image});
+	    my $pdb = ElectricCommander::PropDB->new($ec, '');
+	    $pdb->setProp("$p_path/createdBy", 'EC-OpenStack');
+	    $pdb->setProp("$p_path/instance_id", $additional_opts->{server_id});
+	    $pdb->setProp("$p_path/config", $additional_opts->{config_name});
+	    $pdb->setProp("$p_path/tenant_id", $additional_opts->{tenant_id});
+
+	    # let's set other properties for ETC folder
+	    $p_path .= '/etc/';
+	    $pdb->setProp("$p_path/public_ip", $host);
+	    $pdb->setProp("$p_path/image", $additional_opts->{image});
     }
     #-----------------------------
     # Check for error return
@@ -3148,7 +3128,7 @@ sub make_new_resource {
     if ( "$resource_list" ne $EMPTY ) { $resource_list .= q{;}; }
     $resource_list .= $res_name;
 
-    if ($self->opts->{deploying_for_DE}) {
+    if ($self->opts->{resource_pool}) {
         #Add resource to pool through a separate call for dynamic envt.
         #This is to work-around the issue that createResource API does
         #not support resource pool name with spaces.

@@ -44,9 +44,6 @@ $opts->{location} = q{$[location]};
 # for dynamic environments feature.
 #
 
-#Set the flag for Dynamic envt for the deploy sub-routine
-$opts->{deploying_for_DE} = 1;
-
 # Resource Pool: Optional, but if set, flag that corresponding resources will
 # be created.
 $opts->{resource_pool} = q{$[resource_pool]};
