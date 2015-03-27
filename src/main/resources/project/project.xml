@@ -73,12 +73,7 @@
                                         <expandable>1</expandable>
                                         <value>Teardown</value>
                                     </property>
-				    <property>
-                                      <propertyName>resourceName</propertyName>
-                                      <description></description>
-                                      <expandable>1</expandable>
-                                      <value>resName</value>
-				    </property>
+				    
 
                                     <property>
                                         <propertyName>ui_formRefs</propertyName>
@@ -91,7 +86,13 @@
                                         <propertyName>parameterRefs</propertyName>
                                         <description></description>
                                         <propertySheet>
-                                            <!--Place-holder-->
+                                          <!--Place-holder-->
+					  <property>
+					    <propertyName>resourceName</propertyName>
+					    <description></description>
+					    <expandable>1</expandable>
+					    <value>resName</value>
+					  </property>
                                         </propertySheet>
                                     </property>
                                 </propertySheet>
@@ -106,12 +107,7 @@
                                         <expandable>1</expandable>
                                         <value>Teardown</value>
                                     </property>
-				    <property>
-                                      <propertyName>resourcePoolName</propertyName>
-                                      <description></description>
-                                      <expandable>1</expandable>
-                                      <value>resName</value>
-				    </property>
+
                                     <property>
                                         <propertyName>ui_formRefs</propertyName>
                                         <description></description>
@@ -123,7 +119,13 @@
                                         <propertyName>parameterRefs</propertyName>
                                         <description></description>
                                         <propertySheet>
-                                            <!--Place-holder-->
+                                          <!--Place-holder-->
+					  <property>
+					    <propertyName>resourcePoolName</propertyName>
+					    <description></description>
+					    <expandable>1</expandable>
+					    <value>resName</value>
+					  </property>
                                         </propertySheet>
                                     </property>
                                 </propertySheet>
