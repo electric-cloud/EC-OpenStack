@@ -84,7 +84,12 @@
                                         <propertyName>parameterRefs</propertyName>
                                         <description></description>
                                         <propertySheet>
-                                            <!--Place-holder-->
+                                            <property>
+                                                <propertyName>resourceName</propertyName>
+                                                <description></description>
+                                                <expandable>1</expandable>
+                                                <value>resName</value>
+                                            </property>
                                         </propertySheet>
                                     </property>
                                 </propertySheet>
@@ -110,7 +115,12 @@
                                         <propertyName>parameterRefs</propertyName>
                                         <description></description>
                                         <propertySheet>
-                                            <!--Place-holder-->
+                                            <property>
+                                                <propertyName>resourcePoolName</propertyName>
+                                                <description></description>
+                                                <expandable>1</expandable>
+                                                <value>resName</value>
+                                            </property>
                                         </propertySheet>
                                     </property>
                                 </propertySheet>
