@@ -644,7 +644,7 @@ parameter (like a machine name) for its meaning?
 
           <p>This procedure extends the size of specified volume.
               The volume must be in "available state" before extending the size.
-              <b>Note :<b> Please ensure that the "Extend Volume" operation is supported
+              <b>Note :</b> Please ensure that the "Extend Volume" operation is supported
               by underlying Openstack services before using this step.
               <br />
               The plugin will store properties on the Electric Commander server at the
