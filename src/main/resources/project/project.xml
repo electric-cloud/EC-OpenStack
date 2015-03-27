@@ -73,6 +73,13 @@
                                         <expandable>1</expandable>
                                         <value>Teardown</value>
                                     </property>
+				    <property>
+                                      <propertyName>resourceName</propertyName>
+                                      <description></description>
+                                      <expandable>1</expandable>
+                                      <value>resName</value>
+				    </property>
+
                                     <property>
                                         <propertyName>ui_formRefs</propertyName>
                                         <description></description>
@@ -99,6 +106,12 @@
                                         <expandable>1</expandable>
                                         <value>Teardown</value>
                                     </property>
+				    <property>
+                                      <propertyName>resourcePoolName</propertyName>
+                                      <description></description>
+                                      <expandable>1</expandable>
+                                      <value>resName</value>
+				    </property>
                                     <property>
                                         <propertyName>ui_formRefs</propertyName>
                                         <description></description>
