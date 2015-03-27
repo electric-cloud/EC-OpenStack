@@ -1,0 +1,102 @@
+<editor>
+    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#_DeployDE</help>
+    <formElement>
+        <label>Configuration:</label>
+        <property>connection_config</property>
+        <value/>
+        <documentation>The name of the configuration which holds the OpenStack connection information. This must reference a valid existing configuration.</documentation>
+        <required>1</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
+        <label>Tenant ID:</label>
+        <property>tenant_id</property>
+        <value/>
+        <documentation>ID of the tenant to use.</documentation>
+        <required>1</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
+        <label>Number of Instances:</label>
+        <property>quantity</property>
+        <value>1</value>
+        <documentation>Number of instances to deploy.</documentation>
+        <required>1</required>
+        <type>entry</type>
+    </formElement>
+
+    <formElement>
+        <label>Image ID:</label>
+        <property>image</property>
+        <value/>
+        <documentation>ID of an existing image in Openstack.</documentation>
+        <required>1</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
+        <label>Flavor ID:</label>
+        <property>flavor</property>
+        <value/>
+        <documentation>ID for the flavor to use.</documentation>
+        <required>1</required>
+        <type>entry</type>
+    </formElement>
+
+    <formElement>
+        <label>Key Pair Name:</label>
+        <property>keyPairName</property>
+        <value/>
+        <documentation>Existing key pair name</documentation>
+        <required>1</required>
+        <type>entry</type>
+    </formElement>
+
+    <formElement>
+        <label>Security Group(s):</label>
+        <property>security_groups</property>
+        <value/>
+        <documentation>Names of the security groups in which to create the OpenStack instances. Enter multiple values on a new line.</documentation>
+        <required>0</required>
+        <type>textarea</type>
+    </formElement>
+    <formElement>
+        <label>Availability Zone:</label>
+        <property>availability_zone</property>
+        <value/>
+        <documentation>The availability zone in which to launch the server.</documentation>
+        <required>0</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
+        <label>Customization script:</label>
+        <property>customization_script</property>
+        <value/>
+        <documentation>Configuration information or scripts to execute upon launch of the instance.</documentation>
+        <required>0</required>
+        <type>textarea</type>
+    </formElement>
+    <formElement>
+        <label>Results Location:</label>
+        <property>location</property>
+        <value/>
+        <documentation>Location where the output properties will be saved. If not specified, will default to '/myJob/OpenStack/deployed'.</documentation>
+        <required>0</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
+        <label>Resource Pool:</label>
+        <property>resource_pool</property>
+        <value/>
+        <documentation>If you would like to add Commander resources for each OpenStack instance being created, enter the Commander pool name for the new resources. If left blank no resource will be created.</documentation>
+        <required>0</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
+        <label>Resource workspace:</label>
+        <property>resource_workspace</property>
+        <value/>
+        <documentation>If you specify a resource pool name, this is the workspace that will be assigned to the created resources.</documentation>
+        <required>0</required>
+        <type>entry</type>
+    </formElement>
+</editor>

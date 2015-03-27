@@ -117,10 +117,10 @@
         <uncheckedValue>0</uncheckedValue>
     </formElement>
     <formElement>
-        <label>Resource Pool(s):</label>
+        <label>Resource Pool:</label>
         <property>resource_pool</property>
         <value/>
-        <documentation>The ElectricCommander resource pool names to be associated with the machines in this configuration if resources are created(Space separated list).</documentation>
+        <documentation>The ElectricCommander resource pool name to be associated with the machines in this configuration if resources are created.</documentation>
         <required>0</required>
         <type>entry</type>
     </formElement>
