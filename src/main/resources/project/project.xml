@@ -73,9 +73,7 @@
                                         <expandable>1</expandable>
                                         <value>Teardown</value>
                                     </property>
-				    
-
-                                    <property>
+				    <property>
                                         <propertyName>ui_formRefs</propertyName>
                                         <description></description>
                                         <propertySheet>
@@ -106,7 +104,6 @@
                                         <expandable>1</expandable>
                                         <value>Teardown</value>
                                     </property>
-
                                     <property>
                                         <propertyName>ui_formRefs</propertyName>
                                         <description></description>
