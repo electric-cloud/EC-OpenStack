@@ -3103,7 +3103,6 @@ sub make_new_resource {
     if ($cmdrresult) {
 	    my $ec = $self->myCmdr();
 	    my $p_path = "/resources/$res_name/ec_cloud_instance_details";
-	    $self->debug_msg(1, Dumper $self);
 	    $ec->createProperty($p_path, {propertyType => 'sheet'});
 	    $ec->createProperty("$p_path/etc/", {propertyType => 'sheet'});
 
