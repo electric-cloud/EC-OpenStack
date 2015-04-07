@@ -9,16 +9,18 @@ use open IO => ':encoding(utf8)';
 
 my $opts;
 
-# Resource: name of the resource to delete.
-$opts->{resource_name} = q{$[resName]};
-# Conneciton config. Higher priority than config from resource's properties.
-$opts->{connection_config} = q{$[connection_config]};
-# Tenant id. Required for config.
-$opts->{tenant_id} = q{$[tenant_id]};
-
 $[/myProject/procedure_helpers/preamble];
 
 $ec ||= ElectricCommander->new();
+$ec->abortOnError(0);
+
+# Resource: name of the resource to delete.
+$opts->{resource_name} = $ec->getPropertyValue("resName");
+# Connection config. Higher priority than config from resource's properties.
+$opts->{connection_config} = $ec->getPropertyValue("connection_config");
+
+# Tenant id. Required for config.
+$opts->{tenant_id} = $ec->getPropertyValue("tenant_id");
 
 my $data = OpenStack::getInstancesForTermination($ec, $opts->{resource_name});
 @$data = grep {$_->{createdBy} eq 'EC-OpenStack'}@$data;
