@@ -27,8 +27,10 @@ my $data = OpenStack::getInstancesForTermination($ec, $opts->{resource_name});
 
 # No instances for termination
 if (!@$data) {
-    print 'ERROR : No instances found';
-    exit 1;
+    print "No resource or resource pool with name '$opts->{resource_name}' found for termination. Nothing to do in this case.";
+    #ECPREOPSTK-77: This is an acceptable condition since the resource creation may have failed during provisioning.
+    #In this case, when the teardown is called as part of cleanup, we will not find any resources for termination.
+    exit 0;
 }
 
 for my $d (@$data) {
