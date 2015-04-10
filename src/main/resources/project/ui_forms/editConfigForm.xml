@@ -2,7 +2,7 @@
     <formElement>
         <type>entry</type>
         <label>Description:</label>
-        <property>description</property>
+        <property>desc</property>
         <documentation>Provide a simple description for this configuration.</documentation>
     </formElement>
     <formElement>
