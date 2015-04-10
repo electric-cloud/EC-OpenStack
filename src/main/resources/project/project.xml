@@ -474,7 +474,7 @@
                 <type>entry</type>
             </formalParameter>
             <formalParameter>
-                <formalParameterName>description</formalParameterName>
+                <formalParameterName>desc</formalParameterName>
                 <defaultValue/>
                 <description>A brief description of this configuration.</description>
                 <required>0</required>

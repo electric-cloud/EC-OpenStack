@@ -50,18 +50,11 @@ if ( defined $property && "$property" ne "" ) {
 
 my $cfg =
   new ElectricCommander::PropDB( $ec, "/myProject/openstack_cfgs" );
-
-# set configuration description
-$cfg->setRow("$opts->{config}", "$opts->{description}");
   
 # add all the options as properties
 foreach my $key ( keys %{$opts} ) {
     
     if ( "$key" eq "config" ) {
-        next;
-    }
-
-	if ( "$key" eq "description" ) {
         next;
     }
 	
