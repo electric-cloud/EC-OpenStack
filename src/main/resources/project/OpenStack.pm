@@ -657,10 +657,10 @@ sub deploy_vm {
 
     # opts for avanced resource creation
     my $resource_additional_opts = {
-	server_id => $server_id,
-	config_name => $self->opts->{connection_config},
-	image => $self->opts->{image},
-	tenant_id => $self->opts->{tenant_id},
+        server_id => $server_id,
+        config_name => $self->opts->{connection_config},
+        image => $self->opts->{image},
+        tenant_id => $self->opts->{tenant_id},
     };
 
     $self->debug_msg( $DEBUG_LEVEL_1, q{Waiting for action to complete...} );
@@ -692,6 +692,7 @@ sub deploy_vm {
 
     # Now describe them one more time to capture the attributes
     $result = $self->rest_request( 'GET', $url, $EMPTY, $EMPTY );
+
     if ( $self->opts->{exitcode} ) { return; }
 
     $json_result = $json->decode($result);
@@ -2778,7 +2779,11 @@ auth-token - string.
 =cut
 
 sub debug_msg {
-    my ( $self, $errlev, $msg ) = @_;
+    my ( $self, $errlev, @msg ) = @_;
+
+    my $msg = join '', @msg;
+    return unless $msg;
+    $msg =~s/\s+$//gs;
 
     if ( $self->opts->{debug_level} >= $errlev ) {
         print "$msg\n";
@@ -2881,16 +2886,16 @@ sub rest_request {
         }
     }
     ## Set Request Content type
-    if ( $content_type ne $EMPTY ) {
+    if ($content_type && $content_type ne $EMPTY) {
         $req->content_type($content_type);
     }
     ## Set Request Content
-    if ( $content ne $EMPTY ) {
+    if ($content && $content ne $EMPTY) {
         $req->content($content);
     }
 
     ## Print Request
-    if ( $content_type eq 'application/octet-stream' ) {
+    if ($content_type && $content_type eq 'application/octet-stream') {
 
         ## If request body is binary data, no need to print body.Print only the headers.
         $self->debug_msg( $DEBUG_LEVEL_5, "HTTP Request:\n" );
@@ -2909,7 +2914,15 @@ sub rest_request {
     $response = $browser->request($req);
 
     ## Print Response
-    $self->debug_msg( $DEBUG_LEVEL_5, "HTTP Response:\n" . $response->content );
+    ##    $self->debug_msg( $DEBUG_LEVEL_5, "HTTP Response:\n" . $response->content );
+
+    if ($response && $response->code() && $response->code() =~ m/^(?:4|5)/is) {
+        $self->debug_msg(1, "Error occured.\nError description: " . $response->content);
+        my $desc = $self->{_cmdr}->getProperty("summary")->findvalue('//value')->string_value();
+        $desc .= "Error: " . $response->content() . "\n";
+        $desc =~ s/^\s+//is;
+        $self->{_cmdr}->setProperty("summary", $desc . "\n");
+    }
 
     ## Check for errors
     if ( $response->is_error ) {
@@ -3101,21 +3114,19 @@ sub make_new_resource {
         }
     );
     if ($cmdrresult) {
-	    my $ec = $self->myCmdr();
-	    my $p_path = "/resources/$res_name/ec_cloud_instance_details";
-	    $ec->createProperty($p_path, {propertyType => 'sheet'});
-	    $ec->createProperty("$p_path/etc/", {propertyType => 'sheet'});
-
-	    my $pdb = ElectricCommander::PropDB->new($ec, '');
-	    $pdb->setProp("$p_path/createdBy", 'EC-OpenStack');
-	    $pdb->setProp("$p_path/instance_id", $additional_opts->{server_id});
-	    $pdb->setProp("$p_path/config", $additional_opts->{config_name});
-	    $pdb->setProp("$p_path/tenant_id", $additional_opts->{tenant_id});
-
-	    # let's set other properties for ETC folder
-	    $p_path .= '/etc/';
-	    $pdb->setProp("$p_path/public_ip", $host);
-	    $pdb->setProp("$p_path/image", $additional_opts->{image});
+        my $ec = $self->myCmdr();
+        my $p_path = "/resources/$res_name/ec_cloud_instance_details";
+        $ec->createProperty($p_path, {propertyType => 'sheet'});
+        $ec->createProperty("$p_path/etc/", {propertyType => 'sheet'});
+        my $pdb = ElectricCommander::PropDB->new($ec, '');
+        $pdb->setProp("$p_path/createdBy", 'EC-OpenStack');
+        $pdb->setProp("$p_path/instance_id", $additional_opts->{server_id});
+        $pdb->setProp("$p_path/config", $additional_opts->{config_name});
+        $pdb->setProp("$p_path/tenant_id", $additional_opts->{tenant_id});
+        # let's set other properties for ETC folder
+        $p_path .= '/etc/';
+        $pdb->setProp("$p_path/public_ip", $host);
+        $pdb->setProp("$p_path/image", $additional_opts->{image});
     }
     #-----------------------------
     # Check for error return
@@ -3411,31 +3422,31 @@ sub getInstancesForTermination {
     my $instance_data = getResourceDetails($ec, $prop);
 
     if (%$instance_data) {
-	push @$retval, $instance_data;
-	return $retval;
+        push @$retval, $instance_data;
+        return $retval;
     }
     my $data = undef;
     eval {
-	my $res = $ec->getResourcePool($prop);
-	if ($res) {
-	    my $xml = XMLin($res->{_xml});
-	    $data = $xml->{response}->{resourcePool}->{resourceNames}->{resourceName};
-	}
-	1;
+        my $res = $ec->getResourcePool($prop);
+        if ($res) {
+            my $xml = XMLin($res->{_xml});
+            $data = $xml->{response}->{resourcePool}->{resourceNames}->{resourceName};
+        }
+        1;
     } or do {
-	print "Error occured: $@\n";
+        print "Error occured: $@\n";
     };
     if (!$data) {
-	return $retval;
+        return $retval;
     }
 
     if (ref $data eq 'ARRAY') {
-	for my $instance (@$data) {
-	    push @$retval, getResourceDetails($ec, $instance);
-	}
+        for my $instance (@$data) {
+            push @$retval, getResourceDetails($ec, $instance);
+        }
     }
     else {
-	push @$retval, getResourceDetails($ec, $data);
+        push @$retval, getResourceDetails($ec, $data);
     }
     return $retval;
 }
@@ -3457,23 +3468,23 @@ sub getResourceDetails {
     my ($ec, $prop) = @_;
     my $instance_data = {};
     eval {
-	my $res = $ec->getResource($prop);
-	my $p_path = "/resources/$prop/ec_cloud_instance_details";
-	$instance_data = {
-	    instance_id => $ec->getProperty("$p_path/instance_id")->findvalue('//value')->string_value(),
-	    resource_name => $prop,
-	    tenant_id => $ec->getProperty("$p_path/tenant_id")->findvalue('//value')->string_value(),
-	    createdBy => $ec->getProperty("$p_path/createdBy")->findvalue('//value')->string_value(),
-	};
-	eval {
-	    $instance_data->{config} = $ec->getProperty("$p_path/config")->findvalue('//value')->string_value();
-	    1;
-	} or do {
-	    print "Inner eval failed with error: $@\n";
-	};
-	1;
+        my $res = $ec->getResource($prop);
+        my $p_path = "/resources/$prop/ec_cloud_instance_details";
+        $instance_data = {
+            instance_id => $ec->getProperty("$p_path/instance_id")->findvalue('//value')->string_value(),
+            resource_name => $prop,
+            tenant_id => $ec->getProperty("$p_path/tenant_id")->findvalue('//value')->string_value(),
+            createdBy => $ec->getProperty("$p_path/createdBy")->findvalue('//value')->string_value(),
+        };
+        eval {
+            $instance_data->{config} = $ec->getProperty("$p_path/config")->findvalue('//value')->string_value();
+            1;
+        } or do {
+            print "Inner eval failed with error: $@\n";
+        };
+        1;
     } or do {
-	print "outer eval failed with error: $@\n";
+        print "outer eval failed with error: $@\n";
     };
     return {} if !$instance_data->{instance_id};
     return $instance_data;
