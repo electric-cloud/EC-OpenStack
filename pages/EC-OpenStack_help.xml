@@ -1593,6 +1593,25 @@ outline used above where possible.
 
 
     <h1>Release Notes</h1>
+      <h2>@PLUGIN_KEY@ 1.2.0</h2>
+      Added following new procedures:
+      <ul>
+          <li>CreateVolume, creates a new volume with the specified name and size.</li>
+          <li>ExtendVolume, which extends the size of specified volume.</li>
+          <li>AttachVolume, which attaches the volume to server instance.</li>
+          <li>DetachVolume, which detaches the volume from server instance.</li>
+          <li>DeleteVolume, which deletes the speified volume from openstack block storage.</li>
+          <li>CreateImage, which creates a new virtual machine (VM) image on openstack glance.</li>
+          <li>CreateInstanceSnapshot, which creates a snapshot of the specified server instance.</li>
+          <li>CreateVolumeSnapshot, which creates a snaphshot of the specified volume.</li>
+          <li>CreateStack, which creates new heat stack from specified heat template.</li>
+          <li>UpdateStack, which updates existing stack with the specified template.</li>
+          <li>DeleteStack, which deletes a existing stack.</li>
+      </ul>
+      Updated following procedure:
+      <ul>
+          <li>Deploy , added support for customization script, availability zone, security group and deployment from instance snapshot.</li>
+      </ul>
     <h2>@PLUGIN_KEY@ 1.1.2</h2>
     <ul>
       <li>Added properties in 'ec_cloudprovisioning_plugin' property sheet for use in ElectricFlow Deploy</li>
