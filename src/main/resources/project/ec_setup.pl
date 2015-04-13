@@ -1,5 +1,8 @@
 # The plugin is being promoted, create a property reference in the server's property sheet
 # Data that drives the create step picker registration for this plugin.
+no warnings qw/redefine/;
+use XML::Simple;
+
 my %deploy = (
     label       => "OpenStack - Deploy",
     procedure   => "Deploy",
@@ -196,7 +199,10 @@ if ($promoteAction ne '') {
 if ($upgradeAction eq "upgrade") {
     my $query   = $commander->newBatch();
     my $newcfg  = $query->getProperty("/plugins/$pluginName/project/openstack_cfgs");
-    my $oldcfgs = $query->getProperty("/plugins/$otherPluginName/project/openstack_cfgs");
+
+    my $old_cfgs_path = "/plugins/$otherPluginName/project/openstack_cfgs";
+    patch_configs($commander, $old_cfgs_path);
+    my $oldcfgs = $query->getProperty($old_cfgs_path);
     my $creds   = $query->getCredentials("\$[/plugins/$otherPluginName]");
 
     local $self->{abortOnError} = 0;
@@ -467,5 +473,43 @@ if ($upgradeAction eq "upgrade") {
                                     );
         }
     }
+}
+
+sub patch_configs {
+    my ($ec, $oldConfigPath) = @_;
+
+    my $configs = '';
+    eval {
+        $configs = $ec->getProperty($oldConfigPath)->findvalue('//propertySheetId')->string_value();
+    };
+    unless ($configs) {
+        return;
+    }
+    my $cfg_list = undef;
+    eval {
+        my $t = $ec->getProperties({propertySheetId => $configs});
+        my $cfg_data = XMLin($t->{_xml});
+        $cfg_list = $cfg_data->{response}->{propertySheet}->{property};
+        if (ref $cfg_list ne 'ARRAY') {
+            $cfg_list = [];
+        }
+    };
+    for my $c (@$cfg_list) {
+        my $description = $c->{description};
+        eval {
+            my $prop = $ec->getProperty($oldConfigPath . '/' . $c->{propertyName});
+            1;
+        } or do {
+            next
+        };
+        eval {
+            my $prop = $ec->getProperty($oldConfigPath . '/' . $c->{propertyName} . '/desc');
+            1;
+        } or do {
+            # no property, but config exists, so we'll add it.
+            $ec->setProperty($oldConfigPath . '/' . $c->{propertyName} . '/desc' => $description);
+        };
+    }
+    return 1;
 }
 
