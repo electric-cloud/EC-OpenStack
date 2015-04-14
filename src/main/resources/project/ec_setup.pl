@@ -1,5 +1,8 @@
 # The plugin is being promoted, create a property reference in the server's property sheet
 # Data that drives the create step picker registration for this plugin.
+no warnings qw/redefine/;
+use XML::Simple;
+
 my %deploy = (
     label       => "OpenStack - Deploy",
     procedure   => "Deploy",
@@ -194,9 +197,13 @@ if ($promoteAction ne '') {
 }
 
 if ($upgradeAction eq "upgrade") {
+    patch_configs("/plugins/$otherPluginName/project/openstack_cfgs");
     my $query   = $commander->newBatch();
     my $newcfg  = $query->getProperty("/plugins/$pluginName/project/openstack_cfgs");
-    my $oldcfgs = $query->getProperty("/plugins/$otherPluginName/project/openstack_cfgs");
+
+    my $old_cfgs_path = "/plugins/$otherPluginName/project/openstack_cfgs";
+    my $new_cfgs_path = "/plugins/$pluginName/project/openstack_cfgs";
+    my $oldcfgs = $query->getProperty($old_cfgs_path);
     my $creds   = $query->getCredentials("\$[/plugins/$otherPluginName]");
 
     local $self->{abortOnError} = 0;
@@ -215,7 +222,6 @@ if ($upgradeAction eq "upgrade") {
                          );
         }
     }
-
     # Copy configuration credentials and attach them to the appropriate steps
     my $nodes = $query->find($creds);
     if ($nodes) {
@@ -467,5 +473,45 @@ if ($upgradeAction eq "upgrade") {
                                     );
         }
     }
+}
+
+sub patch_configs {
+    my ($config_path) = @_;
+
+    my $configs = '';
+    eval {
+        my $res = $commander->getProperty($config_path);
+        $configs = $res->findvalue('//propertySheetId')->string_value();
+    };
+    unless ($configs) {
+        return;
+    }
+    my $cfg_list = undef;
+    eval {
+        my $t = $commander->getProperties({propertySheetId => $configs});
+        my $cfg_data = XMLin($t->{_xml});
+        $cfg_list = $cfg_data->{response}->{propertySheet}->{property};
+        if (ref $cfg_list eq 'HASH') {
+            $cfg_list = [$cfg_list];
+        }
+        if (ref $cfg_list ne 'ARRAY') {
+            $cfg_list = [];
+        }
+    };
+
+    for my $c (@$cfg_list) {
+        my $description = $c->{description};
+        $description or next;
+        eval {
+            my $prop = $commander->getProperty($config_path . '/' . $c->{propertyName});
+            1;
+        } or do {
+            next;
+        };
+        $commander->deleteProperty($config_path . '/' . $c->{propertyName} . '/desc');
+        $commander->setProperty($config_path . '/' . $c->{propertyName} . '/desc' => $description);
+
+    }
+    return 1;
 }
 
