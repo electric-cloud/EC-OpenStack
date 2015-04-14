@@ -197,11 +197,12 @@ if ($promoteAction ne '') {
 }
 
 if ($upgradeAction eq "upgrade") {
+    patch_configs("/plugins/$otherPluginName/project/openstack_cfgs");
     my $query   = $commander->newBatch();
     my $newcfg  = $query->getProperty("/plugins/$pluginName/project/openstack_cfgs");
 
     my $old_cfgs_path = "/plugins/$otherPluginName/project/openstack_cfgs";
-    patch_configs($commander, $old_cfgs_path);
+    my $new_cfgs_path = "/plugins/$pluginName/project/openstack_cfgs";
     my $oldcfgs = $query->getProperty($old_cfgs_path);
     my $creds   = $query->getCredentials("\$[/plugins/$otherPluginName]");
 
@@ -221,7 +222,6 @@ if ($upgradeAction eq "upgrade") {
                          );
         }
     }
-
     # Copy configuration credentials and attach them to the appropriate steps
     my $nodes = $query->find($creds);
     if ($nodes) {
@@ -476,39 +476,41 @@ if ($upgradeAction eq "upgrade") {
 }
 
 sub patch_configs {
-    my ($ec, $oldConfigPath) = @_;
+    my ($config_path) = @_;
 
     my $configs = '';
     eval {
-        $configs = $ec->getProperty($oldConfigPath)->findvalue('//propertySheetId')->string_value();
+        my $res = $commander->getProperty($config_path);
+        $configs = $res->findvalue('//propertySheetId')->string_value();
     };
     unless ($configs) {
         return;
     }
     my $cfg_list = undef;
     eval {
-        my $t = $ec->getProperties({propertySheetId => $configs});
+        my $t = $commander->getProperties({propertySheetId => $configs});
         my $cfg_data = XMLin($t->{_xml});
         $cfg_list = $cfg_data->{response}->{propertySheet}->{property};
+        if (ref $cfg_list eq 'HASH') {
+            $cfg_list = [$cfg_list];
+        }
         if (ref $cfg_list ne 'ARRAY') {
             $cfg_list = [];
         }
     };
+
     for my $c (@$cfg_list) {
         my $description = $c->{description};
+        $description or next;
         eval {
-            my $prop = $ec->getProperty($oldConfigPath . '/' . $c->{propertyName});
+            my $prop = $commander->getProperty($config_path . '/' . $c->{propertyName});
             1;
         } or do {
-            next
+            next;
         };
-        eval {
-            my $prop = $ec->getProperty($oldConfigPath . '/' . $c->{propertyName} . '/desc');
-            1;
-        } or do {
-            # no property, but config exists, so we'll add it.
-            $ec->setProperty($oldConfigPath . '/' . $c->{propertyName} . '/desc' => $description);
-        };
+        $commander->deleteProperty($config_path . '/' . $c->{propertyName} . '/desc');
+        $commander->setProperty($config_path . '/' . $c->{propertyName} . '/desc' => $description);
+
     }
     return 1;
 }
