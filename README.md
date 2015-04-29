@@ -7,7 +7,7 @@ The ElectricCommander OpenStack integration
 
 Run gradlew to compile the plugin
 
-`./gradlew jar`
+`./gradlew`
 
 ## Tests ##
 

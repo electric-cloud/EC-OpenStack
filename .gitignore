@@ -6,5 +6,6 @@ build
 .project
 .settings
 *.iml
+*~
 openstack-test.properties
 ecplugin.properties
