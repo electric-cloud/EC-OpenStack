@@ -152,32 +152,32 @@ the plugin omit?
       <tr>
           <td class="required">Identity Service URL</td>
 
-          <td>Provide the host name or IP address of the Identity Service for OpenStack.For e.g. http://192.168.100.134:8776. Do not include API version or tenant ID in URL here. (Required)</td>
+          <td>Provide the host name or IP address of the Identity Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here. (Required)</td>
       </tr>
 
       <tr>
         <td class="required">Compute Service URL</td>
 
-        <td>Provide the host name or IP address of the Compute Service for OpenStack.For e.g. http://192.168.100.134:8776. Do not include API version or tenant ID in URL here. (Required)</td>
+        <td>Provide the host name or IP address of the Compute Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here. (Required)</td>
       </tr>
 
 
           <tr>
               <td class="required">Block Storage URL:</td>
 
-              <td>Provide the host name or IP address of the Block Storage Service for OpenStack.For e.g. http://192.168.100.134:8776. Do not include API version or tenant ID in URL here. (Required)</td>
+              <td>Provide the host name or IP address of the Block Storage Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here. (Required)</td>
           </tr>
 
           <tr>
               <td class="required">Image Service URL</td>
 
-              <td>Provide the host name or IP address of the Image Service for OpenStack.For e.g. http://192.168.100.134:8776. Do not include API version or tenant ID in URL here. (Required)</td>
+              <td>Provide the host name or IP address of the Image Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here. (Required)</td>
           </tr>
 
           <tr>
               <td class="required">Orchestration Service URL</td>
 
-              <td>Provide the host name or IP address of the Orchestration Service for OpenStack.For e.g. http://192.168.100.134:8776. Do not include API version or tenant ID in URL here. (Required)</td>
+              <td>Provide the host name or IP address of the Orchestration Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here. (Required)</td>
           </tr>
 
           <tr>
