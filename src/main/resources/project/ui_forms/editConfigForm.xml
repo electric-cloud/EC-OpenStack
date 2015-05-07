@@ -10,7 +10,7 @@
         <label>Identity Service URL:</label>
         <property>identity_service_url</property>
         <value></value>
-        <documentation>Provide the host name or IP address of the Identity Service for OpenStack</documentation>
+        <documentation>Provide the host name or IP address of the Identity Service for OpenStackFor example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here.</documentation>
         <required>1</required>
     </formElement>
     <formElement>
@@ -26,7 +26,7 @@
         <label>Compute Service URL:</label>
         <property>compute_service_url</property>
         <value></value>
-        <documentation>Provide the host name or IP address of the Compute Service for OpenStack</documentation>
+        <documentation>Provide the host name or IP address of the Compute Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here.</documentation>
         <required>1</required>
     </formElement>
     <formElement>
@@ -42,7 +42,7 @@
         <label>Block Storage URL:</label>
         <property>blockstorage_service_url</property>
         <value></value>
-        <documentation>Provide the host name or IP address of the Block Storage Service for OpenStack</documentation>
+        <documentation>Provide the host name or IP address of the Block Storage Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here.</documentation>
         <required>1</required>
     </formElement>
     <formElement>
@@ -58,7 +58,7 @@
         <label>Image service URL:</label>
         <property>image_service_url</property>
         <value></value>
-        <documentation>Provide the host name or IP address of the Image Service for OpenStack</documentation>
+        <documentation>Provide the host name or IP address of the Image Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here.</documentation>
         <required>1</required>
     </formElement>
     <formElement>
@@ -74,7 +74,7 @@
         <label>Orchestration service URL:</label>
         <property>orchestration_service_url</property>
         <value></value>
-        <documentation>Provide the host name or IP address of the Orchestration Service for OpenStack</documentation>
+        <documentation>Provide the host name or IP address of the Orchestration Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here.</documentation>
         <required>0</required>
     </formElement>
     <formElement>

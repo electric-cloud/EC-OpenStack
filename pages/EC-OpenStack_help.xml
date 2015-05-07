@@ -150,44 +150,67 @@ the plugin omit?
         <td>A description for this configuration.</td>
       </tr>
       <tr>
-        <td class="required">Identity Service URL</td>
-        <td>The host name or IP address of the Identity Service for OpenStack. (Required)</td>
+          <td class="required">Identity Service URL</td>
+
+          <td>Provide the host name or IP address of the Identity Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here. (Required)</td>
       </tr>
-			<tr>
+
+      <tr>
         <td class="required">Compute Service URL</td>
-        <td>The host name or IP address of the Compute Service for OpenStack. (Required)</td>
+
+        <td>Provide the host name or IP address of the Compute Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here. (Required)</td>
       </tr>
-      <tr>
-        <td class="required">Block Storage URL</td>
-        <td>The host name or IP address of the Block Storage Service for OpenStack. (Required)</td>
-      </tr>
-      <tr>
-         <td class="required">Image Service URL</td>
-         <td>The host name or IP address of the Image Service for OpenStack. (Required)</td>
-      </tr>
-      <tr>
-         <td class="required">Orchestration Service URL</td>
-         <td>The host name or IP address of the Orchestration Service for OpenStack. (Required)</td>
-      </tr>
-			 <tr>
-         <td class="required">Login as</td>
-         <td>The OpenStack account username and password, which must have enough privileges to perform API functions. (Required)</td>
-      </tr>
-			<tr>
-         <td class="required">Compute API version</td>
-         <td>The Keystone API version. (Required)</td>
-      </tr>
-      <tr>
-         <td class="required">Keystone API version</td>
-         <td>The Keystone API version. (Required)</td>
-      </tr>
-      <tr>
-         <td class="required">Blockstorage API version</td>
-         <td>The OpenStack Block Storage API version. (Required)</td>
-      </tr>
-      <tr>
-         <td class="required">Image API version</td>
-         <td>The Image Service API version. (Required)</td>
+
+
+          <tr>
+              <td class="required">Block Storage URL:</td>
+
+              <td>Provide the host name or IP address of the Block Storage Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here. (Required)</td>
+          </tr>
+
+          <tr>
+              <td class="required">Image Service URL</td>
+
+              <td>Provide the host name or IP address of the Image Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here. (Required)</td>
+          </tr>
+
+          <tr>
+              <td class="required">Orchestration Service URL</td>
+
+              <td>Provide the host name or IP address of the Orchestration Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here. (Required)</td>
+          </tr>
+
+          <tr>
+              <td class="required">Keystone API version</td>
+
+              <td>The Keystone API version. (Required)</td>
+          </tr>
+
+          <tr>
+              <td class="required">Blockstorage API version</td>
+
+              <td>The OpenStack block storage API version (Required)</td>
+          </tr>
+
+          <tr>
+              <td class="required">Image API version</td>
+
+              <td>The Image Service API version (Required)</td>
+          </tr>
+
+
+
+          <tr>
+        <td class="required">Configuration Credential
+        Parameters</td><!-- Describe *exactly* which user name and password go here.
+Is it for a particlar machine? Is it for a website? Is it for a
+particular function in the tool? Does it depend on another
+parameter (like a machine name) for its meaning?
+-->
+
+        <td>OpenStack account username/password. This
+        account must have enough privileges to perform API
+        functions. (Required)</td>
       </tr>
       <tr>
         <td class="required">Resource</td>
