@@ -167,7 +167,7 @@ push (@::gMatchers,
 
                                   my $desc = ((defined $::gProperties{"summary"}) ? $::gProperties{"summary"} : '');
 
-                                  $desc .= "Stack \'$1\' created.";
+                                  $desc = "Stack \'$1\' created.";
 
                                   setProperty("summary", $desc . "\n");
                                   },
@@ -179,7 +179,7 @@ push (@::gMatchers,
 
                                   my $desc = ((defined $::gProperties{"summary"}) ? $::gProperties{"summary"} : '');
 
-                                  $desc .= "Stack \'$1\' updated.";
+                                  $desc = "Stack \'$1\' updated.";
 
                                   setProperty("summary", $desc . "\n");
                                   },
@@ -191,7 +191,7 @@ push (@::gMatchers,
 
                                   my $desc = ((defined $::gProperties{"summary"}) ? $::gProperties{"summary"} : '');
 
-                                  $desc .= "Stack \'$1\' deleted.";
+                                  $desc = "Stack \'$1\' deleted.";
 
                                   setProperty("summary", $desc . "\n");
                                   },
