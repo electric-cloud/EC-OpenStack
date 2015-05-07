@@ -2439,6 +2439,14 @@ sub create_stack {
             $json_result->{stack}->{timeout_mins} );
     }
 
+   my @outputs = @{ $json_result->{stack}->{outputs} };
+   foreach my $output ( @outputs ) {
+
+     $self->setProp( "/Stack/Outputs/" . $output->{"output_key"},
+                 $output->{"output_value"} );
+
+   }
+
     $self->debug_msg( $DEBUG_LEVEL_1,
         q{Stack } . $self->opts->{stack_name} . q{ created.} );
     return;
@@ -2517,6 +2525,14 @@ sub update_stack {
         $status      = $json_result->{stack}->{stack_status};
 
         sleep $WAIT_SLEEP_TIME;
+    }
+
+    my @outputs = @{ $json_result->{stack}->{outputs} };
+    foreach my $output ( @outputs ) {
+
+      $self->setProp( "/Stack/Outputs/" . $output->{"output_key"},
+                 $output->{"output_value"} );
+
     }
 
     $self->debug_msg( $DEBUG_LEVEL_1,
