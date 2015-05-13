@@ -1026,6 +1026,7 @@
                 <formalParameterName>tag</formalParameterName>
                 <defaultValue>&#36;[jobStepId]</defaultValue>
                 <description/>
+                <expansionDeferred>1</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
@@ -2438,6 +2439,7 @@
                 <formalParameterName>tag</formalParameterName>
                 <defaultValue>$[jobStepId]</defaultValue>
                 <description/>
+                <expansionDeferred>1</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
@@ -2655,6 +2657,7 @@
                 <formalParameterName>tag</formalParameterName>
                 <defaultValue>&#36;[jobStepId]</defaultValue>
                 <description/>
+                <expansionDeferred>1</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
@@ -2831,6 +2834,7 @@
                  <formalParameterName>tag</formalParameterName>
                  <defaultValue>&#36;[jobStepId]</defaultValue>
                  <description/>
+                 <expansionDeferred>1</expansionDeferred>
                  <required>1</required>
                  <type>entry</type>
              </formalParameter>
@@ -3399,6 +3403,7 @@
                 <formalParameterName>tag</formalParameterName>
                 <defaultValue>&#36;[jobStepId]</defaultValue>
                 <description/>
+                <expansionDeferred>1</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
@@ -3712,6 +3717,7 @@
                 <formalParameterName>tag</formalParameterName>
                 <defaultValue>&#36;[jobStepId]</defaultValue>
                 <description/>
+                <expansionDeferred>1</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
@@ -3888,6 +3894,7 @@
                 <formalParameterName>tag</formalParameterName>
                 <defaultValue>&#36;[jobStepId]</defaultValue>
                 <description/>
+                <expansionDeferred>1</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
@@ -4065,6 +4072,7 @@
                 <defaultValue>&#36;[jobStepId]</defaultValue>
                 <description/>
                 <required>1</required>
+                <expansionDeferred>1</expansionDeferred>
                 <type>entry</type>
             </formalParameter>
             <step>
@@ -4258,6 +4266,7 @@
                 <defaultValue>&#36;[jobStepId]</defaultValue>
                 <description/>
                 <required>1</required>
+                <expansionDeferred>1</expansionDeferred>
                 <type>entry</type>
             </formalParameter>
             <step>
@@ -4416,6 +4425,7 @@
                 <formalParameterName>tag</formalParameterName>
                 <defaultValue>&#36;[jobStepId]</defaultValue>
                 <description/>
+                <expansionDeferred>1</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
@@ -4583,6 +4593,7 @@
                 <formalParameterName>tag</formalParameterName>
                 <defaultValue>&#36;[jobStepId]</defaultValue>
                 <description/>
+                <expansionDeferred>1</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
