@@ -1026,6 +1026,7 @@
                 <formalParameterName>tag</formalParameterName>
                 <defaultValue>&#36;[jobStepId]</defaultValue>
                 <description/>
+                <expansionDeferred>1</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
@@ -2438,6 +2439,7 @@
                 <formalParameterName>tag</formalParameterName>
                 <defaultValue>$[jobStepId]</defaultValue>
                 <description/>
+                <expansionDeferred>1</expansionDeferred>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
