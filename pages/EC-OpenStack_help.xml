@@ -175,9 +175,9 @@ the plugin omit?
           </tr>
 
           <tr>
-              <td class="required">Orchestration Service URL</td>
+              <td>Orchestration Service URL</td>
 
-              <td>Provide the host name or IP address of the Orchestration Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here. (Required)</td>
+              <td>Provide the host name or IP address of the Orchestration Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here.</td>
           </tr>
 
           <tr>
