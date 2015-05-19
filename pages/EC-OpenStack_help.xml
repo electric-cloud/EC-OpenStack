@@ -878,7 +878,7 @@ parameter (like a machine name) for its meaning?
 
        <p>Heat is an OpenStack service to orchestrate multiple composite cloud applications using templates. 
 			 This procedure creates a new HEAT stack from a specified HEAT template. You can enter the template (in JSON or YAML format)in the
-			 <b>Template</b> field or the URL of the template.Do not use tabs for indentation in YAML heat templates(only spaces.)</p>
+			 <b>Template</b> field or the URL of the template.</p>
 			 <p>The plugin stores properties on the Commander server at the location specified in the <b>Results Location</b> and 
 			 <b>Results tag</b> fields. The default location in the job directory called /myJob/Openstack/deployed/<i>Provision tag</i>
 			 if the <b>Results Location</b> field is empty.</p>
@@ -1657,7 +1657,7 @@ parameter (like a machine name) for its meaning?
               <h2>UpdateStack</h2>
 
               <p>This procedure updates an existing stack. You can enter the updated template (in JSON or YAML format)in the
-                  <b>Template</b> field or the URL of the template.Do not use tabs for indentation in YAML heat templates(only spaces.)</p>
+                  <b>Template</b> field or the URL of the template.</p>
               <p>The plugin stores properties on the Commander server at the location specified in the <b>Results Location</b> and
 							<b>Results tag</b> fields. The default location in the job directory called /myJob/Openstack/deployed/<i>Provision tag</i>
 							if the <b>Results Location</b> field is empty.</p>

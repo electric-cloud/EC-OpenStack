@@ -2361,10 +2361,14 @@ sub create_stack {
                ## If the first character of the template is { then its a json template otherwise it is a yaml template.
                $data->{template} = $json->decode( $self->opts->{template} );
            } else {
-                $data->{template} = $self->opts->{template}
+
+                my $template = $self->opts->{template} ;
+                $template =~ s/\t/ /g;
+                $data->{template} = $template;
            }
     }
     elsif ( $self->opts->{template_url} ) {
+
         $data->{template_url} = $self->opts->{template_url};
     }
     else {
@@ -2512,7 +2516,10 @@ sub update_stack {
                    ## If the first character of the template is { then its a json template otherwise it is a yaml template.
                    $data->{template} = $json->decode( $self->opts->{template} );
                } else {
-                    $data->{template} = $self->opts->{template}
+
+                    my $template = $self->opts->{template} ;
+                    $template =~ s/\t/ /g;
+                    $data->{template} = $template;
                }
     }
     elsif ( $self->opts->{template_url} ) {
