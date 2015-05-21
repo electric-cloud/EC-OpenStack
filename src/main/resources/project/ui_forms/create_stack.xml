@@ -28,7 +28,7 @@
         <label>Template:</label>
         <property>template</property>
         <value/>
-        <documentation>The stack template to instantiate.</documentation>
+        <documentation>The stack template to instantiate a HEAT stack in JSON or YAML format.</documentation>
         <required>0</required>
         <type>textarea</type>
     </formElement>

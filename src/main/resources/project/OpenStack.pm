@@ -2310,6 +2310,58 @@ sub take_instance_snapshot {
 
 =over
 
+=item B<getStackTemplate>
+
+Sets the template or template URL to the request body data
+Performs any additional tasks like replacing tabs in YAML template.
+
+B<Params:>
+
+data - hash of request body
+
+B<Returns:>
+
+data - hash of request body
+
+=back
+
+=cut
+
+sub getStackTemplate {
+
+    my $self = $_[0];
+
+    # If user has supplied both template and template_url,
+    # the template gets preference over template_url.
+
+
+    if ( $self->opts->{template} ) {
+               # Get the first character of the template
+               my $firstCharOfTemplate = substr $self->opts->{template}, 0, 1;
+
+               if($firstCharOfTemplate eq '{') {
+                   ## If the first character of the template is { then its a json template otherwise it is a yaml template.
+                   $_[1]->{template} = $json->decode( $self->opts->{template} );
+               } else {
+
+                    my $template = $self->opts->{template} ;
+                    $template =~ s/\t/ /g;
+                    $_[1]->{template} = $template;
+               }
+    }
+    elsif ( $self->opts->{template_url} ) {
+        $_[1]->{template} = $self->opts->{template_url};
+    }
+    else {
+        $self->debug_msg( $DEBUG_LEVEL_1,
+            q{Error : Either of template or template URL must be specified.} );
+        $self->opts->{exitcode} = $ERROR;
+    }
+
+}
+
+=over
+
 =item B<create_stack>
 
 Creates a new heat stack from a template.
@@ -2350,18 +2402,10 @@ sub create_stack {
 
     $data->{stack_name} = $self->opts->{stack_name};
 
-    # If user has supplied both template and template_url,
-    # the template gets preference over template_url.
+    $self->getStackTemplate($data);
 
-    if ( $self->opts->{template} ) {
-        $data->{template} = $json->decode( $self->opts->{template} );
-    }
-    elsif ( $self->opts->{template_url} ) {
-        $data->{template_url} = $self->opts->{template_url};
-    }
-    else {
-        $self->debug_msg( $DEBUG_LEVEL_1,
-            q{Either of template or template URL must be specified.} );
+    if ( $self->opts->{exitcode} ) {
+            return;
     }
 
     $body = to_json($data);
@@ -2493,19 +2537,11 @@ sub update_stack {
     $url .=
       q{/stacks/} . $self->opts->{stack_name} . q{/} . $self->opts->{stack_id};
 
-    # If user has supplied both template and template_url,
-    # the template gets preference over template_url.
+    $self->getStackTemplate($data);
 
-    if ( $self->opts->{template} ) {
-        $data->{template} = $json->decode( $self->opts->{template} );
-    }
-    elsif ( $self->opts->{template_url} ) {
-        $data->{template_url} = $self->opts->{template_url};
-    }
-    else {
-        $self->debug_msg( $DEBUG_LEVEL_1,
-            q{Either of template or template URL must be specified.} );
-    }
+     if ( $self->opts->{exitcode} ) {
+                return;
+     }
 
     $body = to_json($data);
 
@@ -2539,6 +2575,7 @@ sub update_stack {
         q{Stack } . $self->opts->{stack_name} . q{ updated.} );
     return;
 }
+
 
 =over
 
