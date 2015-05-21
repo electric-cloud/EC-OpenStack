@@ -2354,7 +2354,8 @@ sub getStackTemplate {
     }
     else {
         $self->debug_msg( $DEBUG_LEVEL_1,
-            q{Either of template or template URL must be specified.} );
+            q{Error : Either of template or template URL must be specified.} );
+        $self->opts->{exitcode} = $ERROR;
     }
 
 }
@@ -2402,6 +2403,10 @@ sub create_stack {
     $data->{stack_name} = $self->opts->{stack_name};
 
     $self->getStackTemplate($data);
+
+    if ( $self->opts->{exitcode} ) {
+            return;
+    }
 
     $body = to_json($data);
 
@@ -2533,6 +2538,10 @@ sub update_stack {
       q{/stacks/} . $self->opts->{stack_name} . q{/} . $self->opts->{stack_id};
 
     $self->getStackTemplate($data);
+
+     if ( $self->opts->{exitcode} ) {
+                return;
+     }
 
     $body = to_json($data);
 
