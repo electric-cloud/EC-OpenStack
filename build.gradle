@@ -34,7 +34,7 @@ apply plugin: 'flow-gradle-plugin'
 
 dependencies {
 	testCompile 'junit:junit:[4,)'
-	testCompile 'org.pacesys:openstack4j:2.0.2-SNAPSHOT'
+	testCompile 'org.pacesys:openstack4j:2.0.3'
 	testCompile group: "net.schmizz", name: "sshj", version: "0.8.1"
 	testCompile group: "org.bouncycastle", name: "bcprov-jdk16", version: "1.46"
 }
