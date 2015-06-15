@@ -256,11 +256,17 @@ sub initialize {
         $self->opts->{debug_level} = $DEFAULT_DEBUG;
     }
 
-    if ( defined( $self->opts->{resource_workspace} )
-        && $self->opts->{resource_workspace} eq $EMPTY )
-    {
-        $self->opts->{resource_workspace} = $DEFAULT_WORKSPACE;
+    my $workspace = $DEFAULT_WORKSPACE;
+
+    if ($self->opts->{workspace}) {
+        $workspace = $self->opts->{workspace};
     }
+    if ($self->opts->{resource_workspace}) {
+        $workspace = $self->opts->{resource_workspace};
+    }
+
+    $self->opts->{resource_workspace} = $workspace;
+    print "Workspace: $workspace\n";
 
     $self->opts->{exitcode} = $SUCCESS;
     $self->opts->{JobId}    = $ENV{COMMANDER_JOBID};
