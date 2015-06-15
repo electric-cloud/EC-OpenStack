@@ -266,7 +266,7 @@ sub initialize {
     }
 
     $self->opts->{resource_workspace} = $workspace;
-    print "Workspace: $workspace\n";
+    $self->debug_msg(0, "Workspace: $workspace\n");
 
     $self->opts->{exitcode} = $SUCCESS;
     $self->opts->{JobId}    = $ENV{COMMANDER_JOBID};
