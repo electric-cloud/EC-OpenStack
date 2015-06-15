@@ -761,7 +761,7 @@ sub deploy_vm {
           $self->make_new_resource(
             $name,
             $name, $public_ip, $resource_additional_opts);
-        $self->setProp( "/Server-$id/Resource", "$resource" );
+        $self->setProp( "/Server-$id/Resource", "$resource" ) if $resource;
 
     }
 
@@ -3194,7 +3194,7 @@ sub make_new_resource {
     if ( $err_msg ne $EMPTY ) {
         if ( $err_msg =~ /DuplicateResourceName/sm ) {
             $self->debug_msg( $DEBUG_LEVEL_0, "resource $res_name exists" );
-            next;
+            return;
         }
         else {
             $self->debug_msg( $DEBUG_LEVEL_0, "Error: $err_msg" );
