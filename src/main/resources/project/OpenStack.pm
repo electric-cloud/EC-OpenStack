@@ -756,13 +756,14 @@ sub deploy_vm {
         }
     }
 
+    my $new_resource_name = $self->adjust_resource_name($name);
+    $self->debug_msg(1, "Resource name: $new_resource_name");
     if ( $self->opts->{resource_check} eq $TRUE ) {
-        $resource =
-          $self->make_new_resource(
-            $name,
-            $name, $public_ip, $resource_additional_opts);
+        $resource = $self->make_new_resource(
+            $new_resource_name,
+            $name, $public_ip, $resource_additional_opts
+        );
         $self->setProp( "/Server-$id/Resource", "$resource" ) if $resource;
-
     }
 
     #store properties
@@ -3547,6 +3548,38 @@ sub getResourceDetails {
     };
     return {} if !$instance_data->{instance_id};
     return $instance_data;
+}
+
+
+sub adjust_resource_name {
+    my ($self, $name) = @_;
+
+    my $temp_name = $name;
+
+    for (my $i = 1; $i < 1000; $i++) {
+        if ($self->isResourceExists($temp_name)) {
+            $temp_name = $name . '-' . $i;
+            next;
+        }
+        $name = $temp_name;
+        last;
+    }
+    return $name;
+}
+
+
+sub isResourceExists {
+    my ($self, $name) = @_;
+
+    return 0 unless $name;
+    my $ec = $self->{_cmdr};
+    my $res = $ec->getResource($name);
+
+    my $val = $res->findvalue('//resourceId')->string_value();
+    if ($val) {
+        return 1;
+    }
+    return 0;
 }
 
 
