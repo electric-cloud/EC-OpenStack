@@ -103,14 +103,6 @@
         <required>1</required>
     </formElement>
     <formElement>
-    	<type>entry</type>
-    	<label>Workspace:</label>
-    	<property>workspace</property>
-    	<required>1</required>
-    	<documentation>The workspace to use for resources dynamically created by this configuration (default is 'default').</documentation>
-        <value>default</value>
-    </formElement>
-    <formElement>
         <type>entry</type>
         <label>Debug Level:</label>
         <property>debug_level</property>

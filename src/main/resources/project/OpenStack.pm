@@ -256,11 +256,14 @@ sub initialize {
         $self->opts->{debug_level} = $DEFAULT_DEBUG;
     }
 
-    if ( defined( $self->opts->{resource_workspace} )
-        && $self->opts->{resource_workspace} eq $EMPTY )
-    {
-        $self->opts->{resource_workspace} = $DEFAULT_WORKSPACE;
+    my $workspace = $DEFAULT_WORKSPACE;
+
+    if ($self->opts->{resource_workspace}) {
+        $workspace = $self->opts->{resource_workspace};
     }
+
+    $self->opts->{resource_workspace} = $workspace;
+    $self->debug_msg(0, "Workspace: $workspace\n");
 
     $self->opts->{exitcode} = $SUCCESS;
     $self->opts->{JobId}    = $ENV{COMMANDER_JOBID};
@@ -750,13 +753,14 @@ sub deploy_vm {
         }
     }
 
+    my $new_resource_name = $self->adjust_resource_name($name);
+    $self->debug_msg(1, "Resource name: $new_resource_name");
     if ( $self->opts->{resource_check} eq $TRUE ) {
-        $resource =
-          $self->make_new_resource(
-            $name,
-            $name, $public_ip, $resource_additional_opts);
-        $self->setProp( "/Server-$id/Resource", "$resource" );
-
+        $resource = $self->make_new_resource(
+            $new_resource_name,
+            $name, $public_ip, $resource_additional_opts
+        );
+        $self->setProp( "/Server-$id/Resource", "$resource" ) if $resource;
     }
 
     #store properties
@@ -3188,7 +3192,7 @@ sub make_new_resource {
     if ( $err_msg ne $EMPTY ) {
         if ( $err_msg =~ /DuplicateResourceName/sm ) {
             $self->debug_msg( $DEBUG_LEVEL_0, "resource $res_name exists" );
-            next;
+            return;
         }
         else {
             $self->debug_msg( $DEBUG_LEVEL_0, "Error: $err_msg" );
@@ -3541,6 +3545,38 @@ sub getResourceDetails {
     };
     return {} if !$instance_data->{instance_id};
     return $instance_data;
+}
+
+
+sub adjust_resource_name {
+    my ($self, $name) = @_;
+
+    my $temp_name = $name;
+
+    for (my $i = 1; $i < 1000; $i++) {
+        if ($self->isResourceExists($temp_name)) {
+            $temp_name = $name . '-' . $i;
+            next;
+        }
+        $name = $temp_name;
+        last;
+    }
+    return $name;
+}
+
+
+sub isResourceExists {
+    my ($self, $name) = @_;
+
+    return 0 unless $name;
+    my $ec = $self->{_cmdr};
+    my $res = $ec->getResource($name);
+
+    my $val = $res->findvalue('//resourceId')->string_value();
+    if ($val) {
+        return 1;
+    }
+    return 0;
 }
 
 
