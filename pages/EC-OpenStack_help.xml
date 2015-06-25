@@ -1800,26 +1800,30 @@ outline used above where possible.
 		<img alt="" src="../../plugins/@PLUGIN_KEY@/images/use_cases/Case_1/deploy_log.png" />
 
     <p>Cleanup output:</p>
-		<img alt="" src="../../plugins/@PLUGIN_KEY@/images/use_cases/Case_1/cleanup_log.png" />
+    <img alt="" src="../../plugins/@PLUGIN_KEY@/images/use_cases/Case_1/cleanup_log.png" />
 
 
     <h1 id="rns">Release Notes</h1>
-      <h2>@PLUGIN_KEY@ 1.2.0</h2>
-      <p>The following procedures were added:</p>
-      <ul>
-          <li>CreateVolume to create a new volume.</li>
-          <li>ExtendVolume to extend the size of a volume.</li>
-          <li>AttachVolume to attach the volume to a server instance.</li>
-          <li>DetachVolume to detach the volume from a server instance.</li>
-          <li>DeleteVolume to delete a volume from an OpenStack block storage.</li>
-          <li>CreateImage to create a virtual machine (VM) image on OpenStack Image Service Glance.</li>
-          <li>CreateInstanceSnapshot to create a snapshot of a server instance.</li>
-          <li>CreateVolumeSnapshot to create a snaphshot of a volume.</li>
-          <li>CreateStack to create a HEAT stack from a HEAT template.</li>
-          <li>UpdateStack to update an existing stack with a template.</li>
-          <li>DeleteStack to delete an existing stack.</li>
-      </ul>
-      <p>The Deploy procuedure was updated to add support for customization scripts, availability zones, security groups, 
+    <h2>@PLUGIN_KEY@ 1.2.1</h2>
+    <ul>
+      <li>Fixed issue when resource wasn't created after provision with an error: "Duplicate resource name"</li>
+    </ul>
+    <h2>@PLUGIN_KEY@ 1.2.0</h2>
+    <p>The following procedures were added:</p>
+    <ul>
+      <li>CreateVolume to create a new volume.</li>
+      <li>ExtendVolume to extend the size of a volume.</li>
+      <li>AttachVolume to attach the volume to a server instance.</li>
+      <li>DetachVolume to detach the volume from a server instance.</li>
+      <li>DeleteVolume to delete a volume from an OpenStack block storage.</li>
+      <li>CreateImage to create a virtual machine (VM) image on OpenStack Image Service Glance.</li>
+      <li>CreateInstanceSnapshot to create a snapshot of a server instance.</li>
+      <li>CreateVolumeSnapshot to create a snaphshot of a volume.</li>
+      <li>CreateStack to create a HEAT stack from a HEAT template.</li>
+      <li>UpdateStack to update an existing stack with a template.</li>
+      <li>DeleteStack to delete an existing stack.</li>
+    </ul>
+    <p>The Deploy procuedure was updated to add support for customization scripts, availability zones, security groups, 
 			and deployments using an instance snapshot.</p>
       
 			

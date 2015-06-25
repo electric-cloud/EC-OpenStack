@@ -258,9 +258,6 @@ sub initialize {
 
     my $workspace = $DEFAULT_WORKSPACE;
 
-    # if ($self->opts->{workspace}) {
-    #     $workspace = $self->opts->{workspace};
-    # }
     if ($self->opts->{resource_workspace}) {
         $workspace = $self->opts->{resource_workspace};
     }
