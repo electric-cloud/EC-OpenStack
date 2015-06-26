@@ -1806,7 +1806,8 @@ outline used above where possible.
     <h1 id="rns">Release Notes</h1>
     <h2>@PLUGIN_KEY@ 1.2.1</h2>
     <ul>
-      <li>Fixed issue when resource wasn't created after provision with an error: "Duplicate resource name"</li>
+      <li>Fixed issue when resource wasn't created after provision with an error: "Duplicate resource name".</li>
+      <li>Workspace parameter was removed from configuration.</li>
     </ul>
     <h2>@PLUGIN_KEY@ 1.2.0</h2>
     <p>The following procedures were added:</p>
