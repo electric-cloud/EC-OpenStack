@@ -1,7 +1,7 @@
 EC-OpenStack
 ============
 
-The ElectricCommander OpenStack integration
+The ElectricFlow OpenStack integration
 
 ## Compile ##
 
