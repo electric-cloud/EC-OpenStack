@@ -234,4 +234,8 @@
         <path>procedures/delete_stack.pl</path>
         <xpath>//step[stepName=&quot;DeleteStack&quot;]/command</xpath>
     </file>
+    <file>
+        <path>procedures/form_scripts/validation/createConfiguration.groovy</path>
+        <xpath>//procedure[procedureName=&quot;CreateConfiguration&quot;]/propertySheet/property[propertyName=&quot;form&quot;]/propertySheet/property[propertyName=&quot;validation&quot;]/propertySheet/property[propertyName=&quot;script&quot;]/value</xpath>
+    </file>
 </fileset>

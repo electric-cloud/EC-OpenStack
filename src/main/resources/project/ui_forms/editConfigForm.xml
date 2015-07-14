@@ -14,6 +14,20 @@
         <required>1</required>
     </formElement>
     <formElement>
+        <type>credential</type>
+        <label>Login as:</label>
+        <property>credential</property>
+        <required>1</required>
+        <documentation>OpenStack account username/password. This account must have enough privileges to perform API functions.</documentation>
+    </formElement>
+    <formElement>
+        <label>Tenant ID:</label>
+        <property>tenant_id</property>
+        <documentation>ID of the OpenStack tenant to use.</documentation>
+        <required>0</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
         <type>entry</type>
         <label>Keystone API version</label>
         <property>keystone_api_version</property>
@@ -77,15 +91,6 @@
         <documentation>Provide the host name or IP address of the Orchestration Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here.</documentation>
         <required>0</required>
     </formElement>
-    <formElement>
-        <type>credential</type>
-        <label>Login as:</label>
-        <property>credential</property>
-        <required>1</required>
-        <documentation>OpenStack account username/password. This account must have enough privileges to perform API functions.</documentation>
-    </formElement>
-
-
     <formElement>
         <type>entry</type>
         <label>Resource:</label>
