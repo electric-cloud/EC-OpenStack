@@ -1804,6 +1804,11 @@ outline used above where possible.
 
 
     <h1 id="rns">Release Notes</h1>
+    <h2>@PLUGIN_KEY@ 1.3.0</h2>
+    <ul>
+      <li>Added validation for CreateConfiguration procedure for use with the dynamic environments feature.</li>
+      <li>Added Tenant ID parameter to the plugin configuration.</li>
+    </ul>
     <h2>@PLUGIN_KEY@ 1.2.1</h2>
     <ul>
       <li>Fixed issue when resource wasn't created after provision with an error: "Duplicate resource name".</li>
@@ -1819,12 +1824,12 @@ outline used above where possible.
       <li>DeleteVolume to delete a volume from an OpenStack block storage.</li>
       <li>CreateImage to create a virtual machine (VM) image on OpenStack Image Service Glance.</li>
       <li>CreateInstanceSnapshot to create a snapshot of a server instance.</li>
-      <li>CreateVolumeSnapshot to create a snaphshot of a volume.</li>
+      <li>CreateVolumeSnapshot to create a snapshot of a volume.</li>
       <li>CreateStack to create a HEAT stack from a HEAT template.</li>
       <li>UpdateStack to update an existing stack with a template.</li>
       <li>DeleteStack to delete an existing stack.</li>
     </ul>
-    <p>The Deploy procuedure was updated to add support for customization scripts, availability zones, security groups, 
+    <p>The Deploy procedure was updated to add support for customization scripts, availability zones, security groups,
 			and deployments using an instance snapshot.</p>
       
 			

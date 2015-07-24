@@ -403,6 +403,16 @@
                                     </propertySheet>
                                 </property>
                                 <property>
+                                    <propertyName>tenant_id</propertyName>
+                                    <propertySheet>
+                                        <property>
+                                            <propertyName>formType</propertyName>
+                                            <expandable>1</expandable>
+                                            <value>standard</value>
+                                        </property>
+                                    </propertySheet>
+                                </property>
+                                <property>
                                     <propertyName>orchestration_service_url</propertyName>
                                     <propertySheet>
                                         <property>
@@ -450,6 +460,23 @@
                     <expandable>0</expandable>
                     <value/>
                 </property>
+                <!--Form scripts for validation and dynamic options-->
+                <property>
+                    <propertyName>form</propertyName>
+                    <propertySheet>
+                        <property>
+                            <propertyName>validation</propertyName>
+                            <propertySheet>
+                                <property>
+                                    <propertyName>script</propertyName>
+                                    <expandable>1</expandable>
+                                    <value/>
+                                </property>
+                            </propertySheet>
+                        </property>
+                    </propertySheet>
+                </property>
+                <!--End-of Form scripts for validation and dynamic options-->
             </propertySheet>
             <formalParameter>
                 <formalParameterName>config</formalParameterName>
@@ -555,6 +582,15 @@
                 <description>The host name or IP address of the Orchestration Service for OpenStack</description>
                 <expansionDeferred>0</expansionDeferred>
                 <required>1</required>
+                <type>entry</type>
+            </formalParameter>
+
+            <formalParameter>
+                <formalParameterName>tenant_id</formalParameterName>
+                <defaultValue/>
+                <description>ID of the OpenStack tenant to use</description>
+                <expansionDeferred>0</expansionDeferred>
+                <required>0</required>
                 <type>entry</type>
             </formalParameter>
 

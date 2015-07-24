@@ -19,15 +19,32 @@
         <label>Identity Service URL:</label>
         <property>identity_service_url</property>
         <value></value>
+        <serverValidation>1</serverValidation>
         <documentation>Provide the host name or IP address of the Identity Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here.</documentation>
         <required>1</required>
     </formElement>
-
+    <formElement>
+        <type>credential</type>
+        <label>Login as:</label>
+        <property>credential</property>
+        <required>1</required>
+        <serverValidation>1</serverValidation>
+        <documentation>OpenStack account username/password. This account must have enough privileges to perform API functions.</documentation>
+    </formElement>
+    <formElement>
+        <label>Tenant ID:</label>
+        <property>tenant_id</property>
+        <documentation>ID of the OpenStack tenant to use.</documentation>
+        <required>0</required>
+        <serverValidation>1</serverValidation>
+        <type>entry</type>
+    </formElement>
     <formElement>
         <type>entry</type>
         <label>Compute Service URL:</label>
         <property>compute_service_url</property>
         <value></value>
+        <serverValidation>1</serverValidation>
         <documentation>Provide the host name or IP address of the Compute Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here.</documentation>
         <required>1</required>
     </formElement>
@@ -36,6 +53,7 @@
         <label>Block Storage URL:</label>
         <property>blockstorage_service_url</property>
         <value></value>
+        <serverValidation>1</serverValidation>
         <documentation>Provide the host name or IP address of the Block Storage Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here.</documentation>
         <required>1</required>
     </formElement>
@@ -44,6 +62,7 @@
         <label>Image Service URL:</label>
         <property>image_service_url</property>
         <value></value>
+        <serverValidation>1</serverValidation>
         <documentation>Provide the host name or IP address of the Image Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here.</documentation>
         <required>1</required>
     </formElement>
@@ -52,15 +71,9 @@
         <label>Orchestration Service URL:</label>
         <property>orchestration_service_url</property>
         <value></value>
+        <serverValidation>1</serverValidation>
         <documentation>Provide the host name or IP address of the Orchestration Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here.</documentation>
         <required>0</required>
-    </formElement>
-    <formElement>
-        <type>credential</type>
-        <label>Login as:</label>
-        <property>credential</property>
-        <required>1</required>
-        <documentation>OpenStack account username/password. This account must have enough privileges to perform API functions.</documentation>
     </formElement>
     <formElement>
         <type>entry</type>
