@@ -474,6 +474,16 @@
                                 </property>
                             </propertySheet>
                         </property>
+                        <property>
+                            <propertyName>parameterOptions</propertyName>
+                            <propertySheet>
+                                <property>
+                                    <propertyName>resource</propertyName>
+                                    <expandable>1</expandable>
+                                    <value/>
+                                </property>
+                            </propertySheet>
+                        </property>
                     </propertySheet>
                 </property>
                 <!--End-of Form scripts for validation and dynamic options-->
@@ -1260,6 +1270,48 @@
                     <expandable>0</expandable>
                     <value/>
                 </property>
+                <!--Form scripts for validation and dynamic options-->
+                <property>
+                    <propertyName>form</propertyName>
+                    <propertySheet>
+                        <property>
+                            <propertyName>parameterOptions</propertyName>
+                            <propertySheet>
+                                <property>
+                                    <propertyName>tenant_id</propertyName>
+                                    <expandable>1</expandable>
+                                    <value/>
+                                </property>
+                                <property>
+                                    <propertyName>image</propertyName>
+                                    <expandable>1</expandable>
+                                    <value/>
+                                </property>
+                                <property>
+                                    <propertyName>flavor</propertyName>
+                                    <expandable>1</expandable>
+                                    <value/>
+                                </property>
+                                <property>
+                                    <propertyName>keyPairName</propertyName>
+                                    <expandable>1</expandable>
+                                    <value/>
+                                </property>
+                                <property>
+                                    <propertyName>availability_zone</propertyName>
+                                    <expandable>1</expandable>
+                                    <value/>
+                                </property>
+                                <property>
+                                    <propertyName>resource_workspace</propertyName>
+                                    <expandable>1</expandable>
+                                    <value/>
+                                </property>
+                            </propertySheet>
+                        </property>
+                    </propertySheet>
+                </property>
+                <!--End-of Form scripts for validation and dynamic options-->
             </propertySheet>
             <formalParameter>
                 <formalParameterName>connection_config</formalParameterName>

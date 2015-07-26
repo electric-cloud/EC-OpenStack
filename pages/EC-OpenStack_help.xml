@@ -1808,6 +1808,7 @@ outline used above where possible.
     <ul>
       <li>Added validation for CreateConfiguration procedure for use with the dynamic environments feature.</li>
       <li>Added Tenant ID parameter to the plugin configuration.</li>
+      <li>Added the ability to dynamically retrieve drop-down options for image, flavor, etc when creating resource templates for dynamic environments.</li>
     </ul>
     <h2>@PLUGIN_KEY@ 1.2.1</h2>
     <ul>

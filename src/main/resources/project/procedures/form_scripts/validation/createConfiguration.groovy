@@ -1,5 +1,3 @@
-package ecplugins.openstack.scripts
-
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.transform.Field
@@ -97,10 +95,11 @@ public class InvalidParameterException extends IllegalArgumentException {
 }
 
 boolean canValidate(args) {
-    hasValue(args, USER_NAME) &&
-        hasValue(args, PASSWORD) &&
-        hasValue(args, IDENTITY_SERVICE_URL) &&
-        hasValue(args, IDENTITY_API_VERSION)
+    args?.parameters &&
+            args.parameters[USER_NAME] &&
+            args.parameters[PASSWORD] &&
+            args.parameters[IDENTITY_SERVICE_URL] &&
+            args.parameters[IDENTITY_API_VERSION]
 }
 
 def doValidations(args) {
@@ -166,7 +165,7 @@ def doPost(String url, HttpEntity payload) {
         HttpResponse response = httpClient.execute(httpRequest)
 
         // read the response only upon success
-        def jsonResponse = null
+        def jsonResponse
         if (response.statusLine.statusCode < 400) {
             jsonResponse = readResponse(response.entity)
         }
@@ -177,12 +176,8 @@ def doPost(String url, HttpEntity payload) {
 
         return result
     } finally {
-        if (httpClient != null) httpClient.getConnectionManager().shutdown()
+        httpClient?.getConnectionManager().shutdown()
     }
-}
-
-boolean hasValue(args, parameter) {
-    args.parameters && args.parameters[parameter] != null && args.parameters[parameter] != ""
 }
 
 String buildIdentityServiceURL(args) {
@@ -204,7 +199,7 @@ def buildAuthenticationPayload(args) {
     def keystoneAPIVersion = args.parameters.keystone_api_version
     if (keystoneAPIVersion == "2.0") {
         jsonPayload."auth" = [:]
-        jsonPayload."auth"."tenantId" = hasValue(args, TENANT_ID) ? args.parameters[TENANT_ID] : ""
+        jsonPayload."auth"."tenantId" = args.parameters[TENANT_ID] ?: ''
         jsonPayload."auth"."passwordCredentials" = [:]
         jsonPayload."auth"."passwordCredentials"."username" = args.parameters.userName
         jsonPayload."auth"."passwordCredentials"."password" = args.parameters.password
@@ -219,7 +214,7 @@ def buildAuthenticationPayload(args) {
         jsonPayload."auth"."identity"."password"."user"."domain" = [:]
         jsonPayload."auth"."identity"."password"."user"."domain"."id" = "default"
 
-        if (hasValue(args, TENANT_ID)) {
+        if (args.parameters[TENANT_ID]) {
             jsonPayload."auth"."scope" = [:]
             jsonPayload."auth"."scope"."project" = [:]
             jsonPayload."auth"."scope"."project"."id" = args.parameters[TENANT_ID]
@@ -326,7 +321,7 @@ def buildErrorResponse(String parameter, String errorMessage) {
 }
 
 def buildAuthenticationError(args) {
-    def tenantIdProvided = hasValue(args, TENANT_ID)
+    def tenantIdProvided = args.parameters[TENANT_ID]
     def error = tenantIdProvided ?
             'Invalid username and password for tenant' :
             'Invalid username and password'
@@ -341,12 +336,12 @@ def buildAuthenticationError(args) {
 
 def validateResponse(args, jsonResponse) {
     def result
-    if (hasValue(args, TENANT_ID)) {
+    if (args.parameters[TENANT_ID]) {
         //If the tenant id was provided, then OpenStack API returns the service catalog information
         // for the tenant (project) that can be used to then validate the other API urls.
         result = validateServiceURLs(args, jsonResponse)
     }
-    if (result == null) result = FormalParameterValidationResult.SUCCESS
+    result = result ?: FormalParameterValidationResult.SUCCESS
 
     result
 }
@@ -373,7 +368,7 @@ private def validateServiceURL(args, jsonResponse,
                                String serviceType,
                                List list) {
 
-    if (!hasValue(args, serviceUrlParam)) {
+    if (!args.parameters[serviceUrlParam]) {
         return
     }
 
@@ -385,7 +380,7 @@ private def validateServiceURL(args, jsonResponse,
             node["type"] == serviceType
         }
 
-        if (catalogItem != null && catalogItem.size() > 0) {
+        if (catalogItem) {
             endPoints = catalogItem.endpoints.publicURL
         }
 
@@ -394,12 +389,12 @@ private def validateServiceURL(args, jsonResponse,
             node["type"] == serviceType
         }
 
-        if (catalogItem != null && catalogItem.size() > 0) {
+        if (catalogItem) {
             endPoints = catalogItem.endpoints.url
         }
     }
 
-    if (endPoints != null && endPoints.size() > 0) {
+    if (endPoints) {
         def inputUrl = args.parameters[serviceUrlParam]
         for (String endPoint : endPoints) {
             endPoint =

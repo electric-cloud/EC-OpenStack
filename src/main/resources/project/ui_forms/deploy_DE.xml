@@ -15,6 +15,8 @@
         <documentation>ID of the tenant to use.</documentation>
         <required>1</required>
         <type>entry</type>
+        <serverOptions>1</serverOptions>
+        <dependsOn>connection_config</dependsOn>
     </formElement>
     <formElement>
         <label>Number of Instances:</label>
@@ -26,20 +28,24 @@
     </formElement>
 
     <formElement>
-        <label>Image ID:</label>
+        <label>Image:</label>
         <property>image</property>
         <value/>
-        <documentation>ID of an existing image in Openstack.</documentation>
+        <documentation>An existing image in Openstack.</documentation>
         <required>1</required>
         <type>entry</type>
+        <serverOptions>1</serverOptions>
+        <dependsOn>connection_config,tenant_id</dependsOn>
     </formElement>
     <formElement>
-        <label>Flavor ID:</label>
+        <label>Flavor:</label>
         <property>flavor</property>
         <value/>
-        <documentation>ID for the flavor to use.</documentation>
+        <documentation>An existing flavor in OpenStack to use.</documentation>
         <required>1</required>
         <type>entry</type>
+        <serverOptions>1</serverOptions>
+        <dependsOn>connection_config,tenant_id</dependsOn>
     </formElement>
 
     <formElement>
@@ -49,6 +55,8 @@
         <documentation>Existing key pair name</documentation>
         <required>1</required>
         <type>entry</type>
+        <serverOptions>1</serverOptions>
+        <dependsOn>connection_config,tenant_id</dependsOn>
     </formElement>
 
     <formElement>
@@ -66,6 +74,8 @@
         <documentation>The availability zone in which to launch the server.</documentation>
         <required>0</required>
         <type>entry</type>
+        <serverOptions>1</serverOptions>
+        <dependsOn>connection_config,tenant_id</dependsOn>
     </formElement>
     <formElement>
         <label>Customization script:</label>
@@ -98,5 +108,6 @@
         <documentation>If you specify a resource pool name, this is the workspace that will be assigned to the created resources.</documentation>
         <required>0</required>
         <type>entry</type>
+        <serverOptions>1</serverOptions>
     </formElement>
 </editor>
