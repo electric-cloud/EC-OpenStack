@@ -6,7 +6,7 @@
   <meta name="generator" content="HTML Tidy for Windows (vers 25 March 2009), see www.w3.org" />
   <meta content="text/html; charset=us-ascii" http-equiv="content-type" />
 
-  <title>Electric Commander Plugin for OpenStack</title>
+  <title>ElectricFlow Plugin for OpenStack</title>
   <link rel="stylesheet" href="../../plugins/@PLUGIN_KEY@/pluginhelp.css" type="text/css" media="screen" />
 </head>
 
@@ -17,14 +17,14 @@
     <p>Plugin Version @PLUGIN_VERSION@</p>
     <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade" />
 		
-		<p>Revised on May 6, 2015</p>
+		<p>Revised on July 29, 2015</p>
 				
 	<h1>Contents</h1>
 				
 		<ul>
 				<li><p><a href="#overview">Overview</a></p></li>
 				<li><p><a href="#setupconfig">Setting Up the Plugin Configuration</a></p></li>
-				<li><p><a href="#ElectricFlow">Setting Up ElectricCommander</a></p></li>
+				<li><p><a href="#ElectricFlow">Setting Up ElectricFlow</a></p></li>
 				<li><p><a href="#procedures">Plugin Procedures</a></p></li>
 				<ul>
 				<li><a href="#AllocateIP">AllocateIP</a></li>
@@ -71,7 +71,7 @@
   <li><a href="http://api.openstack.org/">OpenStack API Reference</a></li>
 	</ul>
 	
-  <h2>ElectricCommander Integration to OpenStack</h2>
+  <h2>ElectricFlow Integration to OpenStack</h2>
 				
 	<!-- The integration description should answer the questions:
 How deep does our integration go? Why should I care? What general
@@ -92,7 +92,7 @@ the plugin omit?
     <li>Deploy and delete servers.</li>
     <li>Create and delete key pairs.</li>
     <li>Create and delete floating IPs.</li>
-    <li>Create ElectricCommander resources.</li>
+    <li>Create ElectricFlow resources.</li>
     <li>Create, attach, detach, extend, and delete volumes.</li>
     <li>Create new images.</li>
     <li>Create a snapshot of a server.</li>
@@ -106,7 +106,7 @@ the plugin omit?
 
     <p>This plugin was developed and tested against OpenStack IceHouse. </p>
 
-    <p>The minimum ElectricCommander supported version is ElectricCommander 3.6.</p>
+    <p>The minimum ElectricFlow supported version is ElectricCommander 3.6.</p>
 		
 		<p>IMPORTANT: For all parameter descriptions in this document, the required parameters are shown in 
 		<span class='required'>bold italics</span>.</p>
@@ -151,10 +151,18 @@ the plugin omit?
       </tr>
       <tr>
           <td class="required">Identity Service URL</td>
-
           <td>Provide the host name or IP address of the Identity Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here. (Required)</td>
       </tr>
-
+	  <tr>
+          <td class="required">Login as</td>
+          <td>The OpenStack account user name and password. This
+        account must have enough privileges to perform API
+        functions. (Required)</td>
+      </tr>
+      <tr>
+          <td>Tenant ID</td>
+          <td>ID of the tenant to use.</td>
+      </tr>
       <tr>
         <td class="required">Compute Service URL</td>
 
@@ -180,6 +188,12 @@ the plugin omit?
               <td>Provide the host name or IP address of the Orchestration Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here.</td>
           </tr>
 
+		  <tr>
+              <td class="required">Compute API version</td>
+
+              <td>The Compute Service API version. (Required)</td>
+          </tr>
+		  
           <tr>
               <td class="required">Keystone API version</td>
 
@@ -189,36 +203,18 @@ the plugin omit?
           <tr>
               <td class="required">Blockstorage API version</td>
 
-              <td>The OpenStack block storage API version (Required)</td>
+              <td>The OpenStack block storage API version. (Required)</td>
           </tr>
 
           <tr>
               <td class="required">Image API version</td>
 
-              <td>The Image Service API version (Required)</td>
+              <td>The Image Service API version. (Required)</td>
           </tr>
 
-
-
-          <tr>
-        <td class="required">Configuration Credential
-        Parameters</td><!-- Describe *exactly* which user name and password go here.
-Is it for a particlar machine? Is it for a website? Is it for a
-particular function in the tool? Does it depend on another
-parameter (like a machine name) for its meaning?
--->
-
-        <td>OpenStack account username/password. This
-        account must have enough privileges to perform API
-        functions. (Required)</td>
-      </tr>
-      <tr>
+        <tr>
         <td class="required">Resource</td>
         <td>The name of the resource (or pool) on which the integration steps can run. The default is <i>local</i>. (Required)</td>
-      </tr>
-      <tr>
-        <td class="required">Workspace</td>
-        <td>The workspace where dynamic resources are created by this configuration. The default is <i>default</i>. (Required)</td>
       </tr>
       <tr>
         <td class="required">Debug Level</td>
@@ -247,7 +243,7 @@ parameter (like a machine name) for its meaning?
     <h2>AllocateIP</h2>
 
     <p>This procedure creates a new OpenStack floating IP address to use with your OpenStack account. The plugin stores properties 
-		on the ElectricCommander server in the location in the <b>Results Location</b> and <b>Results tag</b> fields. The default location 
+		on the ElectricFlow server in the location in the <b>Results Location</b> and <b>Results tag</b> fields. The default location 
 		in the job directory called /myJob/Openstack/deployed/<i>Provision tag</i> if the <b>Results Location</b> is blank.</p>
 		
 		<h3>Input</h3>
@@ -273,7 +269,7 @@ parameter (like a machine name) for its meaning?
         </tr>
         <tr>
           <td>Results Location</td>
-          <td>The location in the Commander server where the properties are stored. The default is <i>/myJob/OpenStack/deployed</i>.</td>
+          <td>The location in the ElectricFlow server where the properties are stored. The default is <i>/myJob/OpenStack/deployed</i>.</td>
         </tr>
         <tr>
           <td class="required">Results tag</td>
@@ -291,7 +287,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>AllocateIP</b> step, click the Log button to see the diagnostic information.</p>	
 
@@ -340,7 +336,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>AssociateFloatingIP</b> step, click the Log button to see the diagnostic information.</p>	
 
@@ -392,7 +388,7 @@ parameter (like a machine name) for its meaning?
                   </tr>
                   <tr>
                       <td>Results Location</td>
-                      <td>The location on the Commander server where the properties are stored. The default is <i>/myJob/OpenStack/deployed</i>.</td>
+                      <td>The location on the ElectricFlow server where the properties are stored. The default is <i>/myJob/OpenStack/deployed</i>.</td>
                   </tr>
                   <tr>
                       <td class="required">Results tag</td>
@@ -463,7 +459,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>Cleanup</b> step, click the Log button to see the diagnostic information.</p>	
 
@@ -521,12 +517,12 @@ parameter (like a machine name) for its meaning?
 				</tr>	
         <tr>
           <td class="required">Resource Pool(s)</td>
-          <td>The names of resource pools in ElectricCommander that will be asssociated with the machines in this configuration 
+          <td>The names of resource pools in ElectricFlow that will be asssociated with the machines in this configuration 
 					if resources are created. For more than one resource pool, specify the names in a space-separated list. (Required)</td>
         </tr>
         <tr>
           <td>Resource workspace</td>
-          <td>The ElectricCommander workspace that the resource uses.</td>
+          <td>The ElectricFlow workspace that the resource uses.</td>
         </tr>
       </tbody>
     </table>
@@ -540,7 +536,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>CloudManagerGrow</b> step, click the Log button to see the diagnostic information.</p>	
 			
@@ -586,7 +582,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>CloudManagerShrink</b> step, click the Log button to see the diagnostic information.</p>	
 
@@ -632,7 +628,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>CloudManagerSync</b> step, click the Log button to see the diagnostic information.</p>	
 
@@ -643,7 +639,7 @@ parameter (like a machine name) for its meaning?
      <h2>CreateImage</h2>
 
      <p>This procedure creates a virtual machine (VM) image. You can launch new instances from these images.</p>
-     <p>The plugin stores properties on the Commander server at the location specified in the <b>Results Location</b> and
+     <p>The plugin stores properties on the ElectricFlow server at the location specified in the <b>Results Location</b> and
 			<b>Results tag</b> fields. The default location in the job directory called /myJob/Openstack/deployed/<i>Provision tag</i>
 			if the <b>Results Location</b> field is empty.</p>
 					
@@ -710,7 +706,7 @@ parameter (like a machine name) for its meaning?
                   </tr>
                   <tr>
                       <td>Results Location</td>
-                     <td>The location on the Commander server where the properties are stored. The default is <i>/myJob/OpenStack/deployed</i>.</td>
+                     <td>The location on the ElectricFlow server where the properties are stored. The default is <i>/myJob/OpenStack/deployed</i>.</td>
                   </tr>
                   <tr>
                       <td class="required">Results tag</td>
@@ -728,7 +724,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>CreateImage</b> step, click the Log button to see the diagnostic information.</p>	
 						
@@ -739,7 +735,7 @@ parameter (like a machine name) for its meaning?
       <h2>CreateInstanceSnapshot</h2>
 
       <p>This procedure creates a snapshot from the instance. You can launch an instance from a snapshot.</p>
-      <p>The plugin stores properties on the Commander server at the location specified in the <b>Results Location</b> and 
+      <p>The plugin stores properties on the ElectricFlow server at the location specified in the <b>Results Location</b> and 
 			<b>Results tag</b> fields. The default location in the job directory called /myJob/Openstack/deployed/<i>Provision tag</i> 
 			if the <b>Results Location</b> field is empty.</p>
 			
@@ -781,7 +777,7 @@ parameter (like a machine name) for its meaning?
                   </tr>
 									<tr>
                       <td>Results Location</td>
-                      <td>The location on the Commander server where the properties are stored. The default is 
+                      <td>The location on the ElectricFlow server where the properties are stored. The default is 
 											<i>/myJob/OpenStack/deployed</i>.</td>
                   </tr>
                   <tr>
@@ -801,7 +797,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>CreateImage</b> step, click the Log button to see the diagnostic information.</p>	
 
@@ -817,7 +813,7 @@ parameter (like a machine name) for its meaning?
 
     <p>This procedure creates a new OpenStack key pair. The public key is stored by OpenStack and the private key is returned to you. 
 		If a key with the specified name already exists, OpenStack returns an error.</p>
-    <p>The plugin store properties on the ElectricCommander server at the location in the <b>Results Location</b> and the <b>Results tag</b> fields.
+    <p>The plugin store properties on the ElectricFlow server at the location in the <b>Results Location</b> and the <b>Results tag</b> fields.
 		The default location is the job directory called /myJob/Openstack/deployed/<i>Provision tag value</i> if <b>Results Location</b> field is 
 		empty.</p>
 		
@@ -848,7 +844,7 @@ parameter (like a machine name) for its meaning?
         </tr>
         <tr>
           <td>Results Location</td>
-          <td>The location on the ElectricCommander server where the properties are stored. The default is <i>/myJob/OpenStack/deployed</i>.</td>
+          <td>The location on the ElectricFlow server where the properties are stored. The default is <i>/myJob/OpenStack/deployed</i>.</td>
         </tr>
         <tr>
           <td class="required">Results tag</td>
@@ -866,7 +862,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>CreateKeyPair</b> step, click the Log button to see the diagnostic information.</p>	
 
@@ -879,7 +875,7 @@ parameter (like a machine name) for its meaning?
        <p>Heat is an OpenStack service to orchestrate multiple composite cloud applications using templates. 
 			 This procedure creates a new HEAT stack from a specified HEAT template. You can enter the template (in JSON or YAML format)in the
 			 <b>Template</b> field or the URL of the template.</p>
-			 <p>The plugin stores properties on the Commander server at the location specified in the <b>Results Location</b> and 
+			 <p>The plugin stores properties on the ElectricFlow server at the location specified in the <b>Results Location</b> and 
 			 <b>Results tag</b> fields. The default location in the job directory called /myJob/Openstack/deployed/<i>Provision tag</i>
 			 if the <b>Results Location</b> field is empty.</p>
 							
@@ -919,7 +915,7 @@ parameter (like a machine name) for its meaning?
                       </tr>
                      <tr>
                       <td>Results Location</td>
-                      <td>The location on the Commander server where the properties are stored. The default is 
+                      <td>The location on the ElectricFlow server where the properties are stored. The default is 
 											<i>/myJob/OpenStack/deployed</i>.</td>
                   </tr>
                   <tr>
@@ -939,7 +935,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>CreateStack</b> step, click the Log button to see the diagnostic information.</p>	
 
@@ -951,7 +947,7 @@ parameter (like a machine name) for its meaning?
 
        <p>This procedure creates a new OpenStack volume. A volume is a detachable block storage device. You can attach a volume
 			  to one instance at a time.</p>
-       <p>The plugin stores properties on the Commander server in the location in the <b>Results Location</b> and <b>Results tag</b> fields.
+       <p>The plugin stores properties on the ElectricFlow server in the location in the <b>Results Location</b> and <b>Results tag</b> fields.
 			 The default location in the job directory called /myJob/Openstack/deployed/<i>Provision tag</i> if the <b>Results location</b>
 			 is empty.</p>
 			 
@@ -994,7 +990,7 @@ parameter (like a machine name) for its meaning?
                   </tr>
                   <tr>
                       <td>Results Location</td>
-                      <td>The location on the Commander server where the properties are stored. The default is <i>/myJob/OpenStack/deployed</i>.</td>
+                      <td>The location on the ElectricFlow server where the properties are stored. The default is <i>/myJob/OpenStack/deployed</i>.</td>
                   </tr>
                   <tr>
                       <td class="required">Results tag</td>
@@ -1013,7 +1009,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>CreateVolume</b> step, click the Log button to see the diagnostic information.</p>	
 
@@ -1025,7 +1021,7 @@ parameter (like a machine name) for its meaning?
 
           <p>This procedure creates a snapshot of a volume, a point-in-time complete copy of the volume. 
 					You can create a volume from this snapshot.</p>
-          <p>The plugin stores properties on the Commander server at the location specified in the <b>Results Location</b> and 
+          <p>The plugin stores properties on the ElectricFlow server at the location specified in the <b>Results Location</b> and 
 					<b>Results tag</b> fields. The default location in the job directory called /myJob/Openstack/deployed/<i>Provision tag</i>
 					if the <b>Results Location</b> field is empty.</p>
 					
@@ -1070,7 +1066,7 @@ parameter (like a machine name) for its meaning?
                   </tr>
                  <tr>
                       <td>Results Location</td>
-                      <td>The location on the Commander server where the properties are stored. The default is 
+                      <td>The location on the ElectricFlow server where the properties are stored. The default is 
 											<i>/myJob/OpenStack/deployed</i>.</td>
                   </tr>
                   <tr>
@@ -1090,7 +1086,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>CreateVolumeSnapshot</b> step, click the Log button to see the diagnostic information.</p>	
 					
@@ -1139,7 +1135,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>DeleteKeyPair</b> step, click the Log button to see the diagnostic information.</p>	
 
@@ -1150,7 +1146,7 @@ parameter (like a machine name) for its meaning?
           <h2>DeleteStack</h2>
 
               <p>This procedure deletes an existing stack.</p>
-              <p>The plugin stores properties on the Commander server at the location specified in the <b>Results Location</b> and
+              <p>The plugin stores properties on the ElectricFlow server at the location specified in the <b>Results Location</b> and
 							<b>Results tag</b> fields. The default location in the job directory called /myJob/Openstack/deployed/<i>Provision tag</i>
 							if the <b>Results Location</b> field is empty.</p>
 							
@@ -1185,7 +1181,7 @@ parameter (like a machine name) for its meaning?
                       </tr>
                      <tr>
                           <td>Results Location</td>
-                          <td>The location on the Commander server where the properties are stored. The default is 
+                          <td>The location on the ElectricFlow server where the properties are stored. The default is 
 											    <i>/myJob/OpenStack/deployed</i>.</td>
                   </tr>
                   <tr>
@@ -1205,7 +1201,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>DeleteStack</b> step, click the Log button to see the diagnostic information.</p>	
 
@@ -1216,7 +1212,7 @@ parameter (like a machine name) for its meaning?
     <h2>DeleteVolume</h2>
 
    <p>This procedure deletes a volume. A volume is a detachable block storage device.</p>
-   <p>The plugin stores properties on the Commander server at the location specified in the <b>Results Location</b> and
+   <p>The plugin stores properties on the ElectricFlow server at the location specified in the <b>Results Location</b> and
 	 <b>Results tag</b> fields. The default location is the the job directory called /myJob/Openstack/deployed/<i>Provision tag</i>
 	 fields if the <b>Results Location</b> is empty.</p>
 
@@ -1257,7 +1253,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>DeleteVolume</b> step, click the Log button to see the diagnostic information.</p>	
 					
@@ -1267,7 +1263,7 @@ parameter (like a machine name) for its meaning?
 
     <h2>Deploy</h2>
 
-    <p>This procedure calls the CreateKey procedure and deploys one or more new instances. It store properties on the Commander 
+    <p>This procedure calls the CreateKey procedure and deploys one or more new instances. It store properties on the ElectricFlow 
 		server at the location specified in the <b>Results Location</b> and the <b>Results tag</b> fields. The default location is in the 
 		directory for the job deployment results (/myJob/Openstack/deployed/<i>Results tag value</i>) if the <b>Results Location</b> field 
 		is empty.</p>
@@ -1328,7 +1324,7 @@ parameter (like a machine name) for its meaning?
           </tr>
           <tr>
           <td>Results Location</td>
-          <td>The location on the Commander server where the properties are stored. The default is <i>/myJob/OpenStack/deployed</i>.</td>
+          <td>The location on the ElectricFlow server where the properties are stored. The default is <i>/myJob/OpenStack/deployed</i>.</td>
         </tr>
         <tr>
           <td class="required">Results tag</td>
@@ -1344,11 +1340,11 @@ parameter (like a machine name) for its meaning?
         </tr>
         <tr>
           <td>Resource Pool</td>
-          <td>Name of the resource pool in ElectricCommander that is associated with the machines in this configuration when resources are created.</td>
+          <td>Name of the resource pool in ElectricFlow that is associated with the machines in this configuration when resources are created.</td>
         </tr>
         <tr>
           <td>Resource workspace</td>
-          <td>The ElectricCommander workspace that the resources uses.</td>
+          <td>The ElectricFlow workspace that the resources uses.</td>
         </tr>
         </tbody>
     </table>
@@ -1362,7 +1358,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>Deploy</b> step, click the Log button to see the diagnostic information.</p>	
 
@@ -1373,7 +1369,7 @@ parameter (like a machine name) for its meaning?
    <h2>DetachVolume</h2>
 
    <p>This procedure detaches a volume from a server. A volume is a detachable block storage device.</p>
-   <p>The plugin store properties on the Commander server at the location specified in the <b>Results Location</b> and <b>Results tag</b>
+   <p>The plugin store properties on the ElectricFlow server at the location specified in the <b>Results Location</b> and <b>Results tag</b>
 	 fields. The default location is the job directory called /myJob/Openstack/deployed/<i>Provision tag</i> if the <b>Results Location</b> 
 	 field is empty.</p>
 					
@@ -1423,7 +1419,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>DetachVolume</b> step, click the Log button to see the diagnostic information.</p>
 					
@@ -1435,7 +1431,7 @@ parameter (like a machine name) for its meaning?
 
     <p>This procedure extends the size of the specified volume. The volume must be in <i>available state</i> before the 
 		size is extended.</p>
-    <p>The plugin stores properties on the Commander server at the location specified in the <b>Results Location</b> and <b>Results tag</b>
+    <p>The plugin stores properties on the ElectricFlow server at the location specified in the <b>Results Location</b> and <b>Results tag</b>
 		fields. The default location in the job directory called /myJob/Openstack/deployed/<i>Provision tag</i> if the <b>Results Location</b>
 		field is empty.</p>
 					
@@ -1472,7 +1468,7 @@ parameter (like a machine name) for its meaning?
                   </tr>
                   <tr>
                       <td>Results Location</td>
-                      <td>The location on the Commander server where the properties are stored. The default is 
+                      <td>The location on the ElectricFlow server where the properties are stored. The default is 
 											<i>/myJob/OpenStack/deployed</i>.</td>
                   </tr>
                   <tr>
@@ -1492,7 +1488,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>ExtendVolume</b> step, click the Log button to see the diagnostic information.</p>	
 					
@@ -1503,7 +1499,7 @@ parameter (like a machine name) for its meaning?
       <h2>RebootInstance</h2>
 
       <p>This procedure reboots a server instance.</p>
-      <p>The plugin stores properties on the Commander server at the location specified in the <b>Results Location</b> and 
+      <p>The plugin stores properties on the ElectricFlow server at the location specified in the <b>Results Location</b> and 
 			<b>Results tag</b> fields. The default location in the job directory called /myJob/Openstack/deployed/<i>Provision tag</i> 
 			if the <b>Results Location</b> field is empty.</p>
 			
@@ -1548,7 +1544,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>RebootInstance</b> step, click the Log button to see the diagnostic information.</p>	
 
@@ -1597,7 +1593,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>ReleaseIP</b> step, click the Log button to see the diagnostic information.</p>	
     		
@@ -1646,7 +1642,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>Teardown</b> step, click the Log button to see the diagnostic information.</p>	
 
@@ -1658,7 +1654,7 @@ parameter (like a machine name) for its meaning?
 
               <p>This procedure updates an existing stack. You can enter the updated template (in JSON or YAML format)in the
                   <b>Template</b> field or the URL of the template.</p>
-              <p>The plugin stores properties on the Commander server at the location specified in the <b>Results Location</b> and
+              <p>The plugin stores properties on the ElectricFlow server at the location specified in the <b>Results Location</b> and
 							<b>Results tag</b> fields. The default location in the job directory called /myJob/Openstack/deployed/<i>Provision tag</i>
 							if the <b>Results Location</b> field is empty.</p>
 							
@@ -1702,7 +1698,7 @@ parameter (like a machine name) for its meaning?
                       </tr>
                       <tr>
                          <td>Results Location</td>
-                         <td>The location on the Commander server where the properties are stored. The default is 
+                         <td>The location on the ElectricFlow server where the properties are stored. The default is 
 											   <i>/myJob/OpenStack/deployed</i>.</td>
                       </tr>
                       <tr>
@@ -1722,7 +1718,7 @@ parameter (like a machine name) for its meaning?
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow.</p>
 				
 		<p>In the <b>UpdateStack</b> step, click the Log button to see the diagnostic information.</p>	
 
@@ -1741,7 +1737,7 @@ outline used above where possible.
 
     <p>Deploy and cleanup work as a pair within a job.</p>
 
-    <p>The most common use for this plugin is to create a server, create ElectricCommander resources assigned to it, 
+    <p>The most common use for this plugin is to create a server, create ElectricFlow resources assigned to it, 
 		use the resources to run some operations, and then delete the resource and the server. To accomplish these tasks you must:</p>
 
     <ol>
@@ -1789,7 +1785,7 @@ outline used above where possible.
 
     <h4>Results and Output</h4>
 
-    <p>After the job runs, you can view the results in ElectricCommander:</p>
+    <p>After the job runs, you can view the results in ElectricFlow:</p>
 		
 	  <img alt="" src="../../plugins/@PLUGIN_KEY@/images/use_cases/Case_1/job.png" />
 		<br />
@@ -1806,14 +1802,14 @@ outline used above where possible.
     <h1 id="rns">Release Notes</h1>
     <h2>@PLUGIN_KEY@ 1.3.0</h2>
     <ul>
-      <li>Added validation for CreateConfiguration procedure for use with the dynamic environments feature.</li>
-      <li>Added Tenant ID parameter to the plugin configuration.</li>
+      <li>Added validation to the CreateConfiguration procedure for the dynamic environments feature.</li>
+      <li>Added the Tenant ID parameter to the plugin configuration.</li>
       <li>Added the ability to dynamically retrieve drop-down options for image, flavor, etc when creating resource templates for dynamic environments.</li>
     </ul>
     <h2>@PLUGIN_KEY@ 1.2.1</h2>
     <ul>
-      <li>Fixed issue when resource wasn't created after provision with an error: "Duplicate resource name".</li>
-      <li>Workspace parameter was removed from configuration.</li>
+      <li>Fixed the issue that occurs when a resource was not created after provisioning it and the "Duplicate resource name" error message appears.</li>
+      <li>The Workspace parameter was removed from procedure to create an OpenStack configuration.</li>
     </ul>
     <h2>@PLUGIN_KEY@ 1.2.0</h2>
     <p>The following procedures were added:</p>
