@@ -112,8 +112,9 @@
         <label>Resource:</label>
         <property>resource</property>
         <value>local</value>
-        <documentation>	The name of the resource (or pool) on which the integration steps can run (default is 'local').</documentation>
+        <documentation>	The resource (or pool) on which the integration steps can run (default is 'local').</documentation>
         <required>1</required>
+        <serverOptions>1</serverOptions>
     </formElement>
     <formElement>
         <type>entry</type>

@@ -1,30 +1,9 @@
+package ecplugins.openstack
+
 import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 
-class CreateConfigurationValidationTest extends GroovyShellTestCase {
-
-    ResourceBundle testProperties;
-
-    // test constants
-    def USER = System.getProperty("OPENSTACK_USER");
-    def PASSWORD = System.getProperty("OPENSTACK_PASSWORD");
-    def TENANT_ID = System.getProperty("OPENSTACK_TENANTID");
-
-    //properties in the test property file
-    def PROP_IDENTITY_URL = 'identity_service_url'
-    def PROP_SCRIPT_JAR_URLS = 'server_jar_urls'
-
-    @Override
-    void setUp() {
-        super.setUp()
-
-        testProperties =
-                new PropertyResourceBundle(new FileInputStream("ecplugin_test.properties"))
-        for (String url: testProperties.getString(PROP_SCRIPT_JAR_URLS).split(',')) {
-            Thread.currentThread().getContextClassLoader().addURL(new URL(url))
-        }
-    }
+class CreateConfigurationValidationTest extends BaseScriptsTestCase {
 
     void testInputParameterValidations() {
 
@@ -63,7 +42,7 @@ class CreateConfigurationValidationTest extends GroovyShellTestCase {
         actualParams = json (
                 userName: USER,
                 password: PASSWORD,
-                identity_service_url : testProperties.getString(PROP_IDENTITY_URL)
+                identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL)
             )
 
         inputWithValidCreds.parameters = actualParams
@@ -72,7 +51,7 @@ class CreateConfigurationValidationTest extends GroovyShellTestCase {
         actualParams = json (
                 userName: USER,
                 password: PASSWORD,
-                identity_service_url : testProperties.getString(PROP_IDENTITY_URL),
+                identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
                 keystone_api_version: '5'
         )
         inputWithValidCreds.parameters = actualParams
@@ -135,7 +114,7 @@ class CreateConfigurationValidationTest extends GroovyShellTestCase {
         def actualParams = json (
                 userName : USER,
                 password : PASSWORD,
-                identity_service_url : testProperties.getString(PROP_IDENTITY_URL),
+                identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
                 keystone_api_version: version,
                 tenant_id: TENANT_ID
         )
@@ -153,7 +132,7 @@ class CreateConfigurationValidationTest extends GroovyShellTestCase {
         def actualParams = json (
                 userName : USER,
                 password : PASSWORD,
-                identity_service_url : testProperties.getString(PROP_IDENTITY_URL),
+                identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
                 keystone_api_version: version,
                 tenant_id: TENANT_ID
         )
@@ -172,7 +151,7 @@ class CreateConfigurationValidationTest extends GroovyShellTestCase {
         def actualParams = json (
                 userName : USER,
                 password : PASSWORD,
-                identity_service_url : testProperties.getString(PROP_IDENTITY_URL),
+                identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
                 keystone_api_version: version,
                 tenant_id: TENANT_ID,
                 compute_service_url: "https://region-b.geo-1.compute.hpcloudsvc.com",
@@ -194,7 +173,7 @@ class CreateConfigurationValidationTest extends GroovyShellTestCase {
         def actualParams = json (
                 userName : USER,
                 password : PASSWORD,
-                identity_service_url : testProperties.getString(PROP_IDENTITY_URL),
+                identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
                 keystone_api_version: version,
                 tenant_id: tenantId
         )
@@ -237,7 +216,7 @@ class CreateConfigurationValidationTest extends GroovyShellTestCase {
         def actualParams = json (
                 userName : 'dummyuser123',
                 password : PASSWORD,
-                identity_service_url : testProperties.getString(PROP_IDENTITY_URL),
+                identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
                 keystone_api_version: version
             )
 
@@ -257,7 +236,7 @@ class CreateConfigurationValidationTest extends GroovyShellTestCase {
                 userName : USER,
                 password : PASSWORD,
                 tenant_id: '0000000abc',
-                identity_service_url : testProperties.getString(PROP_IDENTITY_URL),
+                identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
                 keystone_api_version: version
         )
 
@@ -276,7 +255,7 @@ class CreateConfigurationValidationTest extends GroovyShellTestCase {
         def actualParams = json (
                 userName : USER,
                 password : 'asfasfdsfsfhr',
-                identity_service_url : testProperties.getString(PROP_IDENTITY_URL),
+                identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
                 keystone_api_version: version
             )
         def input = json (
@@ -291,28 +270,17 @@ class CreateConfigurationValidationTest extends GroovyShellTestCase {
     }
 
     void checkSuccessResponse(def inputParam) {
-        def fileResource = this.class.classLoader.getResourceAsStream("project/procedures/form_scripts/validation/createConfiguration.groovy")
-        BufferedReader fileReader = new BufferedReader(new InputStreamReader(fileResource));
-        def json = JsonOutput.toJson(inputParam)
-        def args = new JsonSlurper().parseText(json)
-        def result = withBinding( [args: args] ) {
-            shell.evaluate(fileReader)
-        }
-        System.out.println("Response: " + JsonOutput.toJson(result))
+
+        def result = evalScript('project/procedures/form_scripts/validation/createConfiguration.groovy', inputParam)
         assertEquals "success", result.outcome.toString()
     }
 
     void checkErrorResponse(def inputParam, def parameter, def expectedError) {
-        def fileResource = this.class.classLoader.getResourceAsStream("project/procedures/form_scripts/validation/createConfiguration.groovy")
-        BufferedReader fileReader = new BufferedReader(new InputStreamReader(fileResource));
-        def json = JsonOutput.toJson(inputParam)
-        def args = new JsonSlurper().parseText(json)
-        def result = withBinding( [args: args] ) {
-            shell.evaluate(fileReader)
-        }
+        def result = evalScript('project/procedures/form_scripts/validation/createConfiguration.groovy', inputParam)
         assertEquals "error", result.outcome.toString()
-        if (expectedError != null) {
+        if (expectedError) {
             def errMsg = findErrorMessage(result.messages, parameter)
+            def json = JsonOutput.toJson(inputParam)
             assertEquals "Incorrect error message with input parameters: " + json, parameter, errMsg.parameterName
             assertEquals "Incorrect error message with input parameters: " + json, expectedError, errMsg.message
         }

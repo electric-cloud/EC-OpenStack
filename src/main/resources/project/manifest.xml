@@ -238,4 +238,32 @@
         <path>procedures/form_scripts/validation/createConfiguration.groovy</path>
         <xpath>//procedure[procedureName=&quot;CreateConfiguration&quot;]/propertySheet/property[propertyName=&quot;form&quot;]/propertySheet/property[propertyName=&quot;validation&quot;]/propertySheet/property[propertyName=&quot;script&quot;]/value</xpath>
     </file>
+    <file>
+        <path>procedures/form_scripts/parameterOptions/resources.groovy</path>
+        <xpath>//procedure[procedureName=&quot;CreateConfiguration&quot;]/propertySheet/property[propertyName=&quot;form&quot;]/propertySheet/property[propertyName=&quot;parameterOptions&quot;]/propertySheet/property[propertyName=&quot;resource&quot;]/value</xpath>
+    </file>
+    <file>
+        <path>procedures/form_scripts/parameterOptions/tenantId.groovy</path>
+        <xpath>//procedure[procedureName=&quot;_DeployDE&quot;]/propertySheet/property[propertyName=&quot;form&quot;]/propertySheet/property[propertyName=&quot;parameterOptions&quot;]/propertySheet/property[propertyName=&quot;tenant_id&quot;]/value</xpath>
+    </file>
+    <file>
+        <path>procedures/form_scripts/parameterOptions/openStackOptions.groovy</path>
+        <xpath>//procedure[procedureName=&quot;_DeployDE&quot;]/propertySheet/property[propertyName=&quot;form&quot;]/propertySheet/property[propertyName=&quot;parameterOptions&quot;]/propertySheet/property[propertyName=&quot;image&quot;]/value</xpath>
+    </file>
+    <file>
+        <path>procedures/form_scripts/parameterOptions/openStackOptions.groovy</path>
+        <xpath>//procedure[procedureName=&quot;_DeployDE&quot;]/propertySheet/property[propertyName=&quot;form&quot;]/propertySheet/property[propertyName=&quot;parameterOptions&quot;]/propertySheet/property[propertyName=&quot;flavor&quot;]/value</xpath>
+    </file>
+    <file>
+        <path>procedures/form_scripts/parameterOptions/openStackOptions.groovy</path>
+        <xpath>//procedure[procedureName=&quot;_DeployDE&quot;]/propertySheet/property[propertyName=&quot;form&quot;]/propertySheet/property[propertyName=&quot;parameterOptions&quot;]/propertySheet/property[propertyName=&quot;keyPairName&quot;]/value</xpath>
+    </file>
+    <file>
+        <path>procedures/form_scripts/parameterOptions/openStackOptions.groovy</path>
+        <xpath>//procedure[procedureName=&quot;_DeployDE&quot;]/propertySheet/property[propertyName=&quot;form&quot;]/propertySheet/property[propertyName=&quot;parameterOptions&quot;]/propertySheet/property[propertyName=&quot;availability_zone&quot;]/value</xpath>
+    </file>
+    <file>
+        <path>procedures/form_scripts/parameterOptions/workspaces.groovy</path>
+        <xpath>//procedure[procedureName=&quot;_DeployDE&quot;]/propertySheet/property[propertyName=&quot;form&quot;]/propertySheet/property[propertyName=&quot;parameterOptions&quot;]/propertySheet/property[propertyName=&quot;resource_workspace&quot;]/value</xpath>
+    </file>
 </fileset>
