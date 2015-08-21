@@ -883,6 +883,16 @@
                                     </propertySheet>
                                 </property>
                                 <property>
+                                    <propertyName>zone</propertyName>
+                                    <propertySheet>
+                                        <property>
+                                            <propertyName>formType</propertyName>
+                                            <expandable>1</expandable>
+                                            <value>standard</value>
+                                        </property>
+                                    </propertySheet>
+                                </property>								
+                                <property>
                                     <propertyName>resource_check</propertyName>
                                     <propertySheet>
                                         <property>
@@ -1089,6 +1099,13 @@
             </formalParameter>
             <formalParameter>
                 <formalParameterName>tenant_id</formalParameterName>
+                <defaultValue/>
+                <description/>
+                <required>1</required>
+                <type>entry</type>
+            </formalParameter>
+			<formalParameter>
+                <formalParameterName>zone</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>
