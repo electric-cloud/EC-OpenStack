@@ -43,6 +43,18 @@ class OpenStackOptionsRetrievalTest extends BaseScriptsTestCase {
         assertOptionPresent(inputParams, 'az1', 'availability_zone')
     }
 
+    void testSecurityGroupsOptionsRetrieval() {
+
+        def json = new JsonBuilder()
+
+        def params = json (
+                augmentedAttr_compute_service_url: testProperties.getString(PROP_COMPUTE_SVC_URL),
+        )
+
+        def inputParams = createScriptInputParams(params, 'security_groups')
+        assertOptionPresent(inputParams, 'default', 'security_groups')
+    }
+
     def createScriptInputParams(def optionParams, def paramName) {
         def json = new JsonBuilder()
         def actualParams = json (

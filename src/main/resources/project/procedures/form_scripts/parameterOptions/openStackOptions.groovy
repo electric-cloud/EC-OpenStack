@@ -84,6 +84,8 @@ boolean canGetOptionsForParameter(args, formalParameterName) {
             return args.parameters[COMPUTE_SERVICE_URL]
         case 'availability_zone':
             return args.parameters[COMPUTE_SERVICE_URL]
+        case 'security_groups':
+            return args.parameters[COMPUTE_SERVICE_URL]
         case 'keyPairName':
             return args.parameters[COMPUTE_SERVICE_URL]
         case 'image':
@@ -110,6 +112,11 @@ List getOptions(args, authToken) {
             case 'availability_zone':
                 list = response.jsonResponse.availabilityZoneInfo.collect{
                     [it.zoneName, it.zoneName]
+                }
+                break
+            case 'security_groups':
+                list = response.jsonResponse.security_groups.collect{
+                    [it.id, it.name]
                 }
                 break
             case 'keyPairName':
@@ -210,6 +217,9 @@ String buildServiceURL(args) {
 
         case 'availability_zone':
             return "$computeServiceUrl/v${computeServiceVersion}/$tenantId/os-availability-zone"
+
+        case 'security_groups':
+            return "$computeServiceUrl/v${computeServiceVersion}/$tenantId/os-security-groups"
 
         case 'keyPairName':
             return "$computeServiceUrl/v${computeServiceVersion}/$tenantId/os-keypairs"
