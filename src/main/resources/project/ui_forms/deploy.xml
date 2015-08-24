@@ -84,7 +84,7 @@
         <label>Results Location:</label>
         <property>location</property>
         <value/>
-        <documentation>The ElectricCommander location to store properties (default is /myJob/OpenStack/deployed).</documentation>
+        <documentation>The ElectricFlow location to store properties (default is /myJob/OpenStack/deployed).</documentation>
         <required>0</required>
         <type>entry</type>
     </formElement>
@@ -120,7 +120,7 @@
         <label>Resource Pool:</label>
         <property>resource_pool</property>
         <value/>
-        <documentation>The ElectricCommander resource pool name to be associated with the machines in this configuration if resources are created.</documentation>
+        <documentation>The ElectricFlow resource pool name to be associated with the machines in this configuration if resources are created.</documentation>
         <required>0</required>
         <type>entry</type>
     </formElement>
@@ -128,7 +128,15 @@
         <label>Resource workspace:</label>
         <property>resource_workspace</property>
         <value>default</value>
-        <documentation>The ElectricCommander workspace the resource should use.</documentation>
+        <documentation>The ElectricFlow workspace the resource should use.</documentation>
+        <required>0</required>
+        <type>entry</type>
+    </formElement>
+	<formElement>
+        <label>Resource Zone Name:</label>
+        <property>resource_zone</property>
+        <value>default</value>
+        <documentation>Created resource will belong to the specified zone. Zone 'default' is used by default.</documentation>
         <required>0</required>
         <type>entry</type>
     </formElement>

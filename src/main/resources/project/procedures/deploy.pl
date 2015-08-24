@@ -57,6 +57,8 @@ $opts->{availability_zone} = q{$[availability_zone]};
 # Customization Script : Configuration information or scripts to execute upon launch of the server.
 $opts->{customization_script} = q{$[customization_script]};
 
+$opts->{resource_zone} = q{$[resource_zone]};
+
 $[/myProject/procedure_helpers/preamble]
 
 $openstack->deploy();
