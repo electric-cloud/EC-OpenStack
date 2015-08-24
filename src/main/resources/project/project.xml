@@ -883,7 +883,7 @@
                                     </propertySheet>
                                 </property>
                                 <property>
-                                    <propertyName>zone</propertyName>
+                                    <propertyName>resource_zone</propertyName>
                                     <propertySheet>
                                         <property>
                                             <propertyName>formType</propertyName>
@@ -1044,6 +1044,13 @@
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
+			<formalParameter>
+                <formalParameterName>resource_zone</formalParameterName>
+                <defaultValue/>
+                <description/>
+                <required>1</required>
+                <type>entry</type>
+            </formalParameter>
             <formalParameter>
                 <formalParameterName>customization_script</formalParameterName>
                 <defaultValue/>
@@ -1099,13 +1106,6 @@
             </formalParameter>
             <formalParameter>
                 <formalParameterName>tenant_id</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
-                <type>entry</type>
-            </formalParameter>
-			<formalParameter>
-                <formalParameterName>zone</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>

@@ -3168,7 +3168,7 @@ sub make_new_resource {
             description   => q{Provisioned resource (dynamic) for } . $server,
             workspaceName => $self->opts->{resource_workspace},
             hostName      => "$host",
-            zoneName      => $self->opts->{zone},
+            zoneName      => $self->opts->{resource_zone},
         }
     );
     if ($cmdrresult) {
