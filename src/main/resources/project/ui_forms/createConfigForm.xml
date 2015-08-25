@@ -88,6 +88,7 @@
         <label>Keystone API version:</label>
         <property>keystone_api_version</property>
         <value>3</value>
+        <serverValidation>1</serverValidation>
         <documentation> The Keystone API version</documentation>
         <required>1</required>
     </formElement>
