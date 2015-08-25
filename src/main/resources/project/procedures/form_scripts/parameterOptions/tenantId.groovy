@@ -16,8 +16,10 @@ final String TENANT_ID_FROM_CONFIG = AUGMENTED_ATTR_PREFIX + "tenant_id"
 def result = new FormalParameterOptionsResult()
 
 // If configs are the same, use the config tenant_id if set
-if (args.parameters[CONFIGURATION_NAME] &&
+if (args?.parameters &&
+        args.parameters[CONFIGURATION_NAME] &&
         args.parameters[CONFIGURATION_NAME] == args.parameters[CONFIGURATION_NAME_FROM_CONFIG]) {
+
     if (args.parameters[TENANT_ID_FROM_CONFIG]) {
         result.add(args.parameters[TENANT_ID_FROM_CONFIG], args.parameters[TENANT_ID_FROM_CONFIG])
     }

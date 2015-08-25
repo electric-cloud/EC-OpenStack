@@ -66,6 +66,8 @@
         <documentation>Names of the security groups in which to create the OpenStack instances. Enter multiple values on a new line.</documentation>
         <required>0</required>
         <type>textarea</type>
+        <serverOptions>1</serverOptions>
+        <dependsOn>connection_config,tenant_id</dependsOn>
     </formElement>
     <formElement>
         <label>Availability Zone:</label>

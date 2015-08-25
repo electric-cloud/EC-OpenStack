@@ -1320,6 +1320,11 @@
                                     <value/>
                                 </property>
                                 <property>
+                                    <propertyName>security_groups</propertyName>
+                                    <expandable>1</expandable>
+                                    <value/>
+                                </property>
+                                <property>
                                     <propertyName>resource_workspace</propertyName>
                                     <expandable>1</expandable>
                                     <value/>
