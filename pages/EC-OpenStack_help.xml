@@ -1,6 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta name="generator" content="HTML Tidy for Windows (vers 25 March 2009), see www.w3.org" />
@@ -109,12 +108,11 @@ the plugin omit?
     <p>The minimum ElectricFlow supported version is ElectricCommander 3.6.</p>
 		
 		<p>IMPORTANT: For all parameter descriptions in this document, the required parameters are shown in 
-		<span class='required'>bold italics</span>.</p>
+		<span class="required">bold italics</span>.</p>
 
     <h1 id="setupconfig">Setting Up the Plugin Configuration</h1>
 		
-		<div id="CreateConfiguration"><a name='CreateConfiguration' id=
-    "CreateConfiguration"></a>
+		<div id="CreateConfiguration"><a name="CreateConfiguration" id="CreateConfiguration"></a>
 
     <p>Plugin configurations are sets of parameters that apply across some or all of the plugin procedures. 
 		They reduce repetition of common values, create predefined sets of parameters for end users, and store 
@@ -126,7 +124,7 @@ the plugin omit?
 		<h2>Input</h2>
   
     <ol>
-		  <li>Go to <b>Administration</b> > <b>Plugins</b> to open the Plugin Manager.</li>
+		  <li>Go to <b>Administration</b> &gt; <b>Plugins</b> to open the Plugin Manager.</li>
 		  <li>Find the EC-OpenStack row.</li>
 		  <li>Click <b>Configure</b> to open the OpenStack Configurations page.</li> 	
 		  <li>Click <b>Create Configuration</b>.</li>
@@ -1752,7 +1750,7 @@ outline used above where possible.
     <h4>Create a Plugin Configuration</h4>
 		
 		 <ol>
-		  <li>Go to <b>Administration</b> > <b>Plugins</b> to open the Plugin Manager.</li>
+		  <li>Go to <b>Administration</b> &gt; <b>Plugins</b> to open the Plugin Manager.</li>
 		  <li>Find the EC-OpenStack row.</li>
 		  <li>Click <b>Configure</b> to open the OpenStack Configurations page.</li> 	
 		  <li>Click <b>Create Configuration</b>.</li>
@@ -1800,6 +1798,10 @@ outline used above where possible.
 
 
     <h1 id="rns">Release Notes</h1>
+    <h2>@PLUGIN_KEY@ 1.3.1</h2>
+    <ul>
+        <li>Fixed issue with configurations being cached for IE.</li>
+    </ul>
     <h2>@PLUGIN_KEY@ 1.3.0</h2>
     <ul>
       <li>Added validation to the CreateConfiguration procedure for the dynamic environments feature.</li>

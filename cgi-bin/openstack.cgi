@@ -53,6 +53,11 @@ sub main() {
 
     # globals
     $::cg = CGI->new();
+    print $::cg->header(
+            -type => 'text/html',
+            -status => 200,
+            -Cache_control => 'no-cache, no-store, must-revalidate');
+
     $::opts = $::cg->Vars;
     $::ec = new ElectricCommander();
     $::ec->abortOnError(0);
@@ -142,7 +147,7 @@ sub printXML {
     my ($xml) = @_;
 
     my ($out,$err) = retrieveOutErr();
-    print $::cg->header("text/html");
+
     print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     print "<response>\n";
     print "$xml\n";
