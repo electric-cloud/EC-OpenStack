@@ -25,25 +25,22 @@ import java.security.cert.X509Certificate
 import com.electriccloud.domain.FormalParameterOptionsResult
 
 @Field
-final String AUGMENTED_ATTR_PREFIX = "augmentedAttr_"
+final String USER_NAME = "userName"
+@Field
+final String PASSWORD = "password"
+@Field
+final String IDENTITY_SERVICE_URL = "identity_service_url"
+@Field
+final String IDENTITY_API_VERSION = "keystone_api_version"
+@Field
+final String COMPUTE_SERVICE_URL = "compute_service_url"
+@Field
+final String IMAGE_SERVICE_URL = "image_service_url"
+@Field
+final String IMAGE_API_VERSION = "image_api_version"
 
 @Field
-final String USER_NAME = AUGMENTED_ATTR_PREFIX + "userName"
-@Field
-final String PASSWORD = AUGMENTED_ATTR_PREFIX + "password"
-@Field
-final String IDENTITY_SERVICE_URL = AUGMENTED_ATTR_PREFIX + "identity_service_url"
-@Field
-final String IDENTITY_API_VERSION = AUGMENTED_ATTR_PREFIX + "keystone_api_version"
-@Field
-final String COMPUTE_SERVICE_URL = AUGMENTED_ATTR_PREFIX + "compute_service_url"
-@Field
-final String IMAGE_SERVICE_URL = AUGMENTED_ATTR_PREFIX + "image_service_url"
-@Field
-final String IMAGE_API_VERSION = AUGMENTED_ATTR_PREFIX + "image_api_version"
-
-@Field
-final String CONFIGURATION_NAME_FROM_CONFIG = AUGMENTED_ATTR_PREFIX + "config"
+final String CONFIGURATION_NAME_FROM_CONFIG = "config"
 @Field
 final String CONFIGURATION_NAME = "connection_config"
 @Field
@@ -66,14 +63,16 @@ result
 
 boolean canGetOptions(args) {
     args?.parameters &&
-            args.parameters[USER_NAME] &&
-            args.parameters[PASSWORD] &&
-            args.parameters[IDENTITY_SERVICE_URL] &&
-            args.parameters[IDENTITY_API_VERSION] &&
+            args.credential &&
+            args.credential.size() > 0 &&
+            args.credential[0][USER_NAME] &&
+            args.credential[0][PASSWORD] &&
+            args.configurationParameters[IDENTITY_SERVICE_URL] &&
+            args.configurationParameters[IDENTITY_API_VERSION] &&
             args.parameters[TENANT_ID] &&
             args.parameters[CONFIGURATION_NAME] &&
-            args.parameters[CONFIGURATION_NAME_FROM_CONFIG] &&
-            args.parameters[CONFIGURATION_NAME] == args.parameters[CONFIGURATION_NAME_FROM_CONFIG] &&
+            args.configurationParameters[CONFIGURATION_NAME_FROM_CONFIG] &&
+            args.parameters[CONFIGURATION_NAME] == args.configurationParameters[CONFIGURATION_NAME_FROM_CONFIG] &&
             canGetOptionsForParameter(args, args.formalParameterName)
 
 }
@@ -81,16 +80,16 @@ boolean canGetOptions(args) {
 boolean canGetOptionsForParameter(args, formalParameterName) {
     switch (formalParameterName) {
         case 'flavor':
-            return args.parameters[COMPUTE_SERVICE_URL]
+            return args.configurationParameters[COMPUTE_SERVICE_URL]
         case 'availability_zone':
-            return args.parameters[COMPUTE_SERVICE_URL]
+            return args.configurationParameters[COMPUTE_SERVICE_URL]
         case 'security_groups':
-            return args.parameters[COMPUTE_SERVICE_URL]
+            return args.configurationParameters[COMPUTE_SERVICE_URL]
         case 'keyPairName':
-            return args.parameters[COMPUTE_SERVICE_URL]
+            return args.configurationParameters[COMPUTE_SERVICE_URL]
         case 'image':
-            return args.parameters[IMAGE_SERVICE_URL] &&
-                    args.parameters[IMAGE_API_VERSION]
+            return args.configurationParameters[IMAGE_SERVICE_URL] &&
+                    args.configurationParameters[IMAGE_API_VERSION]
     }
 }
 
@@ -146,7 +145,7 @@ String getAuthToken(args) {
     def token
     if (statusCode < 400) {
         // Extract auth token
-        def apiVersion = args.parameters[IDENTITY_API_VERSION]
+        def apiVersion = args.configurationParameters[IDENTITY_API_VERSION]
         if(apiVersion == "2.0") {
             token = response.jsonResponse.access.token.id
         } else {
@@ -162,21 +161,21 @@ String getAuthToken(args) {
 
 def buildAuthenticationPayload(args) {
     def jsonPayload = [:]
-    def keystoneAPIVersion = args.parameters[IDENTITY_API_VERSION]
+    def keystoneAPIVersion = args.configurationParameters[IDENTITY_API_VERSION]
     if (keystoneAPIVersion == "2.0") {
         jsonPayload."auth" = [:]
         jsonPayload."auth"."tenantId" = args.parameters[TENANT_ID]
         jsonPayload."auth"."passwordCredentials" = [:]
-        jsonPayload."auth"."passwordCredentials"."username" = args.parameters[USER_NAME]
-        jsonPayload."auth"."passwordCredentials"."password" = args.parameters[PASSWORD]
+        jsonPayload."auth"."passwordCredentials"."username" = args.credential[0].userName
+        jsonPayload."auth"."passwordCredentials"."password" = args.credential[0].password
     } else {
         jsonPayload."auth" = [:]
         jsonPayload."auth"."identity" = [:]
         jsonPayload."auth"."identity"."methods" = ["password"]
         jsonPayload."auth"."identity"."password" = [:]
         jsonPayload."auth"."identity"."password"."user" = [:]
-        jsonPayload."auth"."identity"."password"."user"."name" = args.parameters[USER_NAME]
-        jsonPayload."auth"."identity"."password"."user"."password" = args.parameters[PASSWORD]
+        jsonPayload."auth"."identity"."password"."user"."name" = args.credential[0].userName
+        jsonPayload."auth"."identity"."password"."user"."password" = args.credential[0].password
         jsonPayload."auth"."identity"."password"."user"."domain" = [:]
         jsonPayload."auth"."identity"."password"."user"."domain"."id" = "default"
 
@@ -190,8 +189,8 @@ def buildAuthenticationPayload(args) {
 
 String buildIdentityServiceURL(args) {
 
-    def identityServiceUrl = args.parameters[IDENTITY_SERVICE_URL]
-    def keystoneAPIVersion = args.parameters[IDENTITY_API_VERSION]
+    def identityServiceUrl = args.configurationParameters[IDENTITY_SERVICE_URL]
+    def keystoneAPIVersion = args.configurationParameters[IDENTITY_API_VERSION]
 
     keystoneAPIVersion == "2.0" ?
             "$identityServiceUrl/v$keystoneAPIVersion/tokens" :
@@ -201,12 +200,12 @@ String buildIdentityServiceURL(args) {
 
 String buildServiceURL(args) {
     //
-    def computeServiceUrl = args.parameters[COMPUTE_SERVICE_URL]
+    def computeServiceUrl = args.configurationParameters[COMPUTE_SERVICE_URL]
     def computeServiceVersion = '2'
 
     //
-    def imageServiceUrl = args.parameters[IMAGE_SERVICE_URL]
-    def imageServiceVersion = args.parameters[IMAGE_API_VERSION]
+    def imageServiceUrl = args.configurationParameters[IMAGE_SERVICE_URL]
+    def imageServiceVersion = args.configurationParameters[IMAGE_API_VERSION]
 
     //
     def tenantId = args.parameters[TENANT_ID]

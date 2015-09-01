@@ -8,49 +8,60 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
     void testInputParameterValidations() {
 
         def json = new JsonBuilder()
+
+        def credential = json (
+                credentialName: "testCredential",
+                userName: ''
+        )
+
         def actualParams = json (
-                userName : ''
         )
         def input = json (
-                parameters : actualParams
+                parameters : actualParams,
+                credential: [credential]
         )
 
         checkSuccessResponse({})
 
         checkSuccessResponse(input)
 
+        credential = json (
+                credentialName: "testCredential",
+                userName: USER
+        )
         actualParams = json (
-                userName : USER
         )
         input = json (
-                parameters : actualParams
+                parameters : actualParams,
+                credential: [credential]
         )
 
         checkSuccessResponse(input)
 
-        actualParams = json (
+        credential = json (
+                credentialName: "testCredential",
                 userName: USER,
-                password: PASSWORD,
+                password: PASSWORD
+        )
+        actualParams = json (
                 test: "value"
         )
+
         def inputWithValidCreds = json (
-                parameters : actualParams
+                parameters : actualParams,
+                credential: [credential]
         )
 
         checkSuccessResponse(input)
 
         actualParams = json (
-                userName: USER,
-                password: PASSWORD,
                 identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL)
-            )
+        )
 
         inputWithValidCreds.parameters = actualParams
         checkSuccessResponse(inputWithValidCreds)
 
         actualParams = json (
-                userName: USER,
-                password: PASSWORD,
                 identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
                 keystone_api_version: '5'
         )
@@ -111,9 +122,13 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
     void checkUnsupportedServiceUrl(def version, def service, def serviceUrlLabel) {
         def json = new JsonBuilder()
 
+        def credential = json (
+                credentialName: "testCredential",
+                userName: USER,
+                password: PASSWORD
+        )
+
         def actualParams = json (
-                userName : USER,
-                password : PASSWORD,
                 identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
                 keystone_api_version: version,
                 tenant_id: TENANT_ID
@@ -121,6 +136,7 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
         actualParams[service] = 'http://some_invalid_service'
 
         def input = json (
+                credential: [credential],
                 parameters : actualParams
         )
         checkErrorResponse(input, service, "No ${serviceUrlLabel} is supported by this OpenStack deployment.")
@@ -129,9 +145,13 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
     void checkInvalidServiceUrl(def version, def service, def serviceUrlLabel, def expectedServiceUrl) {
         def json = new JsonBuilder()
 
+        def credential = json (
+                credentialName: "testCredential",
+                userName: USER,
+                password: PASSWORD
+        )
+
         def actualParams = json (
-                userName : USER,
-                password : PASSWORD,
                 identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
                 keystone_api_version: version,
                 tenant_id: TENANT_ID
@@ -139,6 +159,7 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
         actualParams[service] = 'http://some_invalid_service'
 
         def input = json (
+                credential: [credential],
                 parameters : actualParams
         )
         checkErrorResponse(input, service, "${serviceUrlLabel} is invalid. Enter valid URL: '${expectedServiceUrl}'.")
@@ -148,9 +169,13 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
 
         def json = new JsonBuilder()
 
+        def credential = json (
+                credentialName: "testCredential",
+                userName: USER,
+                password: PASSWORD
+        )
+
         def actualParams = json (
-                userName : USER,
-                password : PASSWORD,
                 identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
                 keystone_api_version: version,
                 tenant_id: TENANT_ID,
@@ -159,6 +184,7 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
                 image_service_url: "https://region-b.geo-1.images.hpcloudsvc.com:443"
         )
         def input = json (
+                credential: [credential],
                 parameters : actualParams
         )
 
@@ -170,15 +196,20 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
 
         def json = new JsonBuilder()
 
+        def credential = json (
+                credentialName: "testCredential",
+                userName: USER,
+                password: PASSWORD
+        )
+
         def actualParams = json (
-                userName : USER,
-                password : PASSWORD,
                 identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
                 keystone_api_version: version,
                 tenant_id: tenantId
         )
         def input = json (
-                parameters : actualParams
+                parameters : actualParams,
+                credential: [credential]
         )
 
         checkSuccessResponse(input)
@@ -195,14 +226,19 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
 
         def json = new JsonBuilder()
 
+        def credential = json (
+                credentialName: "testCredential",
+                userName: USER,
+                password: PASSWORD
+        )
+
         def actualParams = json (
-                userName : USER,
-                password : PASSWORD,
                 identity_service_url : 'https://invalidserver.hpcloudsvc.com:35357',
                 keystone_api_version : version
             )
         def input = json (
-                parameters : actualParams
+                parameters : actualParams,
+                credential: [credential]
         )
 
         checkErrorResponse(input, 'identity_service_url', "Identity Service URL is invalid")
@@ -213,18 +249,23 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
 
         def json = new JsonBuilder()
 
+        def credential = json (
+                credentialName: "testCredential",
+                userName: 'dummyuser123',
+                password: PASSWORD
+        )
+
         def actualParams = json (
-                userName : 'dummyuser123',
-                password : PASSWORD,
                 identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
                 keystone_api_version: version
-            )
+        )
 
         def input = json (
+                credential: [credential],
                 parameters : actualParams
         )
 
-        checkErrorResponse(input, 'userName', "Invalid username and password")
+        checkErrorResponse(input, 'testCredential.userName', "Invalid username and password")
 
     }
 
@@ -232,15 +273,20 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
 
         def json = new JsonBuilder()
 
+        def credential = json (
+                credentialName: "testCredential",
+                userName: USER,
+                password: PASSWORD
+        )
+
         def actualParams = json (
-                userName : USER,
-                password : PASSWORD,
                 tenant_id: '0000000abc',
                 identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
                 keystone_api_version: version
         )
 
         def input = json (
+                credential: [credential],
                 parameters : actualParams
         )
 
@@ -252,20 +298,25 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
 
         def json = new JsonBuilder()
 
+        def credential = json (
+                credentialName: "testCredential",
+                userName: USER,
+                password: 'asfasfdsfsfhr'
+        )
+
         def actualParams = json (
-                userName : USER,
-                password : 'asfasfdsfsfhr',
                 identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
                 keystone_api_version: version
-            )
+        )
         def input = json (
-                parameters : actualParams
+                parameters : actualParams,
+                credential: [credential]
         )
 
         //not passing any error message to validate for invalid password as the actual error message is
         //unpredictable in this case. Sometimes the server returns 401:Unauthorized and other times
         //it return 500: server error. As long as it returns an error, we are ok
-        checkErrorResponse(input, 'credential', null)
+        checkErrorResponse(input, null, null)
 
     }
 

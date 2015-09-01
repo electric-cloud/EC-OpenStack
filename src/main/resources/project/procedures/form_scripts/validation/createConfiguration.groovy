@@ -36,9 +36,13 @@ import com.electriccloud.domain.FormalParameterValidationResult
  *   "parameters" : {
  *      "keystone_api_version" : "<3|2.0>",
  *      "identity_service_url" : "e.g, https://<server>:<port>",
- *      // credential details
- *                  "userName" : "<username>",
- *                  "password" : "<pwd>"
+ *      "credential" : [
+ *                      {
+ *                         "credentialName" : "<credentialName>",
+ *                         "userName" : "<username>",
+ *                         "password" : "<pwd>"
+ *                      }
+ *                     ]
  *   },
  * }
  * Output: {
@@ -49,17 +53,24 @@ import com.electriccloud.domain.FormalParameterValidationResult
  *                    parameterName : 'param1',
  *                          message : 'error message1'
  *                  }, {
- *                    parameterName : 'param2',
- *                          message : 'error message2'
+ *                    parameterName : '<credentialName>.userName',
+ *                          message : 'error message for invalid userName'
+ *                  }, {
+ *                    parameterName : '<credentialName>.password',
+ *                          message : 'error message for invalid password'
  *                  }
  *               ]
  *   }
  * }
  */
 @Field
+final String CREDENTIAL_NAME = "credentialName"
+@Field
 final String USER_NAME = "userName"
 @Field
 final String PASSWORD = "password"
+@Field
+final String CREDENTIAL = "credential"
 @Field
 final String IDENTITY_SERVICE_URL = "identity_service_url"
 @Field
@@ -96,8 +107,10 @@ public class InvalidParameterException extends IllegalArgumentException {
 
 boolean canValidate(args) {
     args?.parameters &&
-            args.parameters[USER_NAME] &&
-            args.parameters[PASSWORD] &&
+            args.credential &&
+            args.credential.size() > 0 &&
+            args.credential[0][USER_NAME] &&
+            args.credential[0][PASSWORD] &&
             args.parameters[IDENTITY_SERVICE_URL] &&
             args.parameters[IDENTITY_API_VERSION]
 }
@@ -201,16 +214,16 @@ def buildAuthenticationPayload(args) {
         jsonPayload."auth" = [:]
         jsonPayload."auth"."tenantId" = args.parameters[TENANT_ID] ?: ''
         jsonPayload."auth"."passwordCredentials" = [:]
-        jsonPayload."auth"."passwordCredentials"."username" = args.parameters.userName
-        jsonPayload."auth"."passwordCredentials"."password" = args.parameters.password
+        jsonPayload."auth"."passwordCredentials"."username" = args.credential[0].userName
+        jsonPayload."auth"."passwordCredentials"."password" = args.credential[0].password
     } else {
         jsonPayload."auth" = [:]
         jsonPayload."auth"."identity" = [:]
         jsonPayload."auth"."identity"."methods" = ["password"]
         jsonPayload."auth"."identity"."password" = [:]
         jsonPayload."auth"."identity"."password"."user" = [:]
-        jsonPayload."auth"."identity"."password"."user"."name" = args.parameters.userName
-        jsonPayload."auth"."identity"."password"."user"."password" = args.parameters.password
+        jsonPayload."auth"."identity"."password"."user"."name" = args.credential[0].userName
+        jsonPayload."auth"."identity"."password"."user"."password" = args.credential[0].password
         jsonPayload."auth"."identity"."password"."user"."domain" = [:]
         jsonPayload."auth"."identity"."password"."user"."domain"."id" = "default"
 
@@ -322,12 +335,14 @@ def buildErrorResponse(String parameter, String errorMessage) {
 
 def buildAuthenticationError(args) {
     def tenantIdProvided = args.parameters[TENANT_ID]
+    def credentialName = args.credential[0][CREDENTIAL_NAME];
+
     def error = tenantIdProvided ?
             'Invalid username and password for tenant' :
             'Invalid username and password'
 
-    result = buildErrorResponse(USER_NAME, error).
-            error(PASSWORD, error)
+    result = buildErrorResponse("$credentialName.$USER_NAME", error).
+            error("$credentialName.$PASSWORD", error)
     if (tenantIdProvided) {
         result.error(TENANT_ID, error)
     }
