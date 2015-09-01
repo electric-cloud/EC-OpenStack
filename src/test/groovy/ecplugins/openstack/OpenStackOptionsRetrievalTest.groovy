@@ -11,8 +11,8 @@ class OpenStackOptionsRetrievalTest extends BaseScriptsTestCase {
         def json = new JsonBuilder()
 
         def imageParams = json (
-                augmentedAttr_image_service_url: testProperties.getString(PROP_IMAGE_SVC_URL),
-                augmentedAttr_image_api_version: '1'
+                image_service_url: testProperties.getString(PROP_IMAGE_SVC_URL),
+                image_api_version: '1'
         )
 
         def inputParams = createScriptInputParams(imageParams, 'image')
@@ -24,7 +24,7 @@ class OpenStackOptionsRetrievalTest extends BaseScriptsTestCase {
         def json = new JsonBuilder()
 
         def imageParams = json (
-                augmentedAttr_compute_service_url: testProperties.getString(PROP_COMPUTE_SVC_URL),
+                compute_service_url: testProperties.getString(PROP_COMPUTE_SVC_URL),
         )
 
         def inputParams = createScriptInputParams(imageParams, 'flavor')
@@ -36,7 +36,7 @@ class OpenStackOptionsRetrievalTest extends BaseScriptsTestCase {
         def json = new JsonBuilder()
 
         def imageParams = json (
-                augmentedAttr_compute_service_url: testProperties.getString(PROP_COMPUTE_SVC_URL),
+                compute_service_url: testProperties.getString(PROP_COMPUTE_SVC_URL),
         )
 
         def inputParams = createScriptInputParams(imageParams, 'availability_zone')
@@ -48,32 +48,41 @@ class OpenStackOptionsRetrievalTest extends BaseScriptsTestCase {
         def json = new JsonBuilder()
 
         def params = json (
-                augmentedAttr_compute_service_url: testProperties.getString(PROP_COMPUTE_SVC_URL),
+                compute_service_url: testProperties.getString(PROP_COMPUTE_SVC_URL),
         )
 
         def inputParams = createScriptInputParams(params, 'security_groups')
         assertOptionPresent(inputParams, 'default', 'security_groups')
     }
 
-    def createScriptInputParams(def optionParams, def paramName) {
+    def createScriptInputParams(def inputConfigurationParams, def paramName) {
         def json = new JsonBuilder()
+        def credential = json (
+                credentialName: "testCredential",
+                userName: USER,
+                password: PASSWORD
+        )
+
         def actualParams = json (
-                augmentedAttr_userName : USER,
-                augmentedAttr_password : PASSWORD,
-                augmentedAttr_identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
-                augmentedAttr_keystone_api_version: testProperties.getString(PROP_IDENTITY_SVC_VERSION),
-                augmentedAttr_config:'test',
                 connection_config:'test',
                 tenant_id: TENANT_ID
         )
 
-        //merge optionParams with the actualParams
-        for (prop in optionParams) {
-            actualParams.put(prop.key, prop.value);
+        def configurationParams = json (
+                identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
+                keystone_api_version: testProperties.getString(PROP_IDENTITY_SVC_VERSION),
+                config:'test',
+        )
+
+        //merge configurationParams with the inputConfigurationParams
+        for (prop in inputConfigurationParams) {
+            configurationParams.put(prop.key, prop.value);
         }
 
         def input = json (
                 parameters : actualParams,
+                configurationParameters : configurationParams,
+                credential: [credential],
                 formalParameterName: paramName
         )
 
