@@ -40,10 +40,6 @@ final String IMAGE_SERVICE_URL = "image_service_url"
 final String IMAGE_API_VERSION = "image_api_version"
 
 @Field
-final String CONFIGURATION_NAME_FROM_CONFIG = "config"
-@Field
-final String CONFIGURATION_NAME = "connection_config"
-@Field
 final String TENANT_ID = "tenant_id"
 
 def result = new FormalParameterOptionsResult()
@@ -70,9 +66,6 @@ boolean canGetOptions(args) {
             args.configurationParameters[IDENTITY_SERVICE_URL] &&
             args.configurationParameters[IDENTITY_API_VERSION] &&
             args.parameters[TENANT_ID] &&
-            args.parameters[CONFIGURATION_NAME] &&
-            args.configurationParameters[CONFIGURATION_NAME_FROM_CONFIG] &&
-            args.parameters[CONFIGURATION_NAME] == args.configurationParameters[CONFIGURATION_NAME_FROM_CONFIG] &&
             canGetOptionsForParameter(args, args.formalParameterName)
 
 }
