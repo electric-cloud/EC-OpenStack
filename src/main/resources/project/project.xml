@@ -214,6 +214,12 @@
                     </property>
                 </propertySheet>
             </property>
+            <!--Property used to specify the location path for the plugin configurations-->
+            <property>
+                <propertyName>ec_configurations</propertyName>
+                <expandable>1</expandable>
+                <value>openstack_cfgs</value>
+            </property>
             <property>
                 <propertyName>plugin_driver</propertyName>
                 <description>Home for perl code</description>
@@ -462,7 +468,7 @@
                 </property>
                 <!--Form scripts for validation and dynamic options-->
                 <property>
-                    <propertyName>form</propertyName>
+                    <propertyName>ec_form</propertyName>
                     <propertySheet>
                         <property>
                             <propertyName>validation</propertyName>
@@ -1289,7 +1295,7 @@
                 </property>
                 <!--Form scripts for validation and dynamic options-->
                 <property>
-                    <propertyName>form</propertyName>
+                    <propertyName>ec_form</propertyName>
                     <propertySheet>
                         <property>
                             <propertyName>parameterOptions</propertyName>
@@ -1330,6 +1336,16 @@
                                     <value/>
                                 </property>
                             </propertySheet>
+                        </property>
+                        <property>
+                            <propertyName>configurationParameterRef</propertyName>
+                            <expandable>1</expandable>
+                            <value>connection_config</value>
+                        </property>
+                        <property>
+                            <propertyName>usesConfigurationNameAsCredential</propertyName>
+                            <expandable>1</expandable>
+                            <value>1</value>
                         </property>
                     </propertySheet>
                 </property>

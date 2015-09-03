@@ -70,8 +70,7 @@ class OpenStackOptionsRetrievalTest extends BaseScriptsTestCase {
 
         def configurationParams = json (
                 identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
-                keystone_api_version: testProperties.getString(PROP_IDENTITY_SVC_VERSION),
-                config:'test',
+                keystone_api_version: testProperties.getString(PROP_IDENTITY_SVC_VERSION)
         )
 
         //merge configurationParams with the inputConfigurationParams
