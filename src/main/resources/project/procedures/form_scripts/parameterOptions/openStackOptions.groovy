@@ -23,6 +23,8 @@ import java.security.SecureRandom
 import java.security.cert.X509Certificate
 
 import com.electriccloud.domain.FormalParameterOptionsResult
+import com.electriccloud.log.Log;
+import com.electriccloud.log.LogFactory;
 
 @Field
 final String USER_NAME = "userName"
@@ -35,6 +37,8 @@ final String IDENTITY_API_VERSION = "keystone_api_version"
 @Field
 final String COMPUTE_SERVICE_URL = "compute_service_url"
 @Field
+final String COMPUTE_SERVICE_VERSION = "api_version"
+@Field
 final String IMAGE_SERVICE_URL = "image_service_url"
 @Field
 final String IMAGE_API_VERSION = "image_api_version"
@@ -44,13 +48,19 @@ final String TENANT_ID = "tenant_id"
 
 def result = new FormalParameterOptionsResult()
 
+def final Log log = LogFactory.getLog(this.class);
+
 if (canGetOptions(args)) {
     def authToken = getAuthToken(args)
 
     if (authToken) {
-        def options = getOptions(args, authToken)
-        options?.sort{it[1]}.each{
-            result.add(it[0], it[1])
+        try {
+            def options = getOptions(args, authToken)
+            options?.sort { it[1] }.each {
+                result.add(it[0], it[1])
+            }
+        } catch (Exception ex) {
+            log.warn(ex, 'Failed to retrieve OpenStack options')
         }
     }
 }
@@ -73,13 +83,17 @@ boolean canGetOptions(args) {
 boolean canGetOptionsForParameter(args, formalParameterName) {
     switch (formalParameterName) {
         case 'flavor':
-            return args.configurationParameters[COMPUTE_SERVICE_URL]
+            return args.configurationParameters[COMPUTE_SERVICE_URL] &&
+                    args.configurationParameters[COMPUTE_SERVICE_VERSION]
         case 'availability_zone':
-            return args.configurationParameters[COMPUTE_SERVICE_URL]
+            return args.configurationParameters[COMPUTE_SERVICE_URL]&&
+                    args.configurationParameters[COMPUTE_SERVICE_VERSION]
         case 'security_groups':
-            return args.configurationParameters[COMPUTE_SERVICE_URL]
+            return args.configurationParameters[COMPUTE_SERVICE_URL]&&
+                    args.configurationParameters[COMPUTE_SERVICE_VERSION]
         case 'keyPairName':
-            return args.configurationParameters[COMPUTE_SERVICE_URL]
+            return args.configurationParameters[COMPUTE_SERVICE_URL]&&
+                    args.configurationParameters[COMPUTE_SERVICE_VERSION]
         case 'image':
             return args.configurationParameters[IMAGE_SERVICE_URL] &&
                     args.configurationParameters[IMAGE_API_VERSION]
@@ -194,7 +208,7 @@ String buildIdentityServiceURL(args) {
 String buildServiceURL(args) {
     //
     def computeServiceUrl = args.configurationParameters[COMPUTE_SERVICE_URL]
-    def computeServiceVersion = '2'
+    def computeServiceVersion = args.configurationParameters[COMPUTE_SERVICE_VERSION]
 
     //
     def imageServiceUrl = args.configurationParameters[IMAGE_SERVICE_URL]
@@ -244,7 +258,7 @@ def doPost(String url, HttpEntity payload) {
 
         return result
     } finally {
-        httpClient?.getConnectionManager().shutdown()
+        httpClient?.getConnectionManager()?.shutdown()
     }
 }
 
@@ -269,7 +283,7 @@ def doGet(String url, String authToken) {
 
         return result
     } finally {
-        httpClient?.getConnectionManager().shutdown()
+        httpClient?.getConnectionManager()?.shutdown()
     }
 }
 
