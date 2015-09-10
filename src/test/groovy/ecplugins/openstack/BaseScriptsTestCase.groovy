@@ -17,6 +17,8 @@ public class BaseScriptsTestCase extends GroovyShellTestCase {
     protected final String PROP_IDENTITY_SVC_VERSION = 'keystone_api_version'
     protected final String PROP_COMPUTE_SVC_URL = 'compute_service_url'
     protected final String PROP_IMAGE_SVC_URL = 'image_service_url'
+    protected final String PROP_BLOCK_SVC_URL = 'blockstorage_service_url'
+
     protected final String PROP_SCRIPT_JAR_URLS = 'server_jar_urls'
 
     @Override

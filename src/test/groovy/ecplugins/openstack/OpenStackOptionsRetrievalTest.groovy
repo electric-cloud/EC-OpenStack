@@ -23,11 +23,12 @@ class OpenStackOptionsRetrievalTest extends BaseScriptsTestCase {
 
         def json = new JsonBuilder()
 
-        def imageParams = json (
+        def computeParams = json (
                 compute_service_url: testProperties.getString(PROP_COMPUTE_SVC_URL),
+                api_version: '2'
         )
 
-        def inputParams = createScriptInputParams(imageParams, 'flavor')
+        def inputParams = createScriptInputParams(computeParams, 'flavor')
         assertOptionPresent(inputParams, 'standard.small', 'flavor')
     }
 
@@ -35,11 +36,12 @@ class OpenStackOptionsRetrievalTest extends BaseScriptsTestCase {
 
         def json = new JsonBuilder()
 
-        def imageParams = json (
+        def computeParams = json (
                 compute_service_url: testProperties.getString(PROP_COMPUTE_SVC_URL),
+                api_version: '2'
         )
 
-        def inputParams = createScriptInputParams(imageParams, 'availability_zone')
+        def inputParams = createScriptInputParams(computeParams, 'availability_zone')
         assertOptionPresent(inputParams, 'az1', 'availability_zone')
     }
 
@@ -49,6 +51,7 @@ class OpenStackOptionsRetrievalTest extends BaseScriptsTestCase {
 
         def params = json (
                 compute_service_url: testProperties.getString(PROP_COMPUTE_SVC_URL),
+                api_version: '2'
         )
 
         def inputParams = createScriptInputParams(params, 'security_groups')

@@ -95,23 +95,46 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
         checkValidConfiguration("2.0")
     }
 
+    void testImageServicePublishedURL() {
+        checkImageServicePublishedURL("3")
+        checkImageServicePublishedURL("2.0")
+    }
+
     void testValidConfigurationWithTenant() {
         checkValidConfiguration("3", TENANT_ID)
         checkValidConfiguration("2.0", TENANT_ID)
     }
 
     void testInvalidServiceUrls() {
-        checkInvalidServiceUrl("3", "compute_service_url", "Compute Service URL", "https://region-b.geo-1.compute.hpcloudsvc.com")
-        checkInvalidServiceUrl("2.0", "compute_service_url", "Compute Service URL", "https://region-b.geo-1.compute.hpcloudsvc.com")
+        checkInvalidServiceUrl("3", "compute_service_url", "Compute Service URL", testProperties.getString(PROP_COMPUTE_SVC_URL),
+                                "Compute API Version", "2")
+        checkInvalidServiceUrl("2.0", "compute_service_url", "Compute Service URL", testProperties.getString(PROP_COMPUTE_SVC_URL),
+                                "Compute API Version", "2")
 
-        checkInvalidServiceUrl("3", "blockstorage_service_url", "Block Storage URL", "https://region-b.geo-1.block.hpcloudsvc.com")
-        checkInvalidServiceUrl("2.0", "blockstorage_service_url", "Block Storage URL", "https://region-b.geo-1.block.hpcloudsvc.com")
+        checkInvalidServiceUrl("3", "blockstorage_service_url", "Block Storage URL", testProperties.getString(PROP_BLOCK_SVC_URL),
+                                "Block Storage API Version", "1")
+        checkInvalidServiceUrl("2.0", "blockstorage_service_url", "Block Storage URL", testProperties.getString(PROP_BLOCK_SVC_URL),
+                                "Block Storage API Version", "1")
 
-        checkInvalidServiceUrl("3", "image_service_url", "Image Service URL", "https://region-b.geo-1.images.hpcloudsvc.com:443")
-        checkInvalidServiceUrl("2.0", "image_service_url", "Image Service URL", "https://region-b.geo-1.images.hpcloudsvc.com:443")
+        checkInvalidServiceUrl("3", "image_service_url", "Image Service URL", testProperties.getString(PROP_IMAGE_SVC_URL),
+                                "Image API Version", "1")
+        checkInvalidServiceUrl("2.0", "image_service_url", "Image Service URL", testProperties.getString(PROP_IMAGE_SVC_URL),
+                                "Image API Version", "1")
 
         checkUnsupportedServiceUrl("3", "orchestration_service_url", "Orchestration Service URL")
         checkUnsupportedServiceUrl("2.0", "orchestration_service_url", "Orchestration Service URL")
+    }
+
+    void testInvalidServiceAPIVersions() {
+        checkInvalidServiceVersion("3", "api_version", "Compute API Version")
+        checkInvalidServiceVersion("2.0", "api_version", "Compute API Version")
+
+        checkInvalidServiceVersion("3", "blockstorage_api_version", "Block Storage API Version")
+        checkInvalidServiceVersion("2.0", "blockstorage_api_version", "Block Storage API Version")
+
+        checkInvalidServiceVersion("3", "image_api_version", "Image API Version")
+        checkInvalidServiceVersion("2.0", "image_api_version", "Image API Version")
+
     }
 
     void testValidServiceUrls() {
@@ -142,7 +165,34 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
         checkErrorResponse(input, service, "No ${serviceUrlLabel} is supported by this OpenStack deployment.")
     }
 
-    void checkInvalidServiceUrl(def version, def service, def serviceUrlLabel, def expectedServiceUrl) {
+    void checkInvalidServiceVersion(def keystoneAPIVersion, def versionParam, def serviceVersionLabel) {
+        def json = new JsonBuilder()
+
+        def credential = json (
+                credentialName: "testCredential",
+                userName: USER,
+                password: PASSWORD
+        )
+
+        def actualParams = json (
+                identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
+                keystone_api_version: keystoneAPIVersion,
+                tenant_id: TENANT_ID,
+                compute_service_url: testProperties.getString(PROP_COMPUTE_SVC_URL),
+                image_service_url: testProperties.getString(PROP_IMAGE_SVC_URL),
+                blockstorage_service_url: testProperties.getString(PROP_BLOCK_SVC_URL)
+        )
+        actualParams[versionParam] = '67'
+
+        def input = json (
+                credential: [credential],
+                parameters : actualParams
+        )
+        checkErrorResponse(input, versionParam, "$serviceVersionLabel '67' is not supported by this OpenStack deployment.")
+    }
+
+    void checkInvalidServiceUrl(def version, def service, def serviceUrlLabel, def expectedServiceUrl,
+                                def serviceVersionLabel, def serviceVersion) {
         def json = new JsonBuilder()
 
         def credential = json (
@@ -154,7 +204,10 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
         def actualParams = json (
                 identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
                 keystone_api_version: version,
-                tenant_id: TENANT_ID
+                tenant_id: TENANT_ID,
+                api_version: "2",
+                blockstorage_api_version: "1",
+                image_api_version: "1"
         )
         actualParams[service] = 'http://some_invalid_service'
 
@@ -162,7 +215,7 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
                 credential: [credential],
                 parameters : actualParams
         )
-        checkErrorResponse(input, service, "${serviceUrlLabel} is invalid. Enter valid URL: '${expectedServiceUrl}'.")
+        checkErrorResponse(input, service, "$expectedServiceUrl is the valid $serviceUrlLabel for $serviceVersionLabel '$serviceVersion'.")
     }
 
     void checkValidServiceUrls(def version) {
@@ -179,9 +232,38 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
                 identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
                 keystone_api_version: version,
                 tenant_id: TENANT_ID,
-                compute_service_url: "https://region-b.geo-1.compute.hpcloudsvc.com",
-                blockstorage_service_url: "https://region-b.geo-1.block.hpcloudsvc.com",
-                image_service_url: "https://region-b.geo-1.images.hpcloudsvc.com:443"
+                compute_service_url: testProperties.getString(PROP_COMPUTE_SVC_URL),
+                api_version: "2",
+                blockstorage_service_url: testProperties.getString(PROP_BLOCK_SVC_URL),
+                blockstorage_api_version: "1",
+                image_service_url: testProperties.getString(PROP_IMAGE_SVC_URL),
+                image_api_version: "1"
+        )
+        def input = json (
+                credential: [credential],
+                parameters : actualParams
+        )
+
+        checkSuccessResponse(input)
+
+    }
+
+    void checkImageServicePublishedURL(def version) {
+
+        def json = new JsonBuilder()
+
+        def credential = json (
+                credentialName: "testCredential",
+                userName: USER,
+                password: PASSWORD
+        )
+
+        def actualParams = json (
+                identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
+                keystone_api_version: version,
+                tenant_id: TENANT_ID,
+                image_service_url: testProperties.getString('image_service_published_url'),
+                image_api_version: "1"
         )
         def input = json (
                 credential: [credential],
@@ -323,7 +405,7 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
     void checkSuccessResponse(def inputParam) {
 
         def result = evalScript('project/procedures/form_scripts/validation/createConfiguration.groovy', inputParam)
-        assertEquals "success", result.outcome.toString()
+        assertEquals "Errors found: " + JsonOutput.toJson(result), "success", result.outcome.toString()
     }
 
     void checkErrorResponse(def inputParam, def parameter, def expectedError) {

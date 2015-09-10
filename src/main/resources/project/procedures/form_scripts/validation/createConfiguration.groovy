@@ -85,7 +85,12 @@ final String BLOCK_STORAGE_URL = "blockstorage_service_url"
 final String IMAGE_SERVICE_URL = "image_service_url"
 @Field
 final String ORCHESTRATION_SERVICE_URL = "orchestration_service_url"
-
+@Field
+final String COMPUTE_SERVICE_VERSION = "api_version"
+@Field
+final String BLOCK_STORAGE_VERSION = "blockstorage_api_version"
+@Field
+final String IMAGE_SERVICE_VERSION = "image_api_version"
 
 // Main driver
 if (canValidate(args)) {
@@ -131,13 +136,11 @@ def doValidations(args) {
         HttpEntity payload = new StringEntity(JsonOutput.toJson(jsonPayload))
         payload.setContentType("application/json")
 
-        String url = buildIdentityServiceURL(args)
-
-        def response = doPost(url, payload)
+        def response = authenticate(args, payload)
 
         def statusCode = response.statusLine.statusCode
         if (statusCode < 400) {
-            result = validateResponse(args, response.jsonResponse)
+            result = validateResponse(args, response.jsonResponse, response.token)
         } else if (statusCode == 401) {
             result = buildAuthenticationError(args)
         } else {
@@ -189,7 +192,33 @@ def doPost(String url, HttpEntity payload) {
 
         return result
     } finally {
-        httpClient?.getConnectionManager().shutdown()
+        httpClient?.getConnectionManager()?.shutdown()
+    }
+}
+
+def doGet(String url) {
+
+    HttpClient httpClient
+    try {
+        def httpRequest = new HttpGet(url)
+        //httpRequest.setHeader('X-Auth-Token', authToken)
+
+        httpClient = buildMostTrustingHttpClient(httpRequest)
+        HttpResponse response = httpClient.execute(httpRequest)
+
+        // read the response only upon success
+        def jsonResponse = null
+        if (response.statusLine.statusCode < 400) {
+            jsonResponse = readResponse(response.entity)
+        }
+
+        def result = [:]
+        result.statusLine = response.statusLine
+        result.jsonResponse = jsonResponse
+
+        return result
+    } finally {
+        httpClient?.getConnectionManager()?.shutdown()
     }
 }
 
@@ -349,25 +378,46 @@ def buildAuthenticationError(args) {
     result
 }
 
-def validateResponse(args, jsonResponse) {
+def validateResponse(args, jsonResponse, authenticationToken) {
     def result
     if (args.parameters[TENANT_ID]) {
         //If the tenant id was provided, then OpenStack API returns the service catalog information
         // for the tenant (project) that can be used to then validate the other API urls.
-        result = validateServiceURLs(args, jsonResponse)
+        result = validateServiceURLs(args, jsonResponse, authenticationToken)
     }
     result = result ?: FormalParameterValidationResult.SUCCESS
 
     result
 }
 
-private def validateServiceURLs(args, jsonResponse) {
+private def validateServiceURLs(args, jsonResponse, authenticationToken) {
     def result
     def list = []
-    validateServiceURL(args, jsonResponse, COMPUTE_SERVICE_URL, 'Compute Service URL', 'compute', list)
-    validateServiceURL(args, jsonResponse, BLOCK_STORAGE_URL, 'Block Storage URL', 'volume', list)
-    validateServiceURL(args, jsonResponse, IMAGE_SERVICE_URL, 'Image Service URL', 'image', list)
-    validateServiceURL(args, jsonResponse, ORCHESTRATION_SERVICE_URL, 'Orchestration Service URL', 'orchestration', list)
+
+    validateServiceURLAndVersion(args, jsonResponse, authenticationToken,
+            COMPUTE_SERVICE_URL, 'Compute Service URL',
+            COMPUTE_SERVICE_VERSION, 'Compute API Version', 'compute', list)
+
+    validateServiceURLAndVersion(args, jsonResponse, authenticationToken,
+            BLOCK_STORAGE_URL, 'Block Storage URL',
+            BLOCK_STORAGE_VERSION, 'Block Storage API Version', 'volume', list)
+
+    validateServiceURLAndVersion(args, jsonResponse, authenticationToken,
+            IMAGE_SERVICE_URL, 'Image Service URL',
+            IMAGE_SERVICE_VERSION, 'Image API Version', 'image', list)
+    // Orchestration service version is hard-coded in the plugin as '1'. The user is not prompted
+    // for the value, so we handle orchestration service end-point validation
+    // as a special case.
+    validateServiceEndpoint(args,
+            jsonResponse, authenticationToken,
+            args.parameters[ORCHESTRATION_SERVICE_URL],
+            ORCHESTRATION_SERVICE_URL,
+            'Orchestration Service URL',
+            /*orchestration API version supported by the plugin*/'1',
+            /*report the version error again the orchestration url parameter */ ORCHESTRATION_SERVICE_URL,
+            'Orchestration Service Version',
+            'orchestration', list)
+
     if (list.size() > 0) {
         result = FormalParameterValidationResult.errorResult()
         for (def err : list) {
@@ -377,17 +427,100 @@ private def validateServiceURLs(args, jsonResponse) {
     result
 }
 
-private def validateServiceURL(args, jsonResponse,
-                               String serviceUrlParam,
-                               String urlLabel,
-                               String serviceType,
-                               List list) {
+private void validateServiceURLAndVersion(args, jsonResponse, authenticationToken,
+        String serviceUrlParam,
+        String urlLabel,
+        String serviceVersionParam,
+        String serviceVersionLabel,
+        String serviceType,
+        List list) {
 
-    if (!args.parameters[serviceUrlParam]) {
+
+    validateServiceEndpoint(args,
+            jsonResponse, authenticationToken, args.parameters[serviceUrlParam], serviceUrlParam, urlLabel,
+            args.parameters[serviceVersionParam], serviceVersionParam, serviceVersionLabel,
+            serviceType, list)
+
+}
+
+private void validateServiceEndpoint(args,
+                                      jsonResponse,
+                                      authenticationToken,
+                                      String serviceUrlValue,
+                                      String serviceUrlParam,
+                                      String urlLabel,
+                                      String serviceVersionValue,
+                                      String serviceVersionParam,
+                                      String versionLabel,
+                                      String serviceType,
+                                      List list) {
+
+    if (!serviceUrlValue || !serviceVersionValue) {
         return
     }
 
-    def endPoints
+    def serviceUrlToRetrieveVersions = getServiceUrlForVersions(args, jsonResponse, serviceType)
+    boolean serviceUrlMatches = serviceUrlToRetrieveVersions == serviceUrlValue
+    def serviceUrls = null
+
+    try {
+        if (serviceUrlToRetrieveVersions) {
+
+            serviceUrls = getServiceVersionUrls(serviceUrlToRetrieveVersions)
+        }
+
+        if (serviceUrlToRetrieveVersions && serviceUrls) {
+
+            // find the end-point with the version passed in.
+            def serviceUrl = serviceUrls.find {
+                it.endsWith("/v$serviceVersionValue")
+            }
+
+            // If no end-point found with the given version
+            // then the version is not supported.
+            if (!serviceUrl) {
+                def error = [:]
+                error.param = serviceVersionParam
+                error.message = "$versionLabel '$serviceVersionValue' is not supported by this OpenStack deployment."
+                list.add(error)
+            } else if (!serviceUrlMatches) {
+                // For the matching version, check that the user-provided url matches
+                String serviceUrlWithoutVersion = serviceUrl.substring(0, serviceUrl.lastIndexOf("/v$serviceVersionValue"))
+                if (serviceUrlWithoutVersion != serviceUrlValue) {
+                    def error = [:]
+                    error.param = serviceUrlParam
+                    error.message = "$serviceUrlWithoutVersion is the valid $urlLabel for $versionLabel '$serviceVersionValue'."
+                    list.add(error)
+                }
+            }
+
+        } else {
+            def error = [:]
+            error.param = serviceUrlParam
+            error.message = "No ${urlLabel} is supported by this OpenStack deployment."
+            list.add(error)
+        }
+    } catch (HttpHostConnectException |
+        ClientProtocolException |
+        IllegalStateException |
+        ConnectException |
+        UnknownHostException ex) {
+
+        // If we failed to connect to serviceUrlToRetrieveVersions to retrieve
+        // the version information, we continue if serviceUrlToRetrieveVersions matched
+        // the value entered. Otherwise, we report it as an error.
+        if (!serviceUrlMatches) {
+            def error = [:]
+            error.param = serviceUrlParam
+            error.message = "Failed to valid ${urlLabel}. ${ex.class.name}: ${ex.message}"
+            list.add(error)
+        }
+    }
+
+}
+
+def getServiceUrlForVersions(args, jsonResponse, String serviceType) {
+    def serviceUrl
     def apiVersion = args.parameters[IDENTITY_API_VERSION]
 
     if (apiVersion == "2.0") {
@@ -396,7 +529,7 @@ private def validateServiceURL(args, jsonResponse,
         }
 
         if (catalogItem) {
-            endPoints = catalogItem.endpoints.publicURL
+            serviceUrl = catalogItem.endpoints.publicURL
         }
 
     } else { //assuming version 3
@@ -405,37 +538,11 @@ private def validateServiceURL(args, jsonResponse,
         }
 
         if (catalogItem) {
-            endPoints = catalogItem.endpoints.url
+            serviceUrl = catalogItem.endpoints.url
         }
     }
 
-    if (endPoints) {
-        def inputUrl = args.parameters[serviceUrlParam]
-        for (String endPoint : endPoints) {
-            endPoint =
-                    stripTenantIdAndVersionFromUrl(endPoints[0],
-                            args.parameters[TENANT_ID])
-
-            if (endPoint == inputUrl) {
-                // found
-                return
-            }
-        }
-        // input service url is not valid
-        def endPoint =
-                stripTenantIdAndVersionFromUrl(endPoints[0],
-                                               args.parameters[TENANT_ID])
-        def error = [:]
-        error.param = serviceUrlParam
-        error.message = "${urlLabel} is invalid. Enter valid URL: '${endPoint}'."
-        list.add(error)
-    } else {
-        def error = [:]
-        error.param = serviceUrlParam
-        error.message = "No ${urlLabel} is supported by this OpenStack deployment."
-        list.add(error)
-    }
-
+    return serviceUrl ? stripTenantIdAndVersionFromUrl(serviceUrl[0], args.parameters[TENANT_ID]) : null
 }
 
 String stripTenantIdAndVersionFromUrl(String endPoint, String tenantId) {
@@ -459,4 +566,49 @@ String stripTenantIdAndVersionFromUrl(String endPoint, String tenantId) {
     }
 
     endPoint
+}
+
+def getServiceVersionUrls(serviceUrlToRetrieveVersions) {
+
+    def serviceUrls
+
+    // Get the supported versions for the service using the versionList url
+    def serviceUrlResponse = doGet(serviceUrlToRetrieveVersions)
+    def statusCode = serviceUrlResponse.statusLine.statusCode
+
+    if (statusCode < 400) {
+
+        serviceUrls = serviceUrlResponse.jsonResponse.versions.links.href.collectNested{
+
+            if (it.endsWith("/")) {
+                it = it.substring(0, it.length() - 1)
+            }
+            it
+        }.flatten()
+
+    }
+
+    serviceUrls
+}
+
+def authenticate(args, HttpEntity payload) {
+    String url = buildIdentityServiceURL(args)
+
+    def response = doPost(url, payload)
+    if (response.statusLine.statusCode < 400) {
+
+        // Extract auth token
+        def token;
+        def apiVersion = args.parameters[IDENTITY_API_VERSION]
+        if(apiVersion == "2.0") {
+            token = response.jsonResponse.access.token.id
+        } else {
+            def header = response.headers.find {it.name == 'X-Subject-Token'}
+            if (header) {
+                token = header.value
+            }
+        }
+        response.token = token
+    }
+    response
 }

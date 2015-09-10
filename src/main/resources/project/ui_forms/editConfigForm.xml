@@ -10,8 +10,24 @@
         <label>Identity Service URL:</label>
         <property>identity_service_url</property>
         <value></value>
-        <documentation>Provide the host name or IP address of the Identity Service for OpenStackFor example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here.</documentation>
+        <documentation>Provide the host name or IP address of the Identity Service for OpenStack. For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here.</documentation>
         <required>1</required>
+    </formElement>
+    <formElement>
+        <type>select</type>
+        <label>Keystone API version</label>
+        <property>keystone_api_version</property>
+        <value></value>
+        <documentation>Keystone API version</documentation>
+        <required>1</required>
+        <option>
+            <name>2.0</name>
+            <value>2.0</value>
+        </option>
+        <option>
+            <name>3</name>
+            <value>3</value>
+        </option>
     </formElement>
     <formElement>
         <type>credential</type>
@@ -29,14 +45,6 @@
     </formElement>
     <formElement>
         <type>entry</type>
-        <label>Keystone API version</label>
-        <property>keystone_api_version</property>
-        <value></value>
-        <documentation>Keystone API version</documentation>
-        <required>1</required>
-    </formElement>
-    <formElement>
-        <type>entry</type>
         <label>Compute Service URL:</label>
         <property>compute_service_url</property>
         <value></value>
@@ -44,12 +52,16 @@
         <required>1</required>
     </formElement>
     <formElement>
-        <type>entry</type>
+        <type>select</type>
         <label>Compute API version:</label>
         <property>api_version</property>
-        <value>2.0</value>
+        <value></value>
         <documentation>	The Compute service API version</documentation>
         <required>1</required>
+        <option>
+            <name>2</name>
+            <value>2</value>
+        </option>
     </formElement>
     <formElement>
         <type>entry</type>
@@ -60,12 +72,20 @@
         <required>1</required>
     </formElement>
     <formElement>
-        <type>entry</type>
+        <type>select</type>
         <label>Blockstorage API version</label>
         <property>blockstorage_api_version</property>
         <value></value>
         <documentation>The OpenStack block storage API version</documentation>
         <required>1</required>
+        <option>
+            <name>1</name>
+            <value>1</value>
+        </option>
+        <option>
+            <name>2</name>
+            <value>2</value>
+        </option>
     </formElement>
     <formElement>
         <type>entry</type>
@@ -76,12 +96,20 @@
         <required>1</required>
     </formElement>
     <formElement>
-        <type>entry</type>
+        <type>select</type>
         <label>Image API version:</label>
         <property>image_api_version</property>
         <value></value>
         <documentation>The OpenStack Image service API version</documentation>
         <required>1</required>
+        <option>
+            <name>1</name>
+            <value>1</value>
+        </option>
+        <option>
+            <name>2</name>
+            <value>2</value>
+        </option>
     </formElement>
     <formElement>
         <type>entry</type>
