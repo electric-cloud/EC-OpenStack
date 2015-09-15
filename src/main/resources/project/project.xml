@@ -473,6 +473,8 @@
                         <property>
                             <propertyName>validation</propertyName>
                             <propertySheet>
+                                <!--Flag the property sheet as being protected by credentials attached to the enclosing procedure's steps.-->
+                                <credentialProtected>1</credentialProtected>
                                 <property>
                                     <propertyName>script</propertyName>
                                     <expandable>1</expandable>
@@ -483,6 +485,8 @@
                         <property>
                             <propertyName>parameterOptions</propertyName>
                             <propertySheet>
+                                <!--Flag the property sheet as being protected by credentials attached to the enclosing procedure's steps.-->
+                                <credentialProtected>1</credentialProtected>
                                 <property>
                                     <propertyName>resource</propertyName>
                                     <expandable>1</expandable>
@@ -1300,6 +1304,8 @@
                         <property>
                             <propertyName>parameterOptions</propertyName>
                             <propertySheet>
+                                <!--Flag the property sheet as being protected by credentials attached to the enclosing procedure's steps.-->
+                                <credentialProtected>1</credentialProtected>
                                 <property>
                                     <propertyName>tenant_id</propertyName>
                                     <expandable>1</expandable>
