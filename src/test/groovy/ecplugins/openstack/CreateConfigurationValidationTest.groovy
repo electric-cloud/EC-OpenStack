@@ -91,13 +91,8 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
     }
 
     void testValidConfiguration() {
-        checkValidConfiguration("3")
         checkValidConfiguration("2.0")
-    }
-
-    void testImageServicePublishedURL() {
-        checkImageServicePublishedURL("3")
-        checkImageServicePublishedURL("2.0")
+        checkValidConfiguration("3")
     }
 
     void testValidConfigurationWithTenant() {
@@ -126,20 +121,98 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
     }
 
     void testInvalidServiceAPIVersions() {
-        checkInvalidServiceVersion("3", "api_version", "Compute API Version")
+        //Check using version2
         checkInvalidServiceVersion("2.0", "api_version", "Compute API Version")
-
-        checkInvalidServiceVersion("3", "blockstorage_api_version", "Block Storage API Version")
         checkInvalidServiceVersion("2.0", "blockstorage_api_version", "Block Storage API Version")
-
-        checkInvalidServiceVersion("3", "image_api_version", "Image API Version")
         checkInvalidServiceVersion("2.0", "image_api_version", "Image API Version")
 
+        //Check using version 3
+        checkInvalidServiceVersion("3", "api_version", "Compute API Version")
+        checkInvalidServiceVersion("3", "blockstorage_api_version", "Block Storage API Version")
+        checkInvalidServiceVersion("3", "image_api_version", "Image API Version")
     }
 
     void testValidServiceUrls() {
-        checkValidServiceUrls("3")
         checkValidServiceUrls("2.0")
+        checkValidServiceUrls("3")
+    }
+
+    void testCEV8820_AllInvalidValues() {
+
+        def json = new JsonBuilder()
+
+        def credential = json (
+                credentialName: "credential",
+                userName: "123",
+                password: "123"
+        )
+
+        def actualParams = json (
+                identity_service_url : "http://asdas.com/asda",
+                keystone_api_version: "3",
+                api_version: "2",
+                blockstorage_api_version: "1",
+                image_api_version: "1"
+        )
+        def input = json (
+                parameters : actualParams,
+                credential: [credential]
+        )
+
+        checkErrorResponse(input, 'identity_service_url', 'Identity Service URL is invalid')
+
+    }
+
+    void testCEV8821_AllInvalidValues() {
+
+        def json = new JsonBuilder()
+
+        def credential = json (
+                credentialName: "credential",
+                userName: "123",
+                password: "123"
+        )
+
+        def actualParams = json (
+                identity_service_url : "https://google.com/[",
+                keystone_api_version: "3",
+                api_version: "2",
+                blockstorage_api_version: "1",
+                image_api_version: "1"
+        )
+        def input = json (
+                parameters : actualParams,
+                credential: [credential]
+        )
+
+        checkErrorResponse(input, 'identity_service_url', 'Identity Service URL is invalid')
+
+    }
+
+    void testCEV8822_AllInvalidValues() {
+
+        def json = new JsonBuilder()
+
+        def credential = json (
+                credentialName: "credential",
+                userName: "123",
+                password: "123"
+        )
+
+        def actualParams = json (
+                identity_service_url : "https://google.com/;",
+                keystone_api_version: "3",
+                api_version: "2",
+                blockstorage_api_version: "1",
+                image_api_version: "1"
+        )
+        def input = json (
+                parameters : actualParams,
+                credential: [credential]
+        )
+
+        checkErrorResponse(input, 'identity_service_url', 'Identity Service URL is invalid')
+
     }
 
     void checkUnsupportedServiceUrl(def version, def service, def serviceUrlLabel) {
@@ -237,32 +310,6 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
                 blockstorage_service_url: testProperties.getString(PROP_BLOCK_SVC_URL),
                 blockstorage_api_version: "1",
                 image_service_url: testProperties.getString(PROP_IMAGE_SVC_URL),
-                image_api_version: "1"
-        )
-        def input = json (
-                credential: [credential],
-                parameters : actualParams
-        )
-
-        checkSuccessResponse(input)
-
-    }
-
-    void checkImageServicePublishedURL(def version) {
-
-        def json = new JsonBuilder()
-
-        def credential = json (
-                credentialName: "testCredential",
-                userName: USER,
-                password: PASSWORD
-        )
-
-        def actualParams = json (
-                identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
-                keystone_api_version: version,
-                tenant_id: TENANT_ID,
-                image_service_url: testProperties.getString('image_service_published_url'),
                 image_api_version: "1"
         )
         def input = json (
