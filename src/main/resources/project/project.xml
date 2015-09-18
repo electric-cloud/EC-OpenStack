@@ -73,7 +73,7 @@
                                         <expandable>1</expandable>
                                         <value>Teardown</value>
                                     </property>
-				    <property>
+				                    <property>
                                         <propertyName>ui_formRefs</propertyName>
                                         <description></description>
                                         <propertySheet>
@@ -213,6 +213,12 @@
                         <value>OpenStack</value>
                     </property>
                 </propertySheet>
+            </property>
+            <property>
+                <propertyName>ec_dsl_libraries_path</propertyName>
+                <description>Path where the supporting scripts and jars used for evaluating DSL scripts for validation and dynamic options are located. A relative path is considered relative to the plugin's install directory.</description>
+                <expandable>1</expandable>
+                <value>libs</value>
             </property>
             <!--Property used to specify the location path for the plugin configurations-->
             <property>
