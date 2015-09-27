@@ -442,10 +442,21 @@ class CreateConfigurationValidationTest extends BaseScriptsTestCase {
                 credential: [credential]
         )
 
-        //not passing any error message to validate for invalid password as the actual error message is
-        //unpredictable in this case. Sometimes the server returns 401:Unauthorized and other times
-        //it return 500: server error. As long as it returns an error, we are ok
-        checkErrorResponse(input, null, null)
+        // The actual error message is unpredictable when the password is invalid.
+        // Sometimes the server returns AuthenticationException: Unauthorized and other times
+        // it return ServerResponseException: Internal server error.
+        def result = evalScript('project/procedures/form_scripts/validation/createConfiguration.groovy', input)
+        assertEquals "error", result.outcome.toString()
+        def inputAsJSON = JsonOutput.toJson(input)
+        def expectedErrors = [
+                'Failed to authenticate user with given username and password.',
+                'Invalid username and password']
+
+        def errMsg = findErrorMessage(result.messages, 'testCredential.userName')
+        assertTrue "Incorrect error message with input parameters: " + inputAsJSON, expectedErrors.contains(errMsg.message)
+
+        errMsg = findErrorMessage(result.messages, 'testCredential.password')
+        assertTrue "Incorrect error message with input parameters: " + inputAsJSON, expectedErrors.contains(errMsg.message)
 
     }
 
