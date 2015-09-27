@@ -2,6 +2,7 @@ import groovy.transform.Field
 
 import org.openstack4j.api.OSClient
 import org.openstack4j.api.exceptions.AuthenticationException
+import org.openstack4j.api.exceptions.ServerResponseException
 import org.openstack4j.core.transport.Config
 import org.openstack4j.core.transport.HttpExecutorService
 import org.openstack4j.model.common.Identifier
@@ -148,6 +149,9 @@ def doValidations(args) {
         debug("${ex.class.name}: ${ex.message}")
         result = buildAuthenticationError(args)
 
+    } catch (ServerResponseException ex) {
+        debug("${ex.class.name}: ${ex.message}")
+        result = buildAuthenticationFailureError(args)
     } catch (Exception ex) {
         debug("${ex.class.name}: ${ex.message}")
         result = buildErrorResponse(IDENTITY_SERVICE_URL, 'Identity Service URL is invalid')
@@ -401,6 +405,15 @@ private void validateServiceEndpoint(Map serviceEndPoints,
 def buildErrorResponse(String parameter, String errorMessage) {
     def errors = FormalParameterValidationResult.errorResult()
     errors.error(parameter, errorMessage)
+}
+
+def buildAuthenticationFailureError(args) {
+    def credentialName = args.credential[0][CREDENTIAL_NAME];
+    def error = 'Failed to authenticate user with given username and password.'
+
+    result = buildErrorResponse("$credentialName.$USER_NAME", error).
+            error("$credentialName.$PASSWORD", error)
+    result
 }
 
 def buildAuthenticationError(args) {
