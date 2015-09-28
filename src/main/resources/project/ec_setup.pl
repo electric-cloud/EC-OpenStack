@@ -2,6 +2,7 @@
 # Data that drives the create step picker registration for this plugin.
 no warnings qw/redefine/;
 use XML::Simple;
+use ElectricCommander::Util;
 
 my %deploy = (
     label       => "OpenStack - Deploy",
@@ -473,6 +474,22 @@ if ($upgradeAction eq "upgrade") {
                                     );
         }
     }
+}
+
+# Set the credentialProtected flag on the validation and parameterOptions
+# property sheets if installing the plugin on EF server 6.1+. Doing this
+# programatically allows the plugin to continue to be supported on
+# older versions of EF server.
+my $xpath = $commander->getVersions();
+my $serverVersion = $xpath->findvalue('//version')->string_value();
+
+if (compareMinor($serverVersion, '6.1') >= 0) {
+     # Flag the property sheet as being protected by credentials
+     # attached to the enclosing procedure's steps.
+
+     $commander->modifyProperty("/projects/$pluginName/procedures/CreateConfiguration/ec_form/validation", {credentialProtected => "1"});
+     $commander->modifyProperty("/projects/$pluginName/procedures/CreateConfiguration/ec_form/parameterOptions", {credentialProtected => "1"});
+     $commander->modifyProperty("/projects/$pluginName/procedures/_DeployDE/ec_form/parameterOptions", {credentialProtected => "1"});
 }
 
 sub patch_configs {
