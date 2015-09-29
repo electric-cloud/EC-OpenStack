@@ -227,6 +227,11 @@
                 <value>openstack_cfgs</value>
             </property>
             <property>
+                <propertyName>ec_disable_dynamic_operations</propertyName>
+                <description>Set to '1' if the server-side validations and dynamic options retrieval need to be disabled in Dynamic Environments for this plugin.</description>
+                <value>0</value>
+            </property>
+            <property>
                 <propertyName>plugin_driver</propertyName>
                 <description>Home for perl code</description>
                 <propertySheet>

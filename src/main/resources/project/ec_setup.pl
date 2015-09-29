@@ -490,6 +490,38 @@ if (compareMinor($serverVersion, '6.1') >= 0) {
      $commander->modifyProperty("/projects/$pluginName/procedures/CreateConfiguration/ec_form/validation", {credentialProtected => "1"});
      $commander->modifyProperty("/projects/$pluginName/procedures/CreateConfiguration/ec_form/parameterOptions", {credentialProtected => "1"});
      $commander->modifyProperty("/projects/$pluginName/procedures/_DeployDE/ec_form/parameterOptions", {credentialProtected => "1"});
+
+       if ($upgradeAction eq 'upgrade') {
+         # If the disable flags were set on the earlier version of the plugin,
+         # then set them when upgrading.
+         my $batch = $commander->newBatch();
+         my @reqIds = (
+             $batch->getProperty("/plugins/$otherPluginName/project/ec_disable_dynamic_operations"),
+             $batch->getProperty("/plugins/$otherPluginName/project/procedures/CreateConfiguration/ec_form/disable"),
+             $batch->getProperty("/plugins/$otherPluginName/project/procedures/_DeployDE/ec_form/disable"),
+         );
+         $batch->submit();
+
+         my $disabledOps = $batch->findvalue($reqIds[0], 'property/value')->string_value();
+         my $disabledCreateConfigurationOp = $batch->findvalue($reqIds[1], 'property/value')->string_value();
+         my $disabledDeployOp = $batch->findvalue($reqIds[2], 'property/value')->string_value();
+
+         if ($disabledOps == '1') {
+             my $desc = $batch->findvalue($reqIds[0], 'property/description');
+             $commander->setProperty( "/plugins/$pluginName/project/ec_disable_dynamic_operations", { value => '1', description => $desc});
+         }
+
+         if ($disabledCreateConfigurationOp == '1') {
+             my $desc = $batch->findvalue($reqIds[1], 'property/description');
+             $commander->setProperty( "/plugins/$pluginName/project/procedures/CreateConfiguration/ec_form/disable", { value => '1', description => $desc});
+         }
+
+         if ($disabledDeployOp == '1') {
+             my $desc = $batch->findvalue($reqIds[2], 'property/description');
+             $commander->setProperty( "/plugins/$pluginName/project/procedures/_DeployDE/ec_form/disable", { value => '1', description => $desc});
+         }
+
+       }
 }
 
 sub patch_configs {
