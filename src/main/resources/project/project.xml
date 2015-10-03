@@ -612,7 +612,7 @@
                 <defaultValue/>
                 <description>ID of the OpenStack tenant to use</description>
                 <expansionDeferred>0</expansionDeferred>
-                <required>0</required>
+                <required>1</required>
                 <type>entry</type>
             </formalParameter>
 
@@ -977,16 +977,6 @@
                                         </property>
                                     </propertySheet>
                                 </property>
-                                <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
                             </propertySheet>
                         </property>
                     </propertySheet>
@@ -1114,13 +1104,6 @@
                 <defaultValue>default</defaultValue>
                 <description/>
                 <required>0</required>
-                <type>entry</type>
-            </formalParameter>
-            <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
                 <type>entry</type>
             </formalParameter>
             <step>
@@ -1279,16 +1262,6 @@
                                         </property>
                                     </propertySheet>
                                 </property>
-                                <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
                             </propertySheet>
                         </property>
                     </propertySheet>
@@ -1306,11 +1279,6 @@
                         <property>
                             <propertyName>parameterOptions</propertyName>
                             <propertySheet>
-                                <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <expandable>1</expandable>
-                                    <value/>
-                                </property>
                                 <property>
                                     <propertyName>image</propertyName>
                                     <expandable>1</expandable>
@@ -1437,13 +1405,6 @@
                 <required>0</required>
                 <type>entry</type>
             </formalParameter>
-            <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
-                <type>entry</type>
-            </formalParameter>
             <step>
                 <stepName>_DeployDE</stepName>
                 <alwaysRun>0</alwaysRun>
@@ -1520,16 +1481,6 @@
                                         </property>
                                     </propertySheet>
                                 </property>
-                                <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
                             </propertySheet>
                         </property>
                     </propertySheet>
@@ -1560,13 +1511,6 @@
                 <defaultValue/>
                 <description/>
                 <required>0</required>
-                <type>entry</type>
-            </formalParameter>
-            <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
                 <type>entry</type>
             </formalParameter>
             <step>
@@ -1639,16 +1583,6 @@
                                         </property>
                                     </propertySheet>
                                 </property>
-                                <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
                             </propertySheet>
                         </property>
                     </propertySheet>
@@ -1672,13 +1606,6 @@
                 <defaultValue/>
                 <description/>
                 <required>1</required>
-                <type>entry</type>
-            </formalParameter>
-            <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>0</required>
                 <type>entry</type>
             </formalParameter>
             <step>
@@ -1740,16 +1667,6 @@
                                     </propertySheet>
                                 </property>
                                 <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
-                                <property>
                                     <propertyName>keyname</propertyName>
                                     <propertySheet>
                                         <property>
@@ -1792,13 +1709,6 @@
             </propertySheet>
             <formalParameter>
                 <formalParameterName>connection_config</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
-                <type>entry</type>
-            </formalParameter>
-            <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>
@@ -1880,17 +1790,7 @@
                                             <value>standard</value>
                                         </property>
                                     </propertySheet>
-                                </property>
-                                <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
+                                </property>s
                                 <property>
                                     <propertyName>keyname</propertyName>
                                     <propertySheet>
@@ -1914,13 +1814,6 @@
             </propertySheet>
             <formalParameter>
                 <formalParameterName>connection_config</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
-                <type>entry</type>
-            </formalParameter>
-            <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>
@@ -1990,16 +1883,6 @@
                                     </propertySheet>
                                 </property>
                                 <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
-                                <property>
                                     <propertyName>location</propertyName>
                                     <propertySheet>
                                         <property>
@@ -2033,13 +1916,6 @@
             </propertySheet>
             <formalParameter>
                 <formalParameterName>connection_config</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
-                <type>entry</type>
-            </formalParameter>
-            <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>
@@ -2116,16 +1992,6 @@
                                     </propertySheet>
                                 </property>
                                 <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
-                                <property>
                                     <propertyName>address_id</propertyName>
                                     <propertySheet>
                                         <property>
@@ -2148,13 +2014,6 @@
             </propertySheet>
             <formalParameter>
                 <formalParameterName>connection_config</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
-                <type>entry</type>
-            </formalParameter>
-            <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>
@@ -2227,17 +2086,6 @@
                                         </property>
                                     </propertySheet>
                                 </property>
-                                <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
-
                             </propertySheet>
                         </property>
                     </propertySheet>
@@ -2251,13 +2099,6 @@
             </propertySheet>
             <formalParameter>
                 <formalParameterName>connection_config</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
-                <type>entry</type>
-            </formalParameter>
-            <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>
@@ -2492,16 +2333,6 @@
                                         </property>
                                     </propertySheet>
                                 </property>
-                                <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
                             </propertySheet>
                         </property>
                     </propertySheet>
@@ -2725,13 +2556,6 @@
                 <type>entry</type>
             </formalParameter>
             <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
-                <type>entry</type>
-            </formalParameter>
-            <formalParameter>
                 <formalParameterName>display_name</formalParameterName>
                 <defaultValue/>
                 <description/>
@@ -2831,16 +2655,6 @@
                                     </propertySheet>
                                 </property>
                                 <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
-                                <property>
                                     <propertyName>server_id</propertyName>
                                     <propertySheet>
                                         <property>
@@ -2903,13 +2717,6 @@
             </propertySheet>
             <formalParameter>
                 <formalParameterName>connection_config</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
-                <type>entry</type>
-            </formalParameter>
-            <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>
@@ -3008,16 +2815,6 @@
                                     </propertySheet>
                                 </property>
                                 <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
-                                <property>
                                     <propertyName>server_id</propertyName>
                                     <propertySheet>
                                         <property>
@@ -3060,13 +2857,6 @@
             </propertySheet>
             <formalParameter>
                 <formalParameterName>connection_config</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
-                <type>entry</type>
-            </formalParameter>
-            <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>
@@ -3150,16 +2940,6 @@
                                     </propertySheet>
                                 </property>
                                 <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
-                                <property>
                                     <propertyName>volume_id</propertyName>
                                     <propertySheet>
                                         <property>
@@ -3182,13 +2962,6 @@
             </propertySheet>
             <formalParameter>
                 <formalParameterName>connection_config</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
-                <type>entry</type>
-            </formalParameter>
-            <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>
@@ -3258,16 +3031,6 @@
                                     </propertySheet>
                                 </property>
                                 <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
-                                <property>
                                 <propertyName>server_id</propertyName>
                                 <propertySheet>
                                     <property>
@@ -3300,13 +3063,6 @@
             </propertySheet>
             <formalParameter>
                 <formalParameterName>connection_config</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
-                <type>entry</type>
-            </formalParameter>
-            <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>
@@ -3374,16 +3130,6 @@
                             <propertySheet>
                                 <property>
                                     <propertyName>connection_config</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
-                                <property>
-                                    <propertyName>tenant_id</propertyName>
                                     <propertySheet>
                                         <property>
                                             <propertyName>formType</propertyName>
@@ -3465,13 +3211,6 @@
             </propertySheet>
             <formalParameter>
                 <formalParameterName>connection_config</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
-                <type>entry</type>
-            </formalParameter>
-            <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>
@@ -3568,16 +3307,6 @@
                             <propertySheet>
                                 <property>
                                     <propertyName>connection_config</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
-                                <property>
-                                    <propertyName>tenant_id</propertyName>
                                     <propertySheet>
                                         <property>
                                             <propertyName>formType</propertyName>
@@ -3743,13 +3472,6 @@
                 <type>entry</type>
             </formalParameter>
             <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
-                <type>entry</type>
-            </formalParameter>
-            <formalParameter>
                 <formalParameterName>name</formalParameterName>
                 <defaultValue/>
                 <description/>
@@ -3891,16 +3613,6 @@
                                     </propertySheet>
                                 </property>
                                 <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
-                                <property>
                                     <propertyName>display_name</propertyName>
                                     <propertySheet>
                                         <property>
@@ -3963,13 +3675,6 @@
             </propertySheet>
             <formalParameter>
                 <formalParameterName>connection_config</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
-                <type>entry</type>
-            </formalParameter>
-            <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>
@@ -4068,16 +3773,6 @@
                                     </propertySheet>
                                 </property>
                                 <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
-                                <property>
                                     <propertyName>stack_name</propertyName>
                                     <propertySheet>
                                         <property>
@@ -4140,13 +3835,6 @@
             </propertySheet>
             <formalParameter>
                 <formalParameterName>connection_config</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
-                <type>entry</type>
-            </formalParameter>
-            <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>
@@ -4245,16 +3933,6 @@
                                     </propertySheet>
                                 </property>
                                 <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
-                                <property>
                                     <propertyName>stack_name</propertyName>
                                     <propertySheet>
                                         <property>
@@ -4327,13 +4005,6 @@
             </propertySheet>
             <formalParameter>
                 <formalParameterName>connection_config</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
-                <type>entry</type>
-            </formalParameter>
-            <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>
@@ -4439,16 +4110,6 @@
                                     </propertySheet>
                                 </property>
                                 <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
-                                <property>
                                     <propertyName>stack_name</propertyName>
                                     <propertySheet>
                                         <property>
@@ -4501,13 +4162,6 @@
             </propertySheet>
             <formalParameter>
                 <formalParameterName>connection_config</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
-                <type>entry</type>
-            </formalParameter>
-            <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>
@@ -4601,17 +4255,7 @@
                                         </property>
                                     </propertySheet>
                                 </property>
-                                <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType
-                                            </propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
+
                                 <property>
                                     <propertyName>volume_id</propertyName>
                                     <propertySheet>
@@ -4669,13 +4313,6 @@
             </propertySheet>
             <formalParameter>
                 <formalParameterName>connection_config</formalParameterName>
-                <defaultValue/>
-                <description/>
-                <required>1</required>
-                <type>entry</type>
-            </formalParameter>
-            <formalParameter>
-                <formalParameterName>tenant_id</formalParameterName>
                 <defaultValue/>
                 <description/>
                 <required>1</required>

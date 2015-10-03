@@ -52,7 +52,7 @@
         <label>Tenant ID:</label>
         <property>tenant_id</property>
         <documentation>ID of the OpenStack tenant to use.</documentation>
-        <required>0</required>
+        <required>1</required>
         <serverValidation>1</serverValidation>
         <type>entry</type>
     </formElement>

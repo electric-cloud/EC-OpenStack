@@ -9,14 +9,6 @@
         <type>entry</type>
     </formElement>
     <formElement>
-        <label>Tenant ID:</label>
-        <property>tenant_id</property>
-        <value/>
-        <documentation>ID of the tenant to use.</documentation>
-        <required>1</required>
-        <type>entry</type>
-    </formElement>
-    <formElement>
         <label>Server ID(s):</label>
         <property>server_id</property>
         <value/>

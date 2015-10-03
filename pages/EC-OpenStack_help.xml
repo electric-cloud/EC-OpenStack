@@ -16,8 +16,8 @@
     <p>Plugin Version @PLUGIN_VERSION@</p>
     <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade" />
 		
-		<p>Revised on July 29, 2015</p>
-				
+		<p>Revised on October 1, 2015</p>
+
 	<h1>Contents</h1>
 				
 		<ul>
@@ -262,10 +262,6 @@ the plugin omit?
           <td>The name of a valid existing configuration with the connection information. (Required)</td>
         </tr>
         <tr>
-          <td class="required">Tenant ID</td>
-          <td>ID of the tenant to use. (Required)</td>
-        </tr>
-        <tr>
           <td>Results Location</td>
           <td>The location in the ElectricFlow server where the properties are stored. The default is <i>/myJob/OpenStack/deployed</i>.</td>
         </tr>
@@ -315,10 +311,6 @@ the plugin omit?
           <td>The name of a valid existing configuration with the connection information. (Required)</td>
         </tr>
         <tr>
-          <td class="required">Tenant ID</td>
-          <td>The ID of the tenant to use. (Required)</td>
-        </tr>
-        <tr>
           <td class="required">Server Id</td>
           <td>The ID of the target server with the IP address. (Required)</td>
         </tr>
@@ -366,10 +358,6 @@ the plugin omit?
                   <tr>
                       <td class="required">Configuration</td>
                       <td>The name of a valid existing configuration with the connection information. (Required)</td>
-                  </tr>
-                  <tr>
-                      <td class="required">Tenant ID</td>
-                      <td>ID of the tenant to use. (Required)</td>
                   </tr>
                   <tr>
                       <td class="required">Server ID</td>
@@ -432,10 +420,6 @@ the plugin omit?
         <tr>
           <td class="required">Configuration</td>
           <td>The name of a valid existing configuration with the connection information. (Required)</td>
-        </tr>
-        <tr>
-          <td class="required">Tenant ID</td>
-          <td>ID of the tenant to use. (Required)</td>
         </tr>
         <tr>
           <td class="required">Server ID(s)</td>
@@ -659,10 +643,6 @@ the plugin omit?
                       <td>The name of a valid existing configuration with the connection information. (Required)</td>
                   </tr>
                   <tr>
-                      <td class="required">Tenant ID</td>
-                      <td>ID of the tenant to use. (Required)</td>
-                  </tr>
-                  <tr>
                       <td class="required">Image name</td>
                       <td>Display name of the new image. (Required)</td>
                   </tr>
@@ -755,10 +735,6 @@ the plugin omit?
                       <td>The name of a valid existing configuration with the connection information. (Required)</td>
                   </tr>
                   <tr>
-                      <td class="required">Tenant ID</td>
-                      <td>The ID of the tenant to use. (Required)</td>
-                  </tr>
-                  <tr>
                       <td class="required">Instance snapshot name</td>
                       <td>The display name of the snapshot. (Required)</td>
                   </tr>
@@ -833,10 +809,6 @@ the plugin omit?
           <td>The name of a valid existing configuration wtih the connection information. (Required)</td>
         </tr>
         <tr>
-          <td class="required">Tenant ID</td>
-          <td>The ID of the tenant to use. (Required)</td>
-        </tr>
-        <tr>
           <td class="required">Key name</td>
           <td>A unique name for the key pair. The default is <i>cmdr-$[jobStepId]</i>. (Required)</td>
         </tr>
@@ -893,10 +865,6 @@ the plugin omit?
                       <tr>
                           <td class="required">Configuration</td>
                            <td>The name of a valid existing configuration with the connection information. (Required)</td>
-                      </tr>
-                      <tr>
-                          <td class="required">Tenant ID</td>
-                          <td>The ID of the tenant to use. (Required)</td>
                       </tr>
                       <tr>
                           <td class="required">Stack Name</td>
@@ -965,10 +933,6 @@ the plugin omit?
                   <tr>
                       <td class="required">Configuration</td>
                       <td>The name of a valid existing configuration with the connection information. (Required)</td>
-                  </tr>
-                  <tr>
-                      <td class="required">Tenant ID</td>
-                      <td>ID of the tenant to use. (Required)</td>
                   </tr>
                   <tr>
                       <td class="required">Volume name</td>
@@ -1041,10 +1005,6 @@ the plugin omit?
                       <td>The name of a valid existing configuration with the connection information. (Required)</td>
                   </tr>
                   <tr>
-                      <td class="required">Tenant ID</td>
-                      <td>ID of the tenant to use. (Required)</td>
-                  </tr>
-                  <tr>
                       <td class="required">Name of volume snapshot</td>
                       <td>The display name of the snapshot. (Required)</td>
                   </tr>
@@ -1114,10 +1074,6 @@ the plugin omit?
           <td>The name of a valid existing configuration with the connection information. (Required)</td>
         </tr>
         <tr>
-          <td class="required">Tenant ID</td>
-          <td>ID of the tenant to use. (Required)</td>
-        </tr>
-        <tr>
           <td class="required">Key name</td>
           <td>Name of the key pair to delete. (Required)</td>
         </tr>
@@ -1164,10 +1120,6 @@ the plugin omit?
                       <tr>
                           <td class="required">Configuration</td>
                            <td>The name of a valid existing configuration with the connection information. (Required)</td>
-                      </tr>
-                      <tr>
-                          <td class="required">Tenant ID</td>
-                          <td>The ID of the tenant to use. (Required)</td>
                       </tr>
                       <tr>
                           <td class="required">Stack Name</td>
@@ -1232,10 +1184,6 @@ the plugin omit?
                       <td>The name of a valid existing configuration with the connection information. (Required)</td>
                   </tr>
                   <tr>
-                      <td class="required">Tenant ID</td>
-                      <td>ID of the tenant to use. (Required)</td>
-                  </tr>
-                  <tr>
                       <td class="required">Volume ID</td>
                       <td>ID of the volume to delete. (Required)</td>
                   </tr>
@@ -1282,10 +1230,6 @@ the plugin omit?
         <tr>
           <td class="required">Configuration</td>
           <td>The name of a valid existing configuration with the connection information. (Required)</td>
-        </tr>
-        <tr>
-          <td class="required">Tenant ID</td>
-          <td>ID of the tenant to use. (Required)</td>
         </tr>
         <tr>
           <td class="required">Key Pair Name</td>
@@ -1389,10 +1333,6 @@ the plugin omit?
                       <td>The name of a valid existing configuration with the connection information. (Required)</td>
                   </tr>
                   <tr>
-                      <td class="required">Tenant ID</td>
-                      <td>ID of the tenant to use. (Required)</td>
-                  </tr>
-                  <tr>
                       <td class="required">Server ID</td>
                       <td>ID of the server from which the volume is detached. (Required)</td>
                   </tr>
@@ -1451,10 +1391,6 @@ the plugin omit?
                   <tr>
                       <td class="required">Configuration</td>
                       <td>The name of a valid existing configuration with the connection information. (Required)</td>
-                  </tr>
-                  <tr>
-                      <td class="required">Tenant ID</td>
-                      <td>ID of the tenant to use. (Required)</td>
                   </tr>
                   <tr>
                       <td class="required">Volume ID</td>
@@ -1519,10 +1455,6 @@ the plugin omit?
                       <td>The name of a valid existing configuration with the connection information.  (Required)</td>
                   </tr>
                   <tr>
-                      <td class="required">Tenant ID</td>
-                      <td>ID of the tenant to use. (Required)</td>
-                  </tr>
-                  <tr>
                       <td class="required">Server ID</td>
                       <td>ID of the server to reboot. (Required)</td>
                   </tr>
@@ -1572,10 +1504,6 @@ the plugin omit?
           <td>The name of a valid existing configuration with the connection information. (Required)</td>
         </tr>
         <tr>
-          <td class="required">Tenant ID</td>
-          <td>ID of the tenant to use. (Required)</td>
-        </tr>
-        <tr>
           <td class="required">Floating Address ID</td>
           <td>ID of the floating IP address to delete. (Required)</td>
         </tr>
@@ -1619,10 +1547,6 @@ the plugin omit?
                       <tr>
                           <td>Configuration</td>
                            <td>The name of a valid existing configuration with the connection information.</td>
-                      </tr>
-                      <tr>
-                          <td>Tenant ID</td>
-                          <td>The ID of the tenant to use.</td>
                       </tr>
                       <tr>
                           <td class="required">Resource name(s)</td>
@@ -1672,10 +1596,6 @@ the plugin omit?
                       <tr>
                           <td class="required">Configuration</td>
                            <td>The name of a valid existing configuration with the connection information. (Required)</td>
-                      </tr>
-                      <tr>
-                          <td class="required">Tenant ID</td>
-                          <td>The ID of the tenant to use. (Required)</td>
                       </tr>
                       <tr>
                           <td class="required">Stack Name</td>
@@ -1801,13 +1721,11 @@ outline used above where possible.
     <h2>@PLUGIN_KEY@ 1.3.1</h2>
     <ul>
         <li>Fixed issue with configurations being cached for IE.</li>
-    </ul>
-    <h2>@PLUGIN_KEY@ 1.3.0</h2>
-    <ul>
-      <li>Added validation to the CreateConfiguration procedure for the dynamic environments feature.</li>
-      <li>Added the "Tenant ID" parameter to the plugin configuration.</li>
-      <li>Added the ability to dynamically retrieve drop-down options such as image or flavor when creating resource templates for dynamic environments.</li>
-      <li>Added the ability to create a resource in non-default zone.</li>
+        <li>Added validation to the CreateConfiguration procedure for the dynamic environments feature.</li>
+        <li>Added the "Tenant ID" parameter to the plugin configuration.</li>
+        <li>Removed tenant_id from all procedures except CreateConfiguration.</li>
+        <li>Added the ability to dynamically retrieve drop-down options such as image or flavor when creating resource templates for dynamic environments.</li>
+        <li>Added the ability to create a resource in non-default zone.</li>
 	</ul>
     <h2>@PLUGIN_KEY@ 1.2.1</h2>
     <ul>

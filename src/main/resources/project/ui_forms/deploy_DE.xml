@@ -9,16 +9,6 @@
         <type>entry</type>
     </formElement>
     <formElement>
-        <label>Tenant ID:</label>
-        <property>tenant_id</property>
-        <value/>
-        <documentation>ID of the tenant to use.</documentation>
-        <required>1</required>
-        <type>entry</type>
-        <serverOptions>1</serverOptions>
-        <dependsOn>connection_config</dependsOn>
-    </formElement>
-    <formElement>
         <label>Number of Instances:</label>
         <property>quantity</property>
         <value>1</value>
@@ -35,7 +25,7 @@
         <required>1</required>
         <type>entry</type>
         <serverOptions>1</serverOptions>
-        <dependsOn>connection_config,tenant_id</dependsOn>
+        <dependsOn>connection_config</dependsOn>
     </formElement>
     <formElement>
         <label>Flavor:</label>
@@ -45,7 +35,7 @@
         <required>1</required>
         <type>entry</type>
         <serverOptions>1</serverOptions>
-        <dependsOn>connection_config,tenant_id</dependsOn>
+        <dependsOn>connection_config</dependsOn>
     </formElement>
 
     <formElement>
@@ -56,7 +46,7 @@
         <required>1</required>
         <type>entry</type>
         <serverOptions>1</serverOptions>
-        <dependsOn>connection_config,tenant_id</dependsOn>
+        <dependsOn>connection_config</dependsOn>
     </formElement>
 
     <formElement>
@@ -67,7 +57,7 @@
         <required>0</required>
         <type>textarea</type>
         <serverOptions>1</serverOptions>
-        <dependsOn>connection_config,tenant_id</dependsOn>
+        <dependsOn>connection_config</dependsOn>
     </formElement>
     <formElement>
         <label>Availability Zone:</label>
@@ -77,7 +67,7 @@
         <required>0</required>
         <type>entry</type>
         <serverOptions>1</serverOptions>
-        <dependsOn>connection_config,tenant_id</dependsOn>
+        <dependsOn>connection_config</dependsOn>
     </formElement>
     <formElement>
         <label>Customization script:</label>

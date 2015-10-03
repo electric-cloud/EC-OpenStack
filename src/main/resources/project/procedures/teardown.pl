@@ -19,9 +19,6 @@ $opts->{resource_name} = $ec->getPropertyValue("resName");
 # Connection config. Higher priority than config from resource's properties.
 $opts->{connection_config} = $ec->getPropertyValue("connection_config");
 
-# Tenant id. Required for config.
-$opts->{tenant_id} = $ec->getPropertyValue("tenant_id");
-
 my $data = OpenStack::getInstancesForTermination($ec, $opts->{resource_name});
 @$data = grep {$_->{createdBy} eq 'EC-OpenStack'}@$data;
 

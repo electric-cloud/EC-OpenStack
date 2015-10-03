@@ -37,13 +37,6 @@
         <documentation>OpenStack account username/password. This account must have enough privileges to perform API functions.</documentation>
     </formElement>
     <formElement>
-        <label>Tenant ID:</label>
-        <property>tenant_id</property>
-        <documentation>ID of the OpenStack tenant to use.</documentation>
-        <required>0</required>
-        <type>entry</type>
-    </formElement>
-    <formElement>
         <type>entry</type>
         <label>Compute Service URL:</label>
         <property>compute_service_url</property>

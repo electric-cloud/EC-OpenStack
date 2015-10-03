@@ -35,7 +35,7 @@ if (!ElectricCommander::PropMod::loadPerlCodeFromProperty( $ec, '/myProject/plug
 *{ElectricCommander::__get_openstack_instance_by_options} = sub {
     my (undef, $options) = @_;
 
-    if (!$options->{connection_config} || !$options->{tenant_id}) {
+    if (!$options->{connection_config}) {
 	return ($options, undef);
     }
 

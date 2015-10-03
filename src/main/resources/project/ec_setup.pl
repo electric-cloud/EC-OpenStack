@@ -492,6 +492,8 @@ if (compareMinor($serverVersion, '6.1') >= 0) {
      $commander->modifyProperty("/projects/$pluginName/procedures/_DeployDE/ec_form/parameterOptions", {credentialProtected => "1"});
 }
 
+removeTenantId();
+
 sub patch_configs {
     my ($config_path) = @_;
 
@@ -530,5 +532,49 @@ sub patch_configs {
 
     }
     return 1;
+}
+
+sub removeTenantId {
+       my $commander = ElectricCommander->new();
+          my $steps = $commander->findObjects("procedureStep", {
+              filter => [
+                  {
+                      propertyName => "subproject",
+                      operator     => "equals",
+                      operand1     => "/plugins/EC-OpenStack/project"
+                  },
+                  {
+                      propertyName => "subprocedure",
+                      operator     => "notEqual",
+                      operand1     => "CreateConfiguration"
+                  }
+              ]
+          });
+
+          # Walk through all the steps
+          for my $step ($steps->findnodes("//step")) {
+              my $projectName = $step->findvalue("projectName");
+              my $procedureName = $step->findvalue("procedureName");
+              my $stepName = $step->findvalue("stepName");
+
+              my $parameters = $commander->getActualParameters({
+                  projectName     => $projectName,
+                  procedureName   => $procedureName,
+                  stepName        => $stepName});
+
+              my $tenantIdExists = 0;
+
+              for my $parameter ($parameters->findnodes("//actualParameter")) {
+                  my $name = $parameter->findvalue("actualParameterName");
+                  if ($name eq "tenant_id") {
+                      $tenantIdExists = 1;
+
+                  }
+              }
+              if ($tenantIdExists) {
+                  $commander->deleteActualParameter($projectName, $procedureName,
+                      $stepName, "tenant_id");
+              }
+          }
 }
 
