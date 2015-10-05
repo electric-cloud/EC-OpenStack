@@ -24,9 +24,6 @@ $opts->{force} = q{$[force]};
 # Volume ID: ID of the volume of which to take the snapshot.
 $opts->{volume_id} = q{$[volume_id]};
 
-# Tenant: Id of the tenant.
-$opts->{tenant_id} = q{$[tenant_id]};
-
 # Results location: property path to store server information.
 $opts->{location} = q{$[location]};
 

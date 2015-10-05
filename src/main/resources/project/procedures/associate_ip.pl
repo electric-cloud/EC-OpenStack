@@ -12,9 +12,6 @@ my $opts;
 # Configuration: A commander configuration previously created.
 $opts->{connection_config} = q{$[connection_config]};
 
-# Tenant: Id of the tenant.
-$opts->{tenant_id} = q{$[tenant_id]};
-
 # Floating Ip: Id of the floating ip to release.
 $opts->{server_id} = q{$[server_id]};
 

@@ -12,9 +12,6 @@ my $opts;
 # Configuration: A commander configuration previously created.
 $opts->{connection_config} = q{$[connection_config]};
 
-# Tenant: Id of the tenant.
-$opts->{tenant_id} = q{$[tenant_id]};
-
 # Server Id: ID of the server from which volume to detach.
 $opts->{server_id} = q{$[server_id]};
 

@@ -21,9 +21,6 @@ $opts->{quantity} = q{$[quantity]};
 # Commander Workspace: Optional
 $opts->{resource_workspace} = q{$[resource_workspace]};
 
-# Tenant: Id of the tenant.
-$opts->{tenant_id} = q{$[tenant_id]};
-
 # The key pair name
 $opts->{keyPairName} = q{$[keyPairName]};
 

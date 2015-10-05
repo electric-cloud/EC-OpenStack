@@ -18,9 +18,6 @@ $opts->{server_id} = q{$[server_id]};
 # Resource: name of the resource to delete.
 $opts->{resource_name} = q{$[resource_name]};
 
-# Tenant: Id of the tenant.
-$opts->{tenant_id} = q{$[tenant_id]};
-
 $[/myProject/procedure_helpers/preamble]
 
 $openstack->cleanup();
