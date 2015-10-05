@@ -2473,16 +2473,6 @@
                                     </propertySheet>
                                 </property>
                                 <property>
-                                    <propertyName>tenant_id</propertyName>
-                                    <propertySheet>
-                                        <property>
-                                            <propertyName>formType</propertyName>
-                                            <expandable>1</expandable>
-                                            <value>standard</value>
-                                        </property>
-                                    </propertySheet>
-                                </property>
-                                <property>
                                     <propertyName>display_name</propertyName>
                                     <propertySheet>
                                         <property>
