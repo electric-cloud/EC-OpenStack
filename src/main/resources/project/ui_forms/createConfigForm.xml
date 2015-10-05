@@ -15,6 +15,14 @@
         <documentation>Provide a simple description for this configuration.</documentation>
     </formElement>
     <formElement>
+        <type>credential</type>
+        <label>Login as:</label>
+        <property>credential</property>
+        <required>1</required>
+        <serverValidation>1</serverValidation>
+        <documentation>OpenStack account username/password. This account must have enough privileges to perform API functions.</documentation>
+    </formElement>
+    <formElement>
         <type>entry</type>
         <label>Identity Service URL:</label>
         <property>identity_service_url</property>
@@ -39,14 +47,6 @@
             <name>3</name>
             <value>3</value>
         </option>
-    </formElement>
-    <formElement>
-        <type>credential</type>
-        <label>Login as:</label>
-        <property>credential</property>
-        <required>1</required>
-        <serverValidation>1</serverValidation>
-        <documentation>OpenStack account username/password. This account must have enough privileges to perform API functions.</documentation>
     </formElement>
     <formElement>
         <label>Tenant ID:</label>
