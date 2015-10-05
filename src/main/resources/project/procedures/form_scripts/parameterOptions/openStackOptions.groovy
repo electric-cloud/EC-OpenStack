@@ -75,7 +75,7 @@ boolean canGetOptions(args) {
             args.credential[0][PASSWORD] &&
             args.configurationParameters[IDENTITY_SERVICE_URL] &&
             args.configurationParameters[IDENTITY_API_VERSION] &&
-            args.parameters[TENANT_ID] &&
+            args.configurationParameters[TENANT_ID] &&
             canGetOptionsForParameter(args, args.formalParameterName)
 
 }
@@ -171,7 +171,7 @@ def buildAuthenticationPayload(args) {
     def keystoneAPIVersion = args.configurationParameters[IDENTITY_API_VERSION]
     if (keystoneAPIVersion == "2.0") {
         jsonPayload."auth" = [:]
-        jsonPayload."auth"."tenantId" = args.parameters[TENANT_ID]
+        jsonPayload."auth"."tenantId" = args.configurationParameters[TENANT_ID]
         jsonPayload."auth"."passwordCredentials" = [:]
         jsonPayload."auth"."passwordCredentials"."username" = args.credential[0].userName
         jsonPayload."auth"."passwordCredentials"."password" = args.credential[0].password
@@ -188,7 +188,7 @@ def buildAuthenticationPayload(args) {
 
         jsonPayload."auth"."scope" = [:]
         jsonPayload."auth"."scope"."project" = [:]
-        jsonPayload."auth"."scope"."project"."id" = args.parameters[TENANT_ID]
+        jsonPayload."auth"."scope"."project"."id" = args.configurationParameters[TENANT_ID]
 
     }
     jsonPayload
@@ -215,7 +215,7 @@ String buildServiceURL(args) {
     def imageServiceVersion = args.configurationParameters[IMAGE_API_VERSION]
 
     //
-    def tenantId = args.parameters[TENANT_ID]
+    def tenantId = args.configurationParameters[TENANT_ID]
 
     switch (args.formalParameterName) {
         case 'flavor':
