@@ -1063,7 +1063,7 @@
                 <defaultValue/>
                 <expansionDeferred>0</expansionDeferred>
                 <description/>
-                <required>1</required>
+                <required>0</required>
                 <type>textarea</type>
             </formalParameter>
             <formalParameter>
@@ -1386,7 +1386,7 @@
                 <defaultValue/>
                 <expansionDeferred>0</expansionDeferred>
                 <description/>
-                <required>1</required>
+                <required>0</required>
                 <type>textarea</type>
             </formalParameter>
             <formalParameter>
