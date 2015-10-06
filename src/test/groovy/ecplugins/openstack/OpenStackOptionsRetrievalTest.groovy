@@ -6,13 +6,13 @@ import groovy.json.JsonOutput
 class OpenStackOptionsRetrievalTest extends BaseScriptsTestCase {
 
 
-    void testImagesOptionsRetrievalV1() {
+    void testImagesOptionsRetrieval() {
 
         def json = new JsonBuilder()
 
         def imageParams = json (
-                image_service_url: testProperties.getString(PROP_IMAGE_SVC_URL),
-                image_api_version: '1'
+                compute_service_url: testProperties.getString(PROP_COMPUTE_SVC_URL),
+                api_version: '2'
         )
 
         def inputParams = createScriptInputParams(imageParams, 'image')
@@ -68,12 +68,12 @@ class OpenStackOptionsRetrievalTest extends BaseScriptsTestCase {
 
         def actualParams = json (
                 connection_config:'test',
-                tenant_id: TENANT_ID
         )
 
         def configurationParams = json (
                 identity_service_url : testProperties.getString(PROP_IDENTITY_SVC_URL),
-                keystone_api_version: testProperties.getString(PROP_IDENTITY_SVC_VERSION)
+                keystone_api_version: testProperties.getString(PROP_IDENTITY_SVC_VERSION),
+                tenant_id: TENANT_ID
         )
 
         //merge configurationParams with the inputConfigurationParams

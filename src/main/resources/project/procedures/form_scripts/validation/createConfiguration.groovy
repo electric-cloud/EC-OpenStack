@@ -85,7 +85,7 @@ if (canValidate(args)) {
 
     // The current context class loader is the one which
     // loaded the DslDelegate class, which is the application's
-    // class loader. That is not the class loader we can to use
+    // class loader. That is not the class loader we want to use
     // to find the services registered in the external libraries.
     // So we save the contextClassLoader before switching the context
     // class loader on the thread to the Groovy class loader which is
