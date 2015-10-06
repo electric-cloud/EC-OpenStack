@@ -38,10 +38,6 @@ final String IDENTITY_API_VERSION = "keystone_api_version"
 final String COMPUTE_SERVICE_URL = "compute_service_url"
 @Field
 final String COMPUTE_SERVICE_VERSION = "api_version"
-@Field
-final String IMAGE_SERVICE_URL = "image_service_url"
-@Field
-final String IMAGE_API_VERSION = "image_api_version"
 
 @Field
 final String TENANT_ID = "tenant_id"
@@ -81,23 +77,8 @@ boolean canGetOptions(args) {
 }
 
 boolean canGetOptionsForParameter(args, formalParameterName) {
-    switch (formalParameterName) {
-        case 'flavor':
-            return args.configurationParameters[COMPUTE_SERVICE_URL] &&
-                    args.configurationParameters[COMPUTE_SERVICE_VERSION]
-        case 'availability_zone':
-            return args.configurationParameters[COMPUTE_SERVICE_URL]&&
-                    args.configurationParameters[COMPUTE_SERVICE_VERSION]
-        case 'security_groups':
-            return args.configurationParameters[COMPUTE_SERVICE_URL]&&
-                    args.configurationParameters[COMPUTE_SERVICE_VERSION]
-        case 'keyPairName':
-            return args.configurationParameters[COMPUTE_SERVICE_URL]&&
-                    args.configurationParameters[COMPUTE_SERVICE_VERSION]
-        case 'image':
-            return args.configurationParameters[IMAGE_SERVICE_URL] &&
-                    args.configurationParameters[IMAGE_API_VERSION]
-    }
+    return args.configurationParameters[COMPUTE_SERVICE_URL]&&
+            args.configurationParameters[COMPUTE_SERVICE_VERSION]
 }
 
 List getOptions(args, authToken) {
@@ -211,10 +192,6 @@ String buildServiceURL(args) {
     def computeServiceVersion = args.configurationParameters[COMPUTE_SERVICE_VERSION]
 
     //
-    def imageServiceUrl = args.configurationParameters[IMAGE_SERVICE_URL]
-    def imageServiceVersion = args.configurationParameters[IMAGE_API_VERSION]
-
-    //
     def tenantId = args.configurationParameters[TENANT_ID]
 
     switch (args.formalParameterName) {
@@ -229,10 +206,9 @@ String buildServiceURL(args) {
 
         case 'keyPairName':
             return "$computeServiceUrl/v${computeServiceVersion}/$tenantId/os-keypairs"
+
         case 'image':
-            return imageServiceVersion == '1' ?
-                    "$imageServiceUrl/v${imageServiceVersion}/images/detail?status=active":
-                    "$imageServiceUrl/v${imageServiceVersion}/images?status=active"
+            return "$computeServiceUrl/v${computeServiceVersion}/$tenantId/images?status=active"
 
     }
 
