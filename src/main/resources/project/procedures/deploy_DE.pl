@@ -55,6 +55,13 @@ $opts->{associate_ip} = 1;
 # Deploy tag to identify this deployment in the resource location, default to jobStepId.
 $opts->{tag} = q{$[jobStepId]};
 
+$opts->{resource_zone} = q{$[resource_zone]};
+
+if (!$opts->{resource_zone}) {
+    # Default resource zone to 'default' if nothing was specified.
+    $opts->{resource_zone} = "default";
+}
+
 $[/myProject/procedure_helpers/preamble]
 
 $openstack->deploy();
