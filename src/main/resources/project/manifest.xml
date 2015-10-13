@@ -270,4 +270,8 @@
         <path>procedures/form_scripts/parameterOptions/workspaces.groovy</path>
         <xpath>//procedure[procedureName=&quot;_DeployDE&quot;]/propertySheet/property[propertyName=&quot;ec_form&quot;]/propertySheet/property[propertyName=&quot;parameterOptions&quot;]/propertySheet/property[propertyName=&quot;resource_workspace&quot;]/value</xpath>
     </file>
+    <file>
+        <path>procedures/form_scripts/parameterOptions/resourceZones.groovy</path>
+        <xpath>//procedure[procedureName=&quot;_DeployDE&quot;]/propertySheet/property[propertyName=&quot;ec_form&quot;]/propertySheet/property[propertyName=&quot;parameterOptions&quot;]/propertySheet/property[propertyName=&quot;resource_zone&quot;]/value</xpath>
+    </file>
 </fileset>
