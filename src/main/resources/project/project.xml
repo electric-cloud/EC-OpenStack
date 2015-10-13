@@ -1324,6 +1324,11 @@
                                     <expandable>1</expandable>
                                     <value/>
                                 </property>
+                                <property>
+                                    <propertyName>resource_zone</propertyName>
+                                    <expandable>1</expandable>
+                                    <value/>
+                                </property>
                             </propertySheet>
                         </property>
                         <property>
