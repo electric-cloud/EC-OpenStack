@@ -56,6 +56,11 @@ $opts->{customization_script} = q{$[customization_script]};
 
 $opts->{resource_zone} = q{$[resource_zone]};
 
+if (!$opts->{resource_zone}) {
+    # Default resource zone to 'default' if nothing was specified.
+    $opts->{resource_zone} = "default";
+}
+
 $[/myProject/procedure_helpers/preamble]
 
 $openstack->deploy();

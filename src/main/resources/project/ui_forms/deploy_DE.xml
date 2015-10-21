@@ -102,4 +102,13 @@
         <type>entry</type>
         <serverOptions>1</serverOptions>
     </formElement>
+    <formElement>
+        <label>Resource Zone Name:</label>
+        <property>resource_zone</property>
+        <serverOptions>1</serverOptions>
+        <value>default</value>
+        <documentation>Created resource will belong to the specified zone. Zone 'default' is used by default.</documentation>
+        <required>0</required>
+        <type>entry</type>
+    </formElement>
 </editor>
