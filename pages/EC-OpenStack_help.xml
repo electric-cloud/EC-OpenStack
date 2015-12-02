@@ -16,7 +16,7 @@
     <p>Plugin Version @PLUGIN_VERSION@</p>
     <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade" />
 		
-		<p>Revised on October 1, 2015</p>
+		<p>Revised on December 1, 2015</p>
 
 	<h1>Contents</h1>
 				
@@ -1276,7 +1276,7 @@ the plugin omit?
           <td>Create Resource?</td>
           <td>Select this parameter (in the check box) to create resources for deployed servers.</td>
         </tr>
-				 <tr>
+        <tr>
           <td>Associate IP?</td>
           <td>Select this parameter in the check box to associate the IP address with the deployed instance.</td>
         </tr>
@@ -1285,8 +1285,16 @@ the plugin omit?
           <td>Name of the resource pool in ElectricFlow that is associated with the machines in this configuration when resources are created.</td>
         </tr>
         <tr>
+            <td>Resource Port</td>
+            <td>Port that will be used when creating a resource.</td>
+        </tr>
+        <tr>
           <td>Resource workspace</td>
           <td>The ElectricFlow workspace that the resources uses.</td>
+        </tr>
+        <tr>
+            <td>Resource Zone Name</td>
+            <td>The ElectricFlow zone name for a resource. Used when creating a resource.</td>
         </tr>
         </tbody>
     </table>
