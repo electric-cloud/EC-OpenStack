@@ -3185,6 +3185,7 @@ sub make_new_resource {
             workspaceName => $self->opts->{resource_workspace},
             hostName      => "$host",
             zoneName      => $self->opts->{resource_zone},
+            port          => $self->opts->{resource_port}
         }
     );
     if ($cmdrresult) {
