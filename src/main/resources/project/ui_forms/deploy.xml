@@ -134,6 +134,14 @@
         <type>entry</type>
     </formElement>
     <formElement>
+        <label>Resource Port:</label>
+        <property>resource_port</property>
+        <value/>
+        <documentation>If you specify a resource pool name in 'Resource Pool' field, this is the port that will be used when creating the resource. If no value is specified, port 7800 will be used by default when creating the resource.</documentation>
+        <required>0</required>
+        <type>entry</type>
+    </formElement>
+    <formElement>
         <label>Resource workspace:</label>
         <property>resource_workspace</property>
         <value>default</value>

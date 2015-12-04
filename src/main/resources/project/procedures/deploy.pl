@@ -77,6 +77,12 @@ if (!$opts->{resource_zone}) {
     $opts->{resource_zone} = "default";
 }
 
+$opts->{resource_port} = q{$[resource_port]};
+if (!$opts->{resource_port}) {
+    # Default the resource_port to 7800
+    $opts->{resource_port} = 7800;
+}
+
 $[/myProject/procedure_helpers/preamble]
 
 $openstack->deploy();
