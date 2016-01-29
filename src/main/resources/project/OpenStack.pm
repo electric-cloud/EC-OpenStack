@@ -1285,7 +1285,16 @@ sub create_volume {
     $data->{volume}->{display_name}      = $self->opts->{display_name};
     $data->{volume}->{size}              = $self->opts->{size};
     $data->{volume}->{volume_type}       = $self->opts->{volume_type};
-    $data->{volume}->{availability_zone} = $self->opts->{availability_zone};
+
+    # we will set region ONLY if it's present in config
+    if ($self->opts->{region}) {
+        $data->{volume}->{region}            = $self->opts->{region};
+    }
+
+    # same for region
+    if ($self->opts->{availability_zone}) {
+        $data->{volume}->{availability_zone} = $self->opts->{availability_zone};
+    }
     $body                                = to_json($data);
 
     ## Make POST request
@@ -3161,6 +3170,10 @@ None.
 
 sub make_new_resource {
     my ( $self, $res_name, $server, $host, $additional_opts) = @_;
+    print "Res_name: ", Dumper $res_name;
+    print "Server: ", Dumper $server;
+    print "Host: ", Dumper $host;
+    print "Additional opts: ", Dumper $additional_opts;
 
     my $pool = $self->opts->{resource_pool};
 
