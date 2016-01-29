@@ -2641,14 +2641,14 @@
                 <formalParameterName>availability_zone</formalParameterName>
                 <defaultValue/>
                 <description/>
-                <required>1</required>
+                <required>0</required>
                 <type>entry</type>
             </formalParameter>
             <formalParameter>
                 <formalParameterName>region</formalParameterName>
                 <defaultValue/>
                 <description/>
-                <required>1</required>
+                <required>0</required>
                 <type>entry</type>
             </formalParameter>
             <formalParameter>
