@@ -53,7 +53,7 @@
         <label>Availability zone:</label>
         <property>availability_zone</property>
         <value/>
-        <documentation>The availability zone in which create new volume. For RackSpace, please, use Region parameter instead.</documentation>
+        <documentation>The availability zone in which to create the new volume. For RackSpace, please, use Region parameter instead.</documentation>
         <required>0</required>
         <type>entry</type>
     </formElement>
