@@ -34,6 +34,8 @@ import org.apache.http.impl.conn.SingleClientConnManager
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
+
+import java.util.regex.*
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
 
@@ -97,11 +99,30 @@ boolean canGetOptionsForParameter(args, formalParameterName) {
 }
 
 List getOptions(args, authToken) {
+    def list
+    
     String url = buildServiceURL(args)
+    
     def response = doGet(url, authToken)
+    // we can't get regions from rackspace via api.
+    print "Url: $url\n"
+    if (args.formalParameterName == 'region' && url =~ /^https?:\/\/[a-zA-Z.]+?rackspacecloud/) {
+      list = [
+        ['IAD', 'Northern Virginia (IAD)'],
+        ['DWF', 'Dallas-Fort Worth (DFW)'],
+        ['ORD', 'Chicago (ORD)'],
+        ['LON', 'London (LON)'],
+        ['SYD', 'Sydney (SYD)'],
+        ['HKG', 'Hong Kong (HKG)']
+      ]
+      print "Region: $list\n"
+      return list
+    }
+
+    
 
     def statusCode = response.statusLine.statusCode
-    def list
+
     if (statusCode < 400) {
         // Read the response based on the parameter we
         // requested info for from OpenStack
@@ -130,6 +151,7 @@ List getOptions(args, authToken) {
                 list = response.jsonResponse.images.collect{
                     [it.id, it.name]
                 }
+                print "Images: $list\n"
                 break
         }
     }
@@ -224,6 +246,9 @@ String buildServiceURL(args) {
 
         case 'image':
             return "$computeServiceUrl/v${computeServiceVersion}/$tenantId/images?status=active"
+            
+        case 'region':
+            return "$computeServiceUrl/v${computeServiceVersion}/$tenantId/regions"
 
     }
 
