@@ -45,6 +45,7 @@ $opts->{security_groups} = q{$[security_groups]};
 
 # The availability zone : The availability zone in which to launch the server.
 $opts->{availability_zone} = q{$[availability_zone]};
+$opts->{region} = q{$[region]};
 
 # Customization Script : Configuration information or scripts to execute upon launch of the server.
 $opts->{customization_script} = q{$[customization_script]};

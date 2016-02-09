@@ -87,6 +87,16 @@
         <dependsOn>connection_config</dependsOn>
     </formElement>
     <formElement>
+        <label>Region:</label>
+        <property>region</property>
+        <value/>
+        <documentation>The region zone in which to launch the server.</documentation>
+        <required>0</required>
+        <type>entry</type>
+        <serverOptions>1</serverOptions>
+        <dependsOn>connection_config</dependsOn>
+    </formElement>
+    <formElement>
         <label>Customization script:</label>
         <property>customization_script</property>
         <value/>

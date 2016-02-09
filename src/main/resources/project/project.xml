@@ -1255,6 +1255,17 @@
                                     </propertySheet>
                                 </property>
                                 <property>
+                                    <propertyName>region</propertyName>
+                                    <propertySheet>
+                                        <property>
+                                            <propertyName>formType</propertyName>
+                                            <expandable>1</expandable>
+                                            <value>standard</value>
+                                        </property>
+                                    </propertySheet>
+                                </property>
+                                                                
+                                <property>
                                     <propertyName>customization_script</propertyName>
                                     <propertySheet>
                                         <property>
@@ -1328,6 +1339,11 @@
                                 </property>
                                 <property>
                                     <propertyName>availability_zone</propertyName>
+                                    <expandable>1</expandable>
+                                    <value/>
+                                </property>
+                                <property>
+                                    <propertyName>region</propertyName>
                                     <expandable>1</expandable>
                                     <value/>
                                 </property>
@@ -1411,16 +1427,23 @@
             </formalParameter>
             <formalParameter>
                 <formalParameterName>quantity</formalParameterName>
-                <defaultValue>1</defaultValue>
+                <defaultValue/>
                 <description/>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
             <formalParameter>
                 <formalParameterName>availability_zone</formalParameterName>
-                <defaultValue>1</defaultValue>
+                <defaultValue/>
                 <description/>
-                <required>1</required>
+                <required>0</required>
+                <type>entry</type>
+            </formalParameter>
+            <formalParameter>
+                <formalParameterName>region</formalParameterName>
+                <defaultValue/>
+                <description/>
+                <required>0</required>
                 <type>entry</type>
             </formalParameter>
             <formalParameter>
