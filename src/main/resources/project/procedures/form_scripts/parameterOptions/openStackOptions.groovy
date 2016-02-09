@@ -102,20 +102,21 @@ List getOptions(args, authToken) {
     def list
     
     String url = buildServiceURL(args)
-    
+    def keystoneVersion = args.configurationParameters[IDENTITY_API_VERSION]
     def response = doGet(url, authToken)
     // we can't get regions from rackspace via api.
     print "Url: $url\n"
-    if (args.formalParameterName == 'region' && url =~ /^https?:\/\/[a-zA-Z.]+?rackspacecloud/) {
-      list = [
-        ['IAD', 'Northern Virginia (IAD)'],
-        ['DWF', 'Dallas-Fort Worth (DFW)'],
-        ['ORD', 'Chicago (ORD)'],
-        ['LON', 'London (LON)'],
-        ['SYD', 'Sydney (SYD)'],
-        ['HKG', 'Hong Kong (HKG)']
-      ]
-      print "Region: $list\n"
+    if (args.formalParameterName == 'region') { // && url =~ /^https?:\/\/[a-zA-Z.]+?rackspacecloud/) {
+      // list = [
+      //   ['IAD', 'Northern Virginia (IAD)'],
+      //   ['DWF', 'Dallas-Fort Worth (DFW)'],
+      //   ['ORD', 'Chicago (ORD)'],
+      //   ['LON', 'London (LON)'],
+      //   ['SYD', 'Sydney (SYD)'],
+      //   ['HKG', 'Hong Kong (HKG)']
+      // ]
+      list = getRegions(args)
+      print "Regions: $list\n"
       return list
     }
 
@@ -183,6 +184,50 @@ String getAuthToken(args) {
 
     token
 }
+
+
+List getRegions (args) {
+    // we need keystone api version to determine which way we'll use to get regions.
+    // if we have v2.0 we will construct region list from the service catalog
+    def keystoneVersion = args.configurationParameters[IDENTITY_API_VERSION]
+    // keystone is 2.0
+    def regions = []
+    def response
+    if (keystoneVersion == '2.0') {
+        def jsonPayload = buildAuthenticationPayload(args)
+        HttpEntity payload = new StringEntity(JsonOutput.toJson(jsonPayload))
+        payload.setContentType("application/json")
+        String url = buildIdentityServiceURL(args)
+        response = doPost(url, payload)
+        if (response.statusLine.statusCode < 400) {
+            response.jsonResponse.access.serviceCatalog.each {
+                v1 -> v1.endpoints.each {
+                    if (it.region) {
+                        regions.add([it.region, it.region])
+                    }
+                }
+            }
+        }
+        return regions
+    }
+    else {
+        // keystone 3.0 version
+      
+        String identityServiceUrl = args.configurationParameters[IDENTITY_SERVICE_URL]
+        String url = "$identityServiceUrl/v$keystoneAPIVersion/tokens"
+        token = getAuthToken(args)
+        response = doGet(url, token)
+        if (response.statusLine.statusCode < 400) {
+            response.jsonResponse.each {
+                String description = it.description ? it.description : it.id
+                regions.add([it.id, description])
+            }
+        }
+        return regions
+    }
+    return regions
+}
+
 
 def buildAuthenticationPayload(args) {
     def jsonPayload = [:]

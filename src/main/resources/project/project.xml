@@ -1427,21 +1427,21 @@
             </formalParameter>
             <formalParameter>
                 <formalParameterName>quantity</formalParameterName>
-                <defaultValue>1</defaultValue>
+                <defaultValue/>
                 <description/>
                 <required>1</required>
                 <type>entry</type>
             </formalParameter>
             <formalParameter>
                 <formalParameterName>availability_zone</formalParameterName>
-                <defaultValue>1</defaultValue>
+                <defaultValue/>
                 <description/>
                 <required>0</required>
                 <type>entry</type>
             </formalParameter>
             <formalParameter>
                 <formalParameterName>region</formalParameterName>
-                <defaultValue>1</defaultValue>
+                <defaultValue/>
                 <description/>
                 <required>0</required>
                 <type>entry</type>
