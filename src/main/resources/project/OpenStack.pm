@@ -690,6 +690,9 @@ sub deploy_vm {
       . $self->opts->{tenant_id}
       . q{/servers/}
       . $server_id;
+
+    my $server_url = $url;
+
     while ( $progress ne '100' && $status ne 'ACTIVE' ) {
 
         ## Make GET request
@@ -724,12 +727,21 @@ sub deploy_vm {
     my $image     = $json_result->{server}->{image};
     my $image_id  = $image->{id};
     my $addresses = $json_result->{server}->{addresses};
-    if ( $addresses->{public}[0]->{addr} ) {
-        $public_ip = $addresses->{public}[0]->{addr};
+
+    # public ipv4 address
+    for my $addr_row (@{$addresses->{public}}) {
+        if ($addr_row->{version} eq '4') {
+            $public_ip = $addr_row->{addr};
+        }
     }
-    if ( $addresses->{private}[0]->{addr} ) {
-        $private_ip = $addresses->{private}[0]->{addr};
+
+    # private ipv4 address
+    for my $addr_row (@{$addresses->{private}}) {
+        if ($addr_row->{version} eq '4') {
+            $private_ip = $addr_row->{addr};
+        }
     }
+
     if ( $json_result->{server}->{'OS-EXT-AZ:availability_zone'} ) {
         $availability_zone =$json_result->{server}->{'OS-EXT-AZ:availability_zone'};
         $self->setProp( "/Server-$id/AvailabilityZone", "$availability_zone" );
