@@ -691,8 +691,6 @@ sub deploy_vm {
       . q{/servers/}
       . $server_id;
 
-    my $server_url = $url;
-
     while ( $progress ne '100' && $status ne 'ACTIVE' ) {
 
         ## Make GET request
