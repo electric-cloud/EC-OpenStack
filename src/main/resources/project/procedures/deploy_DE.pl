@@ -53,6 +53,13 @@ $opts->{customization_script} = q{$[customization_script]};
 # Results location: property path to store server information.
 $opts->{location} = q{$[location]};
 
+# IP association and allocation trigger
+$opts->{associate_ip} = q{$[associate_ip]};
+
+# server name as name base for DE servers
+
+$opts->{server_name} = 'EC_dyn';
+
 #
 # '_DeployDE' deviations from the 'Deploy' procedure being made
 # for dynamic environments feature.
@@ -65,9 +72,6 @@ if ($opts->{resource_pool}) {
     # Create Resource if resource pool name was assigned
     $opts->{resource_check} = 1;
 }
-
-# Always associate IP to the deployed instances
-$opts->{associate_ip} = 1;
 
 # Deploy tag to identify this deployment in the resource location, default to jobStepId.
 $opts->{tag} = q{$[jobStepId]};

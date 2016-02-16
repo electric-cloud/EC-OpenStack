@@ -505,11 +505,19 @@ None.
 sub deploy {
     my ($self) = @_;
 
-    my $vm_prefix;
+    my $vm_prefix = '';
 
     # Set the prefix to resource pool name if one has been specified
     # For Dynamic environments, we expect a resource_pool to be provided but
     # no server_name
+
+    $self->debug_msg(1, "Deploy options:\n");
+    my $opts = $self->opts();
+    for my $k (keys %$opts) {
+        $self->debug_msg(1, "$k: $opts->{$k}");
+    }
+    $self->debug_msg(1, "\n\n");
+
     if ($self->opts->{resource_pool}) {
          $vm_prefix = $self->opts->{resource_pool};
     } else {
@@ -756,7 +764,7 @@ sub deploy_vm {
 
     my $resource = $EMPTY;
 
-    if ( $self->opts->{associate_ip} ) {
+    if ($self->opts->{associate_ip}) {
         $self->debug_msg( 1, "Allocating ip to instance: $tenant_url" );
 
         my $allocated_ips_ref = $self->get_allocated_ips($tenant_url);
@@ -3180,10 +3188,6 @@ None.
 
 sub make_new_resource {
     my ( $self, $res_name, $server, $host, $additional_opts) = @_;
-    print "Res_name: ", Dumper $res_name;
-    print "Server: ", Dumper $server;
-    print "Host: ", Dumper $host;
-    print "Additional opts: ", Dumper $additional_opts;
 
     my $pool = $self->opts->{resource_pool};
 
@@ -3490,7 +3494,7 @@ sub associate_ip_to_instance {
     );
 
     if ( $self->opts->{exitcode} && $self->opts->{restcode} ) {
-        print "IP $ip was successfully deployed to instance\n";
+        $self->debug_msg(1, "IP $ip was successfully deployed to instance\n");
         return 0;
     }
 
