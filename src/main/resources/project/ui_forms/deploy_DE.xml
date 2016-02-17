@@ -100,7 +100,7 @@
         <label>Associate IP?:</label>
         <property>associate_ip</property>
         <value/>
-        <documentation>Associate IP to deployed instance?:</documentation>
+        <documentation>Associate IP to deployed instance? Must be unchecked for the RackSpace because RackSpace automatically assigns IP to the instance.</documentation>
         <required>0</required>
         <type>checkbox</type>
         <initiallyChecked>1</initiallyChecked>
