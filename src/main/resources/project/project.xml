@@ -952,7 +952,7 @@
                                         <property>
                                             <propertyName>initiallyChecked</propertyName>
                                             <expandable>1</expandable>
-                                            <value>0</value>
+                                            <value>1</value>
                                         </property>
                                         <property>
                                             <propertyName>uncheckedValue</propertyName>
@@ -1305,6 +1305,31 @@
                                         </property>
                                     </propertySheet>
                                 </property>
+                                <property>
+                                    <propertyName>associate_ip</propertyName>
+                                    <propertySheet>
+                                        <property>
+                                            <propertyName>checkedValue</propertyName>
+                                            <expandable>1</expandable>
+                                            <value>1</value>
+                                        </property>
+                                        <property>
+                                            <propertyName>formType</propertyName>
+                                            <expandable>1</expandable>
+                                            <value>standard</value>
+                                        </property>
+                                        <property>
+                                            <propertyName>initiallyChecked</propertyName>
+                                            <expandable>1</expandable>
+                                            <value>0</value>
+                                        </property>
+                                        <property>
+                                            <propertyName>uncheckedValue</propertyName>
+                                            <expandable>1</expandable>
+                                            <value>0</value>
+                                        </property>
+                                    </propertySheet>
+                                </property>
                             </propertySheet>
                         </property>
                     </propertySheet>
@@ -1489,6 +1514,15 @@
                 <required>0</required>
                 <type>entry</type>
             </formalParameter>
+
+            <formalParameter>
+                <formalParameterName>associate_ip</formalParameterName>
+                <defaultValue/>
+                <description/>
+                <required>0</required>
+                <type>entry</type>
+            </formalParameter>
+            
             <step>
                 <stepName>_DeployDE</stepName>
                 <alwaysRun>0</alwaysRun>

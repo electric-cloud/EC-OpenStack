@@ -97,6 +97,17 @@
         <dependsOn>connection_config</dependsOn>
     </formElement>
     <formElement>
+        <label>Associate IP?:</label>
+        <property>associate_ip</property>
+        <value/>
+        <documentation>Associate IP to deployed instance? Must be unchecked for the RackSpace because RackSpace automatically assigns IP to the instance.</documentation>
+        <required>0</required>
+        <type>checkbox</type>
+        <initiallyChecked>1</initiallyChecked>
+        <checkedValue>1</checkedValue>
+        <uncheckedValue>0</uncheckedValue>
+    </formElement>
+    <formElement>
         <label>Customization script:</label>
         <property>customization_script</property>
         <value/>
