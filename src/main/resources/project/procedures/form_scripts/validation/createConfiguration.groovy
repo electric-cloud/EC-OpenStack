@@ -215,6 +215,9 @@ def doValidations(args) {
                     COMPUTE_SERVICE_URL, 'Compute Service URL',
                     COMPUTE_SERVICE_VERSION, 'Compute API Version', 'compute', errorList)
 
+            debug("Block storage url: " + BLOCK_STORAGE_URL + "\n");
+            debug("Block storage version: " + BLOCK_STORAGE_VERSION + "\n");
+            
             validateServiceURLAndVersion(args, serviceEndPoints,
                     BLOCK_STORAGE_URL, 'Block Storage URL',
                     BLOCK_STORAGE_VERSION, 'Block Storage API Version', 'volume', errorList)
@@ -379,7 +382,7 @@ private void validateServiceEndpoint(Map serviceEndPoints,
     if (!serviceUrlValue || !serviceVersionValue) {
         return
     }
-
+    debug("ServiceEndPoints: " + serviceEndPoints);
     def endpointUrls = serviceEndPoints.get(serviceType)
     if (!endpointUrls) {
         def error = [:]
@@ -390,8 +393,9 @@ private void validateServiceEndpoint(Map serviceEndPoints,
     } else {
         //check the specified end-point url and version against the endPointUrls from OpenStack
         // find the end-point with the version passed in.
+        debug("Endpoints: " + endpointUrls);
         String serviceUrlWithMatchingVersion = endpointUrls.find {
-            it.endsWith("/v$serviceVersionValue")
+            it == serviceUrlValue + '/v' + serviceVersionValue;
         }
         if (!serviceUrlWithMatchingVersion) {
             //Specified version is not supported
