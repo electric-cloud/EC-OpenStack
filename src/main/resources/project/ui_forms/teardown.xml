@@ -19,6 +19,9 @@
   <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#Teardown</help>
   <formElement>
     <label>Configuration:</label>
+    <!-- Improvements for CEV-18687 -->
+    <configuration>1</configuration>
+    <!-- End of improvements for CEV-18687 -->
     <property>connection_config</property>
     <value/>
         <documentation>The name of the config which holds all the connection information. This must reference a valid existing configuration.</documentation>
