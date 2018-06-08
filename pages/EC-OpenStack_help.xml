@@ -1730,6 +1730,8 @@ outline used above where possible.
     <ul>
         <li>Added Rackspace support for Dynamic Environments</li>
         <li>Configured the plugin to allow the ElectricFlow UI to create configs inline of procedure form.</li>
+        <li>Configured the plugin to allow the ElectricFlow UI to render the plugin procedure parameters entirely using the configured form XMLs.</li>
+        <li>Enabled the plugin for managing the plugin configurations in-line when defining an application process step or a pipeline stage task.</li>
     </ul>
       <h2>@PLUGIN_KEY@ 1.3.3</h2>
       <ul>
