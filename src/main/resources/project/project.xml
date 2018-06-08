@@ -6,6 +6,61 @@
         <description>A project that has integrations with OpenStack cloud</description>
         <workspaceName/>
         <propertySheet>
+            <!-- CEV-18771 improvements -->
+            <!-- EC-OpenStack doesn't have custom GWT logic. Setting it for plugin context -->
+            <property>
+                <propertyName>ec_formXmlCompliant</propertyName>
+                <value>true</value>
+            </property>
+            <property>
+                <propertyName>ec_config</propertyName>
+                <description/>
+                <propertySheet>
+                    <property>
+                        <propertyName>configLocation</propertyName>
+                        <expandable>0</expandable>
+                        <value>openstack_cfgs</value>
+                    </property>
+                    <property>
+                        <propertyName>form</propertyName>
+                        <expandable>1</expandable>
+                        <value>$[/projects/@PLUGIN_KEY@-@PLUGIN_VERSION@/ui_forms/CreateConfigForm]</value>
+                    </property>
+                    <property>
+                        <propertyName>fields</propertyName>
+                        <description/>
+                        <propertySheet>
+                            <property>
+                                <propertyName>config</propertyName>
+                                <propertySheet>
+                                    <property>
+                                        <propertyName>label</propertyName>
+                                        <value>Configuration Name</value>
+                                    </property>
+                                    <property>
+                                        <propertyName>order</propertyName>
+                                        <value>1</value>
+                                    </property>
+                                </propertySheet>
+                            </property>
+                            <property>
+                                <propertyName>identity_service_url</propertyName>
+                                <propertySheet>
+                                    <property>
+                                        <propertyName>label</propertyName>
+                                        <value>Identity Service URL</value>
+                                    </property>
+                                    <property>
+                                        <propertyName>order</propertyName>
+                                        <value>2</value>
+                                    </property>
+                                </propertySheet>
+                            </property>
+                        </propertySheet>
+                    </property>
+                </propertySheet>
+            </property>
+            <!-- End of CEV-18771 improvements -->
             <property>
                 <propertyName>ec_cloudprovisioning_plugin</propertyName>
                 <description></description>

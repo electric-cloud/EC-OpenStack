@@ -45,7 +45,7 @@
         <property>identity_service_url</property>
         <value></value>
         <serverValidation>1</serverValidation>
-        <documentation>Provide the host name or IP address of the Identity Service for OpenStack.For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here.</documentation>
+        <documentation>Provide the host name or IP address of the Identity Service for OpenStack. For example, http://192.168.100.134:8776. Do not include API version or tenant ID in URL here.</documentation>
         <required>1</required>
     </formElement>
     <formElement>
