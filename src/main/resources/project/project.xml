@@ -12,6 +12,12 @@
                 <propertyName>ec_formXmlCompliant</propertyName>
                 <value>true</value>
             </property>
+            <!-- Improvement for ECPREOPSTK-150 -->
+            <property>
+                <propertyName>ec_icon</propertyName>
+                <value>images/icon-plugin.svg</value>
+            </property>
+            <!-- End of improvement for ECPREOPSTK-150 -->
             <property>
                 <propertyName>ec_config</propertyName>
                 <description/>
