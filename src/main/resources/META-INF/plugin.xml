@@ -33,4 +33,7 @@
             <javascript>war/ecplugins.openstack.ConfigurationManagement/ecplugins.openstack.ConfigurationManagement.nocache.js</javascript>
         </component>
     </components>
+    <hasAdoc>true</hasAdoc>
+    <catalogLabel>OpenStack</catalogLabel>
+    <detailedDescription>OpenStack is an Infrastructure as a Service (IaaS) cloud computing project by Rackspace Cloud and NASA. It is free open-source software released under the terms of the Apache License. This plugin allows users to build a cloud by launching images and assigning metadata to instances, providing a more generic interface for managing resources.</detailedDescription>
 </plugin>

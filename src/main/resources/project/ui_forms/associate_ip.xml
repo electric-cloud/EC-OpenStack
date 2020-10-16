@@ -16,7 +16,7 @@
 
 -->
 <editor>
-    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#AssociateFloatingIP</help>
+    <help>https://docs.cloudbees.com/docs/cloudbees-cd/latest/plugins/ec-openstack#AssociateFloatingIP</help>
     <formElement>
         <label>Configuration:</label>
         <!-- Improvements for CEV-18687 -->

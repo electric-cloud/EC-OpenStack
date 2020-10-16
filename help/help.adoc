@@ -1,0 +1,905 @@
+
+Plugin Version @PLUGIN_VERSION@
+
+
+Revised on December 25, 2018
+
+== {CD} integration to OpenStack
+
+The plugin communicates with OpenStack through its application programming interface (API), which provides support for developers who are building interactive clients of OpenStack using a RESTful application development style. The EC-OpenStack plugin allows users to build a cloud by launching images and assigning metadata to instances, providing a more generic interface for managing resources.
+
+The plugin interact with OpenStack through the Compute API and Image API using PERL to perform the following tasks:
+
+* Create configurations with the connection information.
+* Perform actions on machines.
+* Deploy and delete servers.
+* Create and delete key pairs.
+* Create and delete floating IPs.
+* Create {CD} resources.
+* Create, attach, detach, extend, and delete volumes.
+* Create new images.
+* Create a snapshot of a server.
+* Do hard and soft reboots of a server.
+* Deploy, update, and delete HEAT orchestration templates.
+
+This plugin provides two primary actions: Deploy and Cleanup, which work as a pair within a job.
+
+== Integrated version
+
+This plugin was developed and tested against OpenStack IceHouse.
+
+The minimum {CD} supported version is ElectricCommander 3.6.
+
+IMPORTANT: For all parameter descriptions in this document, the required parameters are shown in [.required]#bold italics#.
+
+[[setupconfig]]
+== Setting up the plugin configuration
+
+[[CreateConfiguration]]
+
+
+Plugin configurations are sets of parameters that apply across some or all of the plugin procedures. They reduce repetition of common values, create predefined sets of parameters for end users, and store credentials securely. Each configuration has a unique name that is automatically entered in designated parameters in the procedures.
+
+The *Identity Service URL* must have http or https followed by your server hostname or IP address.
+
+==== Input
+
+. Go to *Administration* > *Plugins* to open the Plugin Manager.
+. Find the EC-OpenStack row.
+. Click *Configure* to open the OpenStack Configurations page.
+. Click *Create Configuration*.
+. To create an OpenStack configuration, enter the following information and click *OK*.
+
+Remember that you may need to create additional configurations later.
+
+==== Output
+
+The OpenStack Configurations page now shows the new configuration.
+
+You can also manage your OpenStack configurations on this page. Click *Edit* to modify an existing configuration or *Delete* to remove an existing configuration.
+
+[[procedures]]
+== Plugin procedures
+
+[[AllocateIP]]
+
+
+=== AllocateIP
+
+This procedure creates a new OpenStack floating IP address to use with your OpenStack account. The plugin stores properties on the {CD} server in the location in the *Results Location* and *Results tag* fields. The default location in the job directory called /myJob/Openstack/deployed/_Provision tag_ if the *Results Location* is blank.
+
+==== Input
+
+. Go to the AllocateIP procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|Results Location |The location in the {CD} server where the properties are stored. The default is _/myJob/OpenStack/deployed_.
+|Results tag |The unique tag for this provision to separate it from the other deployments stored in the same location. The default is _$[jobStepId]_. (Required)
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *AllocateIP* step, click the Log button to see the diagnostic information.
+
+[[AssociateFloatingIP]]
+
+
+=== AssociateFloatingIP
+
+This procedure associates a floating IP address to an existing instance.
+
+==== Input
+
+. Go to the AssociateFloatingIP procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|Server Id |The ID of the target server with the IP address. (Required)
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *AssociateFloatingIP* step, click the Log button to see the diagnostic information.
+
+[[AttachVolume]]
+
+
+=== AttachVolume
+
+This procedure attaches volumes that are created with the volume API to server instances. You can attach a volume to one instance.
+
+The plugin stores properties on the Commander server at the location specified the *Results Location* and *Results tag* fields. The default location in the job directory called /myJob/Openstack/deployed/_Provision tag_ if the *Results Location* is empty.
+
+==== Input
+
+. Go to the AttachVolume procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|Server ID |ID of the server to which the volume is attached. (Required)
+|Volume ID |ID of the volume to attach. (Required)
+|Name of device |Name of the device, such as _/dev/vdb_, set after the volume is attached to a server. If you do not specify a name, OpenStack automatically assigns the device a name.
+|Results Location |The location on the {CD} server where the properties are stored. The default is _/myJob/OpenStack/deployed_.
+|Results tag |The unique tag for this provision to separate it from other deployments stored in the same location. The default is _$[jobStepId]_. (Required)
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in ElectricCommander.
+
+In the *AttachVolume* step, click the Log button to see the diagnostic information.
+
+[[Cleanup]]
+
+
+=== Cleanup
+
+This procedure deletes an existing OpenStack server instance that was created using the Deploy procedure.
+
+==== Input
+
+. Go to the Cleanup procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|Server ID(s) |The IDs of one ore more servers to delete. Use a comma-separated list for more than one server. (Required)
+|Resource name(s) |The name of the resources to delete. Use a comma-separated list for more than one resource.
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *Cleanup* step, click the Log button to see the diagnostic information.
+
+[[CloudManagerGrow]]
+
+
+=== CloudManagerGrow
+
+This procedure allows the plugin to work with the CloudManager plugin. It calls the Deploy procedure and is run by the CloudManager.
+
+==== Input
+
+. Go to the CloudManagerGrow procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|Tenant ID |The ID of the tenant to use. (Required)
+|Number of Servers |The number of servers to deploy. If there are more than one, a suffix (_#) is added to server names. The default is 1. (Required)
+|Server name |Name of the new server. (Required)
+|Image ID |The ID of an existing image in Openstack. (Required)
+|Flavor ID |The ID for the flavor to use. (Required)
+|Results tag |The unique tag for this provision to separate it from other deployments stored in the same location. The default is _$[jobStepId]_. (Required)
+|Resource Pool(s) |The names of resource pools in {CD} that will be asssociated with the machines in this configuration if resources are created. For more than one resource pool, specify the names in a space-separated list. (Required)
+|Resource workspace |The {CD} workspace that the resource uses.
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *CloudManagerGrow* step, click the Log button to see the diagnostic information.
+
+[[CloudManagerShrink]]
+
+
+=== CloudManagerShrink
+
+This procedure allows the plugin to work with the CloudManager plugin. It calls the Cleanup procedure and is run by the CloudManager.
+
+==== Input
+
+. Go to the CloudManagerShrink procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|List of Deployments |A list of deployments that were previously created by the CloudManagerGrow procedure to stop. (Required)
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *CloudManagerShrink* step, click the Log button to see the diagnostic information.
+
+[[CloudManagerSync]]
+
+
+=== CloudManagerSync
+
+This procedure allows the plugin to work with CloudManager plugin. It verifies that the instances it has recorded as _alive_ are still alive. It is run by the CloudManager.
+
+==== Input
+
+. Go to the CloudManagerSync procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|List of Deployments |A list of deployments that were previously created by the CloudManagerGrow procedure to verify. (Required)
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *CloudManagerSync* step, click the Log button to see the diagnostic information.
+
+[[CreateImage]]
+
+
+=== CreateImage
+
+This procedure creates a virtual machine (VM) image. You can launch new instances from these images.
+
+The plugin stores properties on the {CD} server at the location specified in the *Results Location* and *Results tag* fields. The default location in the job directory called /myJob/Openstack/deployed/_Provision tag_ if the *Results Location* field is empty.
+
+==== Input
+
+. Go to the CreateImage procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|Image name |Display name of the new image. (Required)
+|Disk format |The disk format of a VM image. Valid values are AKI,AMI,ARI,Raw,iso, vhd, vdi, qcow2,and vmdk. (Required)
+|Container format |The container format for the new image. Valid values are aki, ari, ami, bare, and ovf. (Required)
+|Is image location a local file ? |Select this parameter in the check box if the source image file is on the local machine. (Required)
+|Image path |Path to the image on the local machine or a valid and direct URL to image location. (Required)
+|Size |Size of the raw image file from which the new image is generated.
+|Checksum |The checksum of the raw image file.
+|Min-Ram |The minimum RAM in megabytes (MBs) required to run this image on a server.
+|Min-Disk |The minimum disk space in gigabytes (GBs) required to run this image on a server.
+|Owner |The ID of the owner (tenant) of the image.
+|Results Location |The location on the {CD} server where the properties are stored. The default is _/myJob/OpenStack/deployed_.
+|Results tag |The unique tag for this provision to separate it from other deployments stored in the same location. The default is _$[jobStepId]_. (Required)
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *CreateImage* step, click the Log button to see the diagnostic information.
+
+[[CreateInstanceSnapshot]]
+
+
+=== CreateInstanceSnapshot
+
+This procedure creates a snapshot from the instance. You can launch an instance from a snapshot.
+
+The plugin stores properties on the {CD} server at the location specified in the *Results Location* and *Results tag* fields. The default location in the job directory called /myJob/Openstack/deployed/_Provision tag_ if the *Results Location* field is empty.
+
+==== Input
+
+. Go to the CreateImage procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|Instance snapshot name |The display name of the snapshot. (Required)
+|Server ID |The ID of the server instance for which a snapshot is created. (Required)
+|Metadata |Metadata for the snapshot in this format: key1,value1,key2,value2 ...
+|Results Location |The location on the {CD} server where the properties are stored. The default is _/myJob/OpenStack/deployed_.
+|Results tag |The unique tag for this provision to separate it from other deployments stored in the same location. The default is _$[jobStepId]_. (Required)
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *CreateImage* step, click the Log button to see the diagnostic information.
+
+image::cloudbees-common::cd-plugins/ec-openstack/parameters/create-instance-snapshot.png[image]
+
+[[CreateKeyPair]]
+
+
+=== CreateKeyPair
+
+This procedure creates a new OpenStack key pair. The public key is stored by OpenStack and the private key is returned to you. If a key with the specified name already exists, OpenStack returns an error.
+
+The plugin store properties on the {CD} server at the location in the *Results Location* and the *Results tag* fields. The default location is the job directory called /myJob/Openstack/deployed/_Provision tag value_ if *Results Location* field is empty.
+
+==== Input
+
+. Go to the CreateKeyPair procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration wtih the connection information. (Required)
+|Key name |A unique name for the key pair. The default is _cmdr-$[jobStepId]_. (Required)
+|Results Location |The location on the {CD} server where the properties are stored. The default is _/myJob/OpenStack/deployed_.
+|Results tag |The unique tag for this provision to separate it from other deployments stored in the same location. The default is _$[jobStepId]_. (Required)
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *CreateKeyPair* step, click the Log button to see the diagnostic information.
+
+[[CreateStack]]
+
+
+=== CreateStack
+
+Heat is an OpenStack service to orchestrate multiple composite cloud applications using templates. This procedure creates a new HEAT stack from a specified HEAT template. You can enter the template (in JSON or YAML format)in the *Template* field or the URL of the template.
+
+The plugin stores properties on the {CD} server at the location specified in the *Results Location* and *Results tag* fields. The default location in the job directory called /myJob/Openstack/deployed/_Provision tag_ if the *Results Location* field is empty.
+
+==== Input
+
+. Go to the CreateStack procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|Stack Name |The display name for the new stack. (Required)
+|Template |The stack template to instantiate a HEAT stack in JSON or YAML format.
+|Template URL |A URI to the location containing the updated stack template to instantiate. You specify this parameter only if you are not entering the template in the *Template* field.
+|Results Location |The location on the {CD} server where the properties are stored. The default is _/myJob/OpenStack/deployed_.
+|Results tag |The unique tag for this provision to separate it from other deployments stored in the same location. The default is _$[jobStepId]_. (Required)
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *CreateStack* step, click the Log button to see the diagnostic information.
+
+[[CreateVolume]]
+
+
+=== CreateVolume
+
+This procedure creates a new OpenStack volume. A volume is a detachable block storage device. You can attach a volume to one instance at a time.
+
+The plugin stores properties on the {CD} server in the location in the *Results Location* and *Results tag* fields. The default location in the job directory called /myJob/Openstack/deployed/_Provision tag_ if the *Results location* is empty.
+
+==== Input
+
+. Go to the CreateVolume procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|Volume name |The name for the new volume that appears in the UI. (Required)
+|Size (in gigabytes [GBs]) |Size of the volume in GB. (Required)
+|Type of volume |The volume type. (Required)
+|Availability zone |The availability zone where the new zone is created.
+|Results Location |The location on the {CD} server where the properties are stored. The default is _/myJob/OpenStack/deployed_.
+|Results tag |The unique tag for this provision to separate it from the other deployments stored in the same location. The default is _$[jobStepId]_. (Required)
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *CreateVolume* step, click the Log button to see the diagnostic information.
+
+[[CreateVolumeSnapshot]]
+
+
+=== CreateVolumeSnapshot
+
+This procedure creates a snapshot of a volume, a point-in-time complete copy of the volume. You can create a volume from this snapshot.
+
+The plugin stores properties on the {CD} server at the location specified in the *Results Location* and *Results tag* fields. The default location in the job directory called /myJob/Openstack/deployed/_Provision tag_ if the *Results Location* field is empty.
+
+==== Input
+
+. Go to the CreateVolumeSnapshot procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|Name of volume snapshot |The display name of the snapshot. (Required)
+|Description |The description of the snapshot.
+|Create a snapshot forecefully? |Select this parameter (in the check box) to forcefully create a snapshot of a volume even if it is attached to an instance. Selecting this parameter sets it to _true_.
+
+The default is _false_; the parameter is not selected.
+|Volume ID |The ID of the volume from which to create a snapshot. (Required)
+|Results Location |The location on the {CD} server where the properties are stored. The default is _/myJob/OpenStack/deployed_.
+|Results tag |The unique tag for this provision to separate it from other deployments stored in the same location. The default is _$[jobStepId]_. (Required)
+|===
+
+=== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *CreateVolumeSnapshot* step, click the Log button to see the diagnostic information.
+
+[[DeleteKeyPair]]
+
+
+=== DeleteKeyPair
+
+This procedure deletes an existing OpenStack key pair. The public key is removed from OpenStack. You must own the key pair.
+
+==== Input
+
+. Go to the DeleteKeyPair procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|Key name |Name of the key pair to delete. (Required)
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *DeleteKeyPair* step, click the Log button to see the diagnostic information.
+
+[[DeleteStack]]
+
+
+=== DeleteStack
+
+This procedure deletes an existing stack.
+
+The plugin stores properties on the {CD} server at the location specified in the *Results Location* and *Results tag* fields. The default location in the job directory called /myJob/Openstack/deployed/_Provision tag_ if the *Results Location* field is empty.
+
+==== Input
+
+. Go to the DeleteStack procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|Stack Name |The display name of the stack to delete. (Required)
+|Stack ID |The ID of the stack to delete. (Required)
+|Results Location |The location on the {CD} server where the properties are stored. The default is _/myJob/OpenStack/deployed_.
+|Results tag |The unique tag for this provision to separate it from other deployments stored in the same location. The default is _$[jobStepId]_. (Required)
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *DeleteStack* step, click the Log button to see the diagnostic information.
+
+[[DeleteVolume]]
+
+
+=== DeleteVolume
+
+This procedure deletes a volume. A volume is a detachable block storage device.
+
+The plugin stores properties on the {CD} server at the location specified in the *Results Location* and *Results tag* fields. The default location is the the job directory called /myJob/Openstack/deployed/_Provision tag_ fields if the *Results Location* is empty.
+
+==== Input
+
+. Go to the DeleteVolume procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|Volume ID |ID of the volume to delete. (Required)
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *DeleteVolume* step, click the Log button to see the diagnostic information.
+
+[[Deploy]]
+
+
+=== Deploy
+
+This procedure calls the CreateKey procedure and deploys one or more new instances. It store properties on the {CD} server at the location specified in the *Results Location* and the *Results tag* fields. The default location is in the directory for the job deployment results (/myJob/Openstack/deployed/_Results tag value_) if the *Results Location* field is empty.
+
+==== Input
+
+. Go to the Deploy procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|Key Pair Name |Name of an existing key pair. (Required)
+|Number of Servers |Number of servers to deploy. If there are more than one, a suffix (_#) is added to the server names. The default is 1. (Required)
+|Server name |Name of the new server. (Required)
+|Image ID |ID of an existing image in OpenStack. (Required)
+|Flavor ID |ID of the flavor to use. (Required)
+|Security Group(s) |One or more security groups in a newline delimited list.
+|Availability Zone |The availability zone in which to launch the server.
+|Customization Script |Configuration information or scripts to execute when the server is launched.
+|Results Location |The location on the {CD} server where the properties are stored. The default is _/myJob/OpenStack/deployed_.
+|Results tag |The unique tag for this provision to keep it separate from the other deployments stored in the same location. The default is _$[jobStepId]_. (Required)
+|Create Resource? |Select this parameter (in the check box) to create resources for deployed servers.
+|Associate IP? |Select this parameter in the check box to associate the IP address with the deployed instance.
+|Resource Pool |Name of the resource pool in {CD} that is associated with the machines in this configuration when resources are created.
+|Resource Port |Port that will be used when creating a resource.
+|Resource workspace |The {CD} workspace that the resources uses.
+|Resource Zone Name |The {CD} zone name for a resource. Used when creating a resource.
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *Deploy* step, click the Log button to see the diagnostic information.
+
+[[DetachVolume]]
+
+
+=== DetachVolume
+
+This procedure detaches a volume from a server. A volume is a detachable block storage device.
+
+The plugin store properties on the {CD} server at the location specified in the *Results Location* and *Results tag* fields. The default location is the job directory called /myJob/Openstack/deployed/_Provision tag_ if the *Results Location* field is empty.
+
+==== Input
+
+. Go to the DetachVolume procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|Server ID |ID of the server from which the volume is detached. (Required)
+|Volume ID |ID of the volume to detach. (Required)
+|Attachment ID |ID of the volume attachment. (Required)
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *DetachVolume* step, click the Log button to see the diagnostic information.
+
+[[ExtendVolume]]
+
+
+=== ExtendVolume
+
+This procedure extends the size of the specified volume. The volume must be in _available state_ before the size is extended.
+
+The plugin stores properties on the {CD} server at the location specified in the *Results Location* and *Results tag* fields. The default location in the job directory called /myJob/Openstack/deployed/_Provision tag_ if the *Results Location* field is empty.
+
+*Note:* Make sure that the ExtendVolume procedure is supported by the Openstack services before using this step.
+
+==== Input
+
+. Go to the ExtendVolume procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|Volume ID |ID of the volume to extend. (Required)
+|New size |New size of the volume. (Required)
+|Results Location |The location on the {CD} server where the properties are stored. The default is _/myJob/OpenStack/deployed_.
+|Results tag |The unique tag for this provision to separate it from other deployments stored in the same location. The default is _$[jobStepId]_. (Required)
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *ExtendVolume* step, click the Log button to see the diagnostic information.
+
+[[RebootInstance]]
+
+
+=== RebootInstance
+
+This procedure reboots a server instance.
+
+The plugin stores properties on the {CD} server at the location specified in the *Results Location* and *Results tag* fields. The default location in the job directory called /myJob/Openstack/deployed/_Provision tag_ if the *Results Location* field is empty.
+
+==== Input
+
+. Go to the RebootInstance procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|Server ID |ID of the server to reboot. (Required)
+|Reboot Type |Type of the reboot action (_Hard_ or _Soft_). (Required)
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *RebootInstance* step, click the Log button to see the diagnostic information.
+
+[[ReleaseIP]]
+
+
+=== ReleaseIP
+
+This procedure deletes an existing OpenStack floating IP address that is allocated to your account.
+
+==== Input
+
+. Go to the ReleaseIP procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|Floating Address ID |ID of the floating IP address to delete. (Required)
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *ReleaseIP* step, click the Log button to see the diagnostic information.
+
+[[Teardown]]
+
+
+=== Teardown
+
+This procedure deletes an existing OpenStack server.
+
+==== Input
+
+. Go to the Teardown procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information.
+|Resource name(s) |The names of the resources to delete. For more than one resource, use a comma-separated list. (Required)
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *Teardown* step, click the Log button to see the diagnostic information.
+
+[[UpdateStack]]
+
+
+=== UpdateStack
+
+This procedure updates an existing stack. You can enter the updated template (in JSON or YAML format)in the *Template* field or the URL of the template.
+
+The plugin stores properties on the {CD} server at the location specified in the *Results Location* and *Results tag* fields. The default location in the job directory called /myJob/Openstack/deployed/_Provision tag_ if the *Results Location* field is empty.
+
+==== Input
+
+. Go to the UpdateStack procedure.
+. Enter the following parameters:
+
+
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|Configuration |The name of a valid existing configuration with the connection information. (Required)
+|Stack Name |The display name of the stack to update. (Required)
+|Stack ID |The ID of the stack to update. (Required)
+|Template |The template (in JSON or YAML format) with which to update the stack.
+|Template URL |A URI to the location containing the updated stack template to instantiate. You specify this parameter only if you are not entering the template in the *Template* field.
+|Results Location |The location on the {CD} server where the properties are stored. The default is _/myJob/OpenStack/deployed_.
+|Results tag |The unique tag for this provision to separate it from other deployments stored in the same location. The default is _$[jobStepId]_. (Required)
+|===
+
+==== Output
+
+After the job runs, you can view the results on the Job Details page in {CD}.
+
+In the *UpdateStack* step, click the Log button to see the diagnostic information.
+
+== Use cases and examples
+
+=== Use case: deploy, consume, and cleanup a job
+
+Deploy and cleanup work as a pair within a job.
+
+The most common use for this plugin is to create a server, create {CD} resources assigned to it, use the resources to run some operations, and then delete the resource and the server. To accomplish these tasks you must:
+
+. Create a plugin configuration.
+. Deploy an OpenStack server.
+. Create resources for this deployment.
+. Use the resources.
+. Delete the resources.
+. Delete the deployed server.
+
+=== Create a plugin configuration
+
+. Go to *Administration* > *Plugins* to open the Plugin Manager.
+. Find the EC-OpenStack row.
+. Click *Configure* to open the OpenStack Configurations page.
+. Click *Create Configuration*.
+. To create an OpenStack configuration, enter the following information and click *OK*.
+
+image::cloudbees-common::cd-plugins/ec-openstack/use-cases/case-1/create-config.png[image]
+
+=== Deploy an OpenStack server
+
+. Go to the Deploy procedure.
+. Enter the following parameters:
+
+=== Consume
+
+Create a new command step to use a resource that you created.
+
+In this example, add a resource from a resource pool using the ec-perl sleep command for 30 seconds:
+
+image::cloudbees-common::cd-plugins/ec-openstack/use-cases/case-1/consume-parameters.png[image]
+
+=== Clean up
+
+Create a Cleanup step as follows:
+
+image::cloudbees-common::cd-plugins/ec-openstack/use-cases/case-1/cleanup-parameters.png[image]
+
+=== Results and output
+
+After the job runs, you can view the results in {CD}:
+
+image::cloudbees-common::cd-plugins/ec-openstack/use-cases/case-1/job.png[image]
+
+image::cloudbees-common::cd-plugins/ec-openstack/use-cases/case-1/results.png[image]
+
+Deploy output:
+
+image::cloudbees-common::cd-plugins/ec-openstack/use-cases/case-1/deploy-log.png[image]
+
+Cleanup output:
+
+image::cloudbees-common::cd-plugins/ec-openstack/use-cases/case-1/cleanup-log.png[image]
+
+[[rns]]
+== Release notes
+
+=== EC-OpenStack 1.3.6
+
+* The documentation hahs been migrated to the main documentation site.
+
+=== EC-OpenStack 1.3.5
+
+* The plugin icon has been updated.
+
+=== EC-OpenStack 1.3.4
+
+* Added Rackspace support for Dynamic Environments
+* Configured the plugin to allow the {CD} UI to create configs inline of procedure form.
+* Configured the plugin to allow the {CD} UI to render the plugin procedure parameters entirely using the configured form XMLs.
+* Enabled the plugin for managing the plugin configurations in-line when defining an application process step or a pipeline stage task.
+
+=== EC-OpenStack 1.3.3
+
+* Added region field for create volume procedure
+
+=== EC-OpenStack 1.3.2
+
+* Added resource port field to the Dynamic Environments feature
+* Added resource port field to the Deploy procedure
+
+=== EC-OpenStack 1.3.1
+
+* Fixed issue with configurations being cached for IE.
+* Added validation to the CreateConfiguration procedure for the dynamic environments feature.
+* Added the "Tenant ID" parameter to the plugin configuration.
+* Removed tenant_id from all procedures except CreateConfiguration.
+* Added the ability to dynamically retrieve drop-down options such as image or flavor when creating resource templates for dynamic environments.
+* Added the ability to create a resource in non-default zone.
+
+=== EC-OpenStack 1.2.1
+
+* Fixed the issue that occurs when a resource was not created after provisioning it and the "Duplicate resource name" error message appears.
+* The Workspace parameter was removed from procedure to create an OpenStack configuration.
+
+=== EC-OpenStack 1.2.0
+
+The following procedures were added:
+
+* CreateVolume to create a new volume.
+* ExtendVolume to extend the size of a volume.
+* AttachVolume to attach the volume to a server instance.
+* DetachVolume to detach the volume from a server instance.
+* DeleteVolume to delete a volume from an OpenStack block storage.
+* CreateImage to create a virtual machine (VM) image on OpenStack Image Service Glance.
+* CreateInstanceSnapshot to create a snapshot of a server instance.
+* CreateVolumeSnapshot to create a snapshot of a volume.
+* CreateStack to create a HEAT stack from a HEAT template.
+* UpdateStack to update an existing stack with a template.
+* DeleteStack to delete an existing stack.
+
+The Deploy procedure was updated to add support for customization scripts, availability zones, security groups, and deployments using an instance snapshot.
+
+=== EC-OpenStack 1.1.2
+
+* Added properties in _ec_cloudprovisioning_plugin_ property sheet for {CD} Deploy.
+
+=== EC-OpenStack 1.1.1
+
+* Added support for Keystone v3 authorization.
+* Decoupled key pairs in creation and deletion operations from the Deploy and Cleanup procedures.
+* Added the AssociateFloatingIP procedure to associate floating IP addresses to existing VMs.
+* Fixed the *Create Resource?* parameter in the Deploy procedure.
+
+=== EC-OpenStack 1.0.0
+
+* Added the configuration management procedures.
+* Added the AllocateIP, Cleanup, CreateKeyPair, DeleteKeyPair, Deploy, and ReleaseIP procedures.
+* Implemented CloudManager support.
+* Implemented the XML parameter panel.
+* Added a Help link to each procedure.
+* Added the Help page.
+* Added use cases.

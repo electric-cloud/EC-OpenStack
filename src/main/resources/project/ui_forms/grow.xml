@@ -16,7 +16,7 @@
 
 -->
 <editor>
-    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#CloudManagerGrow</help>
+    <help>https://docs.cloudbees.com/docs/cloudbees-cd/latest/plugins/ec-openstack#CloudManagerGrow</help>
     <formElement>
         <label>Configuration:</label>
         <!-- Improvements for CEV-18687 -->
