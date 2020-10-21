@@ -1,28 +1,6 @@
 
 Plugin Version @PLUGIN_VERSION@
-
-
 Revised on December 25, 2018
-
-== {CD} integration to OpenStack
-
-The plugin communicates with OpenStack through its application programming interface (API), which provides support for developers who are building interactive clients of OpenStack using a RESTful application development style. The EC-OpenStack plugin allows users to build a cloud by launching images and assigning metadata to instances, providing a more generic interface for managing resources.
-
-The plugin interact with OpenStack through the Compute API and Image API using PERL to perform the following tasks:
-
-* Create configurations with the connection information.
-* Perform actions on machines.
-* Deploy and delete servers.
-* Create and delete key pairs.
-* Create and delete floating IPs.
-* Create {CD} resources.
-* Create, attach, detach, extend, and delete volumes.
-* Create new images.
-* Create a snapshot of a server.
-* Do hard and soft reboots of a server.
-* Deploy, update, and delete HEAT orchestration templates.
-
-This plugin provides two primary actions: Deploy and Cleanup, which work as a pair within a job.
 
 == Integrated version
 
@@ -35,14 +13,11 @@ IMPORTANT: For all parameter descriptions in this document, the required paramet
 [[setupconfig]]
 == Setting up the plugin configuration
 
-[[CreateConfiguration]]
-
-
 Plugin configurations are sets of parameters that apply across some or all of the plugin procedures. They reduce repetition of common values, create predefined sets of parameters for end users, and store credentials securely. Each configuration has a unique name that is automatically entered in designated parameters in the procedures.
 
 The *Identity Service URL* must have http or https followed by your server hostname or IP address.
 
-==== Input
+=== Input
 
 . Go to *Administration* > *Plugins* to open the Plugin Manager.
 . Find the EC-OpenStack row.
@@ -52,7 +27,7 @@ The *Identity Service URL* must have http or https followed by your server hostn
 
 Remember that you may need to create additional configurations later.
 
-==== Output
+=== Output
 
 The OpenStack Configurations page now shows the new configuration.
 
@@ -60,9 +35,6 @@ You can also manage your OpenStack configurations on this page. Click *Edit* to 
 
 [[procedures]]
 == Plugin procedures
-
-[[AllocateIP]]
-
 
 === AllocateIP
 
@@ -72,7 +44,6 @@ This procedure creates a new OpenStack floating IP address to use with your Open
 
 . Go to the AllocateIP procedure.
 . Enter the following parameters:
-
 
 [cols=",",options="header",]
 |===
@@ -86,11 +57,8 @@ This procedure creates a new OpenStack floating IP address to use with your Open
 
 After the job runs, you can view the results on the Job Details page in {CD}.
 
-In the *AllocateIP* step, click the Log button to see the diagnostic information.
-
-[[AssociateFloatingIP]]
-
-
+In the *AllocateIP* step, click the *Log* button to see the diagnostic information.
+=
 === AssociateFloatingIP
 
 This procedure associates a floating IP address to an existing instance.
@@ -99,7 +67,6 @@ This procedure associates a floating IP address to an existing instance.
 
 . Go to the AssociateFloatingIP procedure.
 . Enter the following parameters:
-
 
 [cols=",",options="header",]
 |===
@@ -113,8 +80,6 @@ This procedure associates a floating IP address to an existing instance.
 After the job runs, you can view the results on the Job Details page in {CD}.
 
 In the *AssociateFloatingIP* step, click the Log button to see the diagnostic information.
-
-[[AttachVolume]]
 
 
 === AttachVolume
@@ -145,9 +110,6 @@ The plugin stores properties on the Commander server at the location specified t
 After the job runs, you can view the results on the Job Details page in ElectricCommander.
 
 In the *AttachVolume* step, click the Log button to see the diagnostic information.
-
-[[Cleanup]]
-
 
 === Cleanup
 
