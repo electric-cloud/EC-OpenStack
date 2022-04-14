@@ -8,27 +8,69 @@
 
 buildscript {
     repositories {
-    maven {
-        url 'http://dl.bintray.com/ecpluginsdev/maven'
-    }
-
-    jcenter()
+        mavenCentral()
+        mavenLocal()
+        maven {
+            url 'https://nexus-internal.cloudbees.com/content/groups/mirror'
+            credentials {
+                username = System.getenv('NEXUS_USERNAME') ?: nexusUsername
+                password = System.getenv('NEXUS_PASSWORD') ?: nexusPassword
+            }
+        }
     }
     dependencies {
-        classpath group: 'com.electriccloud.plugins', name: 'flow-gradle-plugin', version: '+'
-        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
+        classpath group: 'com.electriccloud.plugins', name: 'flow-gradle-plugin', version: '2.4'
     }
 }
 
 repositories {
+    mavenCentral()
+    mavenLocal()
     maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots"
+        url 'https://nexus-internal.cloudbees.com/content/repositories/snapshots'
+        credentials {
+            username = System.getenv('NEXUS_USERNAME') ?: nexusUsername
+            password = System.getenv('NEXUS_PASSWORD') ?: nexusPassword
+        }
+    }
+    maven {
+        url 'https://nexus-internal.cloudbees.com/service/local/staging/deploy/maven2'
+        credentials {
+            username = System.getenv('NEXUS_USERNAME') ?: nexusUsername
+            password = System.getenv('NEXUS_PASSWORD') ?: nexusPassword
+        }
+    }
+    maven {
+        url 'https://nexus-internal.cloudbees.com/content/groups/mirror'
+        credentials {
+            username = System.getenv('NEXUS_USERNAME') ?: nexusUsername
+            password = System.getenv('NEXUS_PASSWORD') ?: nexusPassword
+        }
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        force group: 'com.electriccloud', name: 'ec-test', version: '10.1.0'
+        force group: 'com.electriccloud', name: 'commander-client', version: '10.1.0'
+        force group: 'com.electriccloud', name: 'commander-sdk', version: '6.1.2.1'
+        force group: 'com.electriccloud', name: 'ec_internal', version: '6.1.2.1'
+        force group: 'com.google.gwt', name: 'gwt-user', version: '2.5.0-ec3'
+        force group: 'com.google.gwt', name: 'gwt-dev', version: '2.5.0-ec1'
+
+        // force group: 'com.electriccloud', name: 'commander-client', version: '10.1.0'
+        // force group: 'com.electriccloud', name: 'commander-sdk', version: '6.1.2.1'
+        // force group: 'com.electriccloud', name: 'ec_internal', version: '6.1.2.1'
+        // force group: 'com.google.gwt', name: 'gwt-user', version: '2.5.0-ec3'
+        // force group: 'com.google.gwt', name: 'gwt-dev', version: '2.5.0-ec1'
+
+        cacheChangingModulesFor 0, 'seconds'
     }
 }
 
 group = "com.electriccloud"
 description = "Plugins : EC-OpenStack"
-version = "1.3.6"
+version = "1.3.7"
 
 apply plugin: 'groovy'
 apply plugin: 'flow-gradle-plugin'
@@ -37,7 +79,7 @@ apply plugin: 'license'
 license {
     header = file ('shortHeader.txt')
     exclude "**/project.xml"
-} 
+}
 
 configurations {
     // Configuration for the jar files we want
@@ -85,7 +127,7 @@ test {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.3'
+    gradleVersion = '2.13'
 }
 
 // Include any dependent jars in the plugin jar file for
