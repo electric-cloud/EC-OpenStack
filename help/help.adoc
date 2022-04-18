@@ -1,6 +1,6 @@
 
 Plugin Version @PLUGIN_VERSION@
-Revised on December 25, 2018
+Revised on April 14, 2022
 
 == Integrated version
 
@@ -789,9 +789,13 @@ image::cloudbees-common::cd-plugins/ec-openstack/use-cases/case-1/cleanup-log.pn
 [[rns]]
 == Release notes
 
+=== EC-OpenStack 1.3.7
+
+* Added session validation.
+
 === EC-OpenStack 1.3.6
 
-* The documentation hahs been migrated to the main documentation site.
+* The documentation has been migrated to the main documentation site.
 
 === EC-OpenStack 1.3.5
 
