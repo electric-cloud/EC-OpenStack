@@ -704,7 +704,7 @@
                 <postProcessor>postp</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName></resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit>5</timeLimit>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -738,7 +738,7 @@
                 <postProcessor>postp</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName></resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -818,7 +818,7 @@
                 <postProcessor>postp</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName></resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit>5</timeLimit>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -1213,7 +1213,7 @@
                 <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -1598,7 +1598,7 @@
                 <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName/>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -1706,7 +1706,7 @@
                 <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -1800,7 +1800,7 @@
                 <parallel>0</parallel>
                 <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
                 <releaseMode>none</releaseMode>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -1928,7 +1928,7 @@
                 <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -2019,7 +2019,7 @@
                 <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -2128,7 +2128,7 @@
                 <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -2219,7 +2219,7 @@
                 <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -2304,7 +2304,7 @@
                 <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -2398,7 +2398,7 @@
                 <releaseExclusive>0</releaseExclusive>
                 <resourceName></resourceName>
                 <retries>0</retries>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit></timeLimit>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -2602,7 +2602,7 @@
                 <releaseExclusive>0</releaseExclusive>
                 <resourceName></resourceName>
                 <retries>0</retries>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit></timeLimit>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -2798,7 +2798,7 @@
                 <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -2958,7 +2958,7 @@
                 <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -3083,7 +3083,7 @@
                 <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -3174,7 +3174,7 @@
                 <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -3282,7 +3282,7 @@
                 <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -3459,7 +3459,7 @@
                 <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -3756,7 +3756,7 @@
                 <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -3916,7 +3916,7 @@
                 <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -4076,7 +4076,7 @@
                 <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -4253,7 +4253,7 @@
                 <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -4396,7 +4396,7 @@
                 <postProcessor>postp --loadProperty /myProject/postp_matchers</postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -4548,7 +4548,7 @@
                 </postProcessor>
                 <releaseMode>none</releaseMode>
                 <resourceName>$[/myProject/openstack_cfgs/$[connection_config]/resource]</resourceName>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>
@@ -4652,7 +4652,7 @@
                 <releaseExclusive>0</releaseExclusive>
                 <resourceName></resourceName>
                 <retries>0</retries>
-                <shell>ec-perl</shell>
+                <shell>cb-perl</shell>
                 <timeLimit/>
                 <timeLimitUnits>minutes</timeLimitUnits>
                 <workingDirectory/>

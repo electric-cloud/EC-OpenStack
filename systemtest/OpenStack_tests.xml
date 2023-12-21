@@ -35,7 +35,7 @@
         <postProcessor></postProcessor>
         <releaseMode>none</releaseMode>
         <resourceName></resourceName>
-        <shell>ec-perl</shell>
+        <shell>cb-perl</shell>
         <timeLimit></timeLimit>
         <timeLimitUnits>minutes</timeLimitUnits>
         <workingDirectory></workingDirectory>
@@ -76,7 +76,7 @@
         <postProcessor></postProcessor>
         <releaseMode>none</releaseMode>
         <resourceName></resourceName>
-        <shell>ec-perl</shell>
+        <shell>cb-perl</shell>
         <timeLimit></timeLimit>
         <timeLimitUnits>minutes</timeLimitUnits>
         <workingDirectory></workingDirectory>
@@ -108,7 +108,7 @@
         <postProcessor></postProcessor>
         <releaseMode>none</releaseMode>
         <resourceName></resourceName>
-        <shell>ec-perl</shell>
+        <shell>cb-perl</shell>
         <timeLimit></timeLimit>
         <timeLimitUnits>minutes</timeLimitUnits>
         <workingDirectory></workingDirectory>
@@ -149,7 +149,7 @@
         <postProcessor></postProcessor>
         <releaseMode>none</releaseMode>
         <resourceName></resourceName>
-        <shell>ec-perl</shell>
+        <shell>cb-perl</shell>
         <timeLimit></timeLimit>
         <timeLimitUnits>minutes</timeLimitUnits>
         <workingDirectory></workingDirectory>
@@ -190,7 +190,7 @@
         <postProcessor></postProcessor>
         <releaseMode>none</releaseMode>
         <resourceName></resourceName>
-        <shell>ec-perl</shell>
+        <shell>cb-perl</shell>
         <timeLimit></timeLimit>
         <timeLimitUnits>minutes</timeLimitUnits>
         <workingDirectory></workingDirectory>
@@ -231,7 +231,7 @@
         <postProcessor></postProcessor>
         <releaseMode>none</releaseMode>
         <resourceName></resourceName>
-        <shell>ec-perl</shell>
+        <shell>cb-perl</shell>
         <timeLimit></timeLimit>
         <timeLimitUnits>minutes</timeLimitUnits>
         <workingDirectory></workingDirectory>
@@ -263,7 +263,7 @@
         <postProcessor></postProcessor>
         <releaseMode>none</releaseMode>
         <resourceName></resourceName>
-        <shell>ec-perl</shell>
+        <shell>cb-perl</shell>
         <timeLimit></timeLimit>
         <timeLimitUnits>minutes</timeLimitUnits>
         <workingDirectory></workingDirectory>
@@ -304,7 +304,7 @@
         <postProcessor></postProcessor>
         <releaseMode>none</releaseMode>
         <resourceName></resourceName>
-        <shell>ec-perl</shell>
+        <shell>cb-perl</shell>
         <timeLimit></timeLimit>
         <timeLimitUnits>minutes</timeLimitUnits>
         <workingDirectory></workingDirectory>
@@ -336,7 +336,7 @@
         <postProcessor></postProcessor>
         <releaseMode>none</releaseMode>
         <resourceName></resourceName>
-        <shell>ec-perl</shell>
+        <shell>cb-perl</shell>
         <timeLimit></timeLimit>
         <timeLimitUnits>minutes</timeLimitUnits>
         <workingDirectory></workingDirectory>
@@ -368,7 +368,7 @@
         <postProcessor></postProcessor>
         <releaseMode>none</releaseMode>
         <resourceName></resourceName>
-        <shell>ec-perl</shell>
+        <shell>cb-perl</shell>
         <timeLimit></timeLimit>
         <timeLimitUnits>minutes</timeLimitUnits>
         <workingDirectory></workingDirectory>
@@ -400,7 +400,7 @@
         <postProcessor></postProcessor>
         <releaseMode>none</releaseMode>
         <resourceName></resourceName>
-        <shell>ec-perl</shell>
+        <shell>cb-perl</shell>
         <timeLimit></timeLimit>
         <timeLimitUnits>minutes</timeLimitUnits>
         <workingDirectory></workingDirectory>
@@ -441,7 +441,7 @@
         <postProcessor></postProcessor>
         <releaseMode>none</releaseMode>
         <resourceName></resourceName>
-        <shell>ec-perl</shell>
+        <shell>cb-perl</shell>
         <timeLimit></timeLimit>
         <timeLimitUnits>minutes</timeLimitUnits>
         <workingDirectory></workingDirectory>

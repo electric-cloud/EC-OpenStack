@@ -70,7 +70,7 @@ configurations.all {
 
 group = "com.electriccloud"
 description = "Plugins : EC-OpenStack"
-version = "1.3.7"
+version = "1.4.0"
 
 apply plugin: 'groovy'
 apply plugin: 'flow-gradle-plugin'
