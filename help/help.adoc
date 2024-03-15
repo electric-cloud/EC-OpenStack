@@ -483,10 +483,10 @@ To accomplish these tasks you must:
 . After the job runs, view the results in {PRODUCT}.
 +
 .Deploy output
-image::cloudbees-common::cd-plugins/ec-openstack/use-cases/case-1/deploy-log.png[Deploy output,role="screenshot"]
+image::cloudbees-common-sda::cd-plugins/ec-openstack/use-cases/case-1/deploy-log.png[Deploy output,role="screenshot"]
 +
 .Cleanup output
-image::cloudbees-common::cd-plugins/ec-openstack/use-cases/case-1/cleanup-log.png[Cleanup output,role="screenshot"]
+image::cloudbees-common-sda::cd-plugins/ec-openstack/use-cases/case-1/cleanup-log.png[Cleanup output,role="screenshot"]
 
 [[rns]]
 == OpenStack plugin notes
